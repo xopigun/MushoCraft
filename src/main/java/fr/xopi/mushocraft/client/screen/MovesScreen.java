@@ -6,6 +6,7 @@ import fr.xopi.mushocraft.combat.move.MoveLoadout;
 import fr.xopi.mushocraft.combat.move.MoveRef;
 import fr.xopi.mushocraft.magic.spell.Spell;
 import fr.xopi.mushocraft.network.SetMoveSlotPayload;
+import fr.xopi.mushocraft.sword.technique.Technique;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -112,6 +113,12 @@ public class MovesScreen extends Screen {
                     String.format(Locale.ROOT, "%.0f", spell.manaCost()),
                     String.format(Locale.ROOT, "%.1f", spell.cooldownTicks() / 20.0)).withStyle(style -> style.withColor(0xA0A0A0)));
             lines.add(spell.description().copy().withStyle(style -> style.withColor(0xC0C0C0).withItalic(true)));
+        } else if (move instanceof Technique technique) {
+            lines.add(Component.translatable("screen.mushocraft.moves.spell_line",
+                    technique.style().displayName(), technique.rank().displayName()).withStyle(style -> style.withColor(0xFFB070)));
+            lines.add(Component.translatable("screen.mushocraft.moves.technique_cooldown",
+                    String.format(Locale.ROOT, "%.1f", technique.cooldownTicks() / 20.0)).withStyle(style -> style.withColor(0xA0A0A0)));
+            lines.add(technique.description().copy().withStyle(style -> style.withColor(0xC0C0C0).withItalic(true)));
         }
         return lines;
     }

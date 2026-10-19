@@ -4,6 +4,7 @@ import fr.xopi.mushocraft.MushoCraft;
 import fr.xopi.mushocraft.combat.move.MoveService;
 import fr.xopi.mushocraft.core.MushoBlocks;
 import fr.xopi.mushocraft.core.MushoMobEffects;
+import fr.xopi.mushocraft.core.Rank;
 import fr.xopi.mushocraft.life.LifeService;
 import fr.xopi.mushocraft.magic.entity.SpellProjectile;
 import fr.xopi.mushocraft.magic.mana.ManaService;
@@ -12,7 +13,6 @@ import fr.xopi.mushocraft.magic.spell.MagicService;
 import fr.xopi.mushocraft.magic.spell.MushoSpells;
 import fr.xopi.mushocraft.magic.spell.SpellCasting;
 import fr.xopi.mushocraft.magic.spell.SpellContext;
-import fr.xopi.mushocraft.magic.spell.SpellRank;
 import fr.xopi.mushocraft.magic.spell.SpellSchool;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.BlockPos;
@@ -51,10 +51,10 @@ public final class ProficiencyGameTests {
     @GameTest(template = EMPTY)
     public static void schoolRankFollowsExperience(GameTestHelper helper) {
         MagicProficiency proficiency = MagicProficiency.none();
-        helper.assertValueEqual(proficiency.rank(SpellSchool.WATER), SpellRank.BEGINNER, "start as Beginner");
-        proficiency = proficiency.with(SpellSchool.WATER, MagicProficiency.threshold(SpellRank.INTERMEDIATE));
-        helper.assertValueEqual(proficiency.rank(SpellSchool.WATER), SpellRank.INTERMEDIATE, "reach Intermediate");
-        helper.assertValueEqual(proficiency.rank(SpellSchool.FIRE), SpellRank.BEGINNER, "schools are separate");
+        helper.assertValueEqual(proficiency.rank(SpellSchool.WATER), Rank.BEGINNER, "start as Beginner");
+        proficiency = proficiency.with(SpellSchool.WATER, MagicProficiency.threshold(Rank.INTERMEDIATE));
+        helper.assertValueEqual(proficiency.rank(SpellSchool.WATER), Rank.INTERMEDIATE, "reach Intermediate");
+        helper.assertValueEqual(proficiency.rank(SpellSchool.FIRE), Rank.BEGINNER, "schools are separate");
         TestPlayers.expectClose(helper, proficiency.power(MushoSpells.WATER_BALL.get()), 1.1, "stronger below one's rank");
         TestPlayers.expectClose(helper, proficiency.power(MushoSpells.WATER_CANNON.get()), 1.0, "normal at one's rank");
         helper.succeed();
@@ -65,10 +65,10 @@ public final class ProficiencyGameTests {
         ServerPlayer player = caster(helper, 0.0F);
         helper.assertValueEqual(MagicService.study(player, MushoSpells.WATER_CANNON.get()), MagicService.StudyResult.NOT_READY,
                 "a beginner cannot study Water Cannon");
-        MagicService.setExperience(player, SpellSchool.WATER, MagicProficiency.threshold(SpellRank.INTERMEDIATE));
+        MagicService.setExperience(player, SpellSchool.WATER, MagicProficiency.threshold(Rank.INTERMEDIATE));
         helper.assertValueEqual(MagicService.study(player, MushoSpells.WATER_CANNON.get()), MagicService.StudyResult.LEARNED,
                 "an intermediate water mage can");
-        helper.assertValueEqual(MagicService.title(player), Optional.of(SpellRank.INTERMEDIATE), "title follows the best spell");
+        helper.assertValueEqual(MagicService.title(player), Optional.of(Rank.INTERMEDIATE), "title follows the best spell");
         TestPlayers.leave(player);
         helper.succeed();
     }

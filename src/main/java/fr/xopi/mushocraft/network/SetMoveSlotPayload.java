@@ -3,7 +3,6 @@ package fr.xopi.mushocraft.network;
 import fr.xopi.mushocraft.MushoCraft;
 import fr.xopi.mushocraft.combat.move.MoveRef;
 import fr.xopi.mushocraft.combat.move.MoveService;
-import fr.xopi.mushocraft.magic.spell.MagicService;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -31,7 +30,7 @@ public record SetMoveSlotPayload(int slot, Optional<MoveRef> move) implements Cu
 
     void handle(IPayloadContext context) {
         if (context.player() instanceof ServerPlayer player
-                && move.map(ref -> MagicService.knows(player, ref)).orElse(true)) {
+                && move.map(ref -> ref.kind().isKnownBy(player, ref.id())).orElse(true)) {
             MoveService.setSlot(player, slot, move);
         }
     }

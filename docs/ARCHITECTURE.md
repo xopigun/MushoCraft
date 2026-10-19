@@ -222,5 +222,5 @@ Limite à connaître : je n'ai accès qu'au wiki et à ses références. Je ne p
 4. ✅ Abstraction `Move`, `Cooldowns`, barre de move branchée sur le mode Epic Fight, écran des moves (nuit du 19/10).
 5. 🟡 Moteur de sorts + 11 sorts Débutants + 12 Intermédiaires + maîtrise par école (nuit du 19/10) ; restent les rangs Avancé et plus, la magie mixte, l'incantation abrégée et silencieuse.
 6. ✅ Stats physiques + entraînement + aura de combat (nuit du 19/10).
-7. Styles Epic Fight + techniques + recharge partagée.
+7. 🟡 Styles + 7 techniques + recharge partagée + règles de rang (nuit du 19/10) ; restent les enchaînements Epic Fight propres à chaque style et les autres techniques.
 8. Maîtres PNJ.

@@ -26,6 +26,10 @@ public record MoveRef(MoveKind kind, ResourceLocation id) {
         return new MoveRef(MoveKind.SPELL, id);
     }
 
+    public static MoveRef technique(ResourceLocation id) {
+        return new MoveRef(MoveKind.TECHNIQUE, id);
+    }
+
     public Optional<Move> resolve() {
         return kind.resolve(id);
     }

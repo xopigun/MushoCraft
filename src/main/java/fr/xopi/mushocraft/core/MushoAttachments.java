@@ -9,6 +9,7 @@ import fr.xopi.mushocraft.life.LifeData;
 import fr.xopi.mushocraft.magic.mana.ManaData;
 import fr.xopi.mushocraft.magic.spell.MagicKnowledge;
 import fr.xopi.mushocraft.magic.spell.MagicProficiency;
+import fr.xopi.mushocraft.sword.SwordMastery;
 import fr.xopi.mushocraft.talent.Talents;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.attachment.AttachmentType;
@@ -51,6 +52,9 @@ public final class MushoAttachments {
 
     public static final Supplier<AttachmentType<BattleAuraData>> BATTLE_AURA = ATTACHMENT_TYPES.register("battle_aura",
             () -> AttachmentType.builder(BattleAuraData::none).serialize(BattleAuraData.CODEC).copyOnDeath().build());
+
+    public static final Supplier<AttachmentType<SwordMastery>> SWORD_MASTERY = ATTACHMENT_TYPES.register("sword_mastery",
+            () -> AttachmentType.builder(SwordMastery::none).serialize(SwordMastery.CODEC).copyOnDeath().build());
 
     private MushoAttachments() {
     }

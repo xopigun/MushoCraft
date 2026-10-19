@@ -10,6 +10,7 @@ import fr.xopi.mushocraft.core.MushoEntities;
 import fr.xopi.mushocraft.core.MushoItems;
 import fr.xopi.mushocraft.core.MushoMobEffects;
 import fr.xopi.mushocraft.magic.spell.MushoSpells;
+import fr.xopi.mushocraft.sword.technique.MushoTechniques;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -35,6 +36,7 @@ public final class MushoCraft {
         MushoMobEffects.register(modEventBus);
         MushoCreativeTabs.register(modEventBus);
         MushoSpells.register(modEventBus);
+        MushoTechniques.register(modEventBus);
         modContainer.registerConfig(ModConfig.Type.SERVER, MushoConfig.SPEC);
     }
 

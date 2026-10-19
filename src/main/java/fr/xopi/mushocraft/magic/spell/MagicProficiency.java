@@ -1,6 +1,7 @@
 package fr.xopi.mushocraft.magic.spell;
 
 import com.mojang.serialization.Codec;
+import fr.xopi.mushocraft.core.Rank;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -14,7 +15,7 @@ public record MagicProficiency(Map<SpellSchool, Double> experience) {
     public static final Codec<MagicProficiency> CODEC = Codec.unboundedMap(SpellSchool.CODEC, Codec.DOUBLE)
             .xmap(MagicProficiency::new, MagicProficiency::experience);
 
-    /** Experience needed to reach each rank, indexed by {@link SpellRank#ordinal()}. */
+    /** Experience needed to reach each rank, indexed by {@link Rank#ordinal()}. */
     private static final double[] THRESHOLDS = {0.0, 150.0, 800.0, 4_000.0, 15_000.0, 50_000.0, 150_000.0};
     /** Extra strength per rank of the school above the spell's own rank. */
     private static final double POWER_PER_RANK = 0.1;
@@ -31,10 +32,10 @@ public record MagicProficiency(Map<SpellSchool, Double> experience) {
         return experience.getOrDefault(school, 0.0);
     }
 
-    public SpellRank rank(SpellSchool school) {
+    public Rank rank(SpellSchool school) {
         double xp = experience(school);
-        SpellRank reached = SpellRank.BEGINNER;
-        for (SpellRank rank : SpellRank.values()) {
+        Rank reached = Rank.BEGINNER;
+        for (Rank rank : Rank.values()) {
             if (xp >= THRESHOLDS[rank.ordinal()]) {
                 reached = rank;
             }
@@ -42,7 +43,7 @@ public record MagicProficiency(Map<SpellSchool, Double> experience) {
         return reached;
     }
 
-    public static double threshold(SpellRank rank) {
+    public static double threshold(Rank rank) {
         return THRESHOLDS[rank.ordinal()];
     }
 

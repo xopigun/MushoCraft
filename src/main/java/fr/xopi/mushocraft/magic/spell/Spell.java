@@ -4,6 +4,7 @@ import fr.xopi.mushocraft.combat.move.Move;
 import fr.xopi.mushocraft.combat.move.MoveRef;
 import fr.xopi.mushocraft.combat.move.MoveUseResult;
 import fr.xopi.mushocraft.core.MushoRegistries;
+import fr.xopi.mushocraft.core.Rank;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -17,7 +18,7 @@ import java.util.Objects;
  */
 public final class Spell implements Move {
     private final SpellSchool school;
-    private final SpellRank rank;
+    private final Rank rank;
     private final double manaCost;
     private final int incantationTicks;
     private final int cooldownTicks;
@@ -27,12 +28,12 @@ public final class Spell implements Move {
         this.school = Objects.requireNonNull(builder.school, "school");
         this.rank = Objects.requireNonNull(builder.rank, "rank");
         this.manaCost = builder.manaCost;
-        this.incantationTicks = builder.incantationTicks >= 0 ? builder.incantationTicks : rank.incantationTicks();
+        this.incantationTicks = builder.incantationTicks >= 0 ? builder.incantationTicks : Incantation.defaultTicks(rank);
         this.cooldownTicks = builder.cooldownTicks;
         this.effect = Objects.requireNonNull(builder.effect, "effect");
     }
 
-    public static Builder builder(SpellSchool school, SpellRank rank) {
+    public static Builder builder(SpellSchool school, Rank rank) {
         return new Builder(school, rank);
     }
 
@@ -44,7 +45,7 @@ public final class Spell implements Move {
         return school;
     }
 
-    public SpellRank rank() {
+    public Rank rank() {
         return rank;
     }
 
@@ -95,13 +96,13 @@ public final class Spell implements Move {
 
     public static final class Builder {
         private final SpellSchool school;
-        private final SpellRank rank;
+        private final Rank rank;
         private double manaCost;
         private int incantationTicks = -1;
         private int cooldownTicks;
         private SpellEffect effect;
 
-        private Builder(SpellSchool school, SpellRank rank) {
+        private Builder(SpellSchool school, Rank rank) {
             this.school = school;
             this.rank = rank;
         }

@@ -1,11 +1,15 @@
 package fr.xopi.mushocraft.gametest.showcase;
 
 import fr.xopi.mushocraft.MushoCraft;
+import fr.xopi.mushocraft.combat.move.CooldownService;
 import fr.xopi.mushocraft.combat.move.MoveService;
 import fr.xopi.mushocraft.life.LifeService;
 import fr.xopi.mushocraft.magic.entity.SpellProjectile;
 import fr.xopi.mushocraft.magic.spell.SpellElement;
 import fr.xopi.mushocraft.magic.spell.effect.ProjectileProfile;
+import fr.xopi.mushocraft.sword.SwordService;
+import fr.xopi.mushocraft.sword.SwordStyle;
+import fr.xopi.mushocraft.sword.technique.MushoTechniques;
 import fr.xopi.mushocraft.magic.mana.ManaService;
 import fr.xopi.mushocraft.magic.spell.MagicService;
 import fr.xopi.mushocraft.magic.spell.MushoSpells;
@@ -15,13 +19,20 @@ import net.minecraft.client.Screenshot;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.monster.Zombie;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
+import yesman.epicfight.registry.entries.EpicFightItems;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 
@@ -89,7 +100,7 @@ public final class ShowcaseDirector {
                     MoveService.setSlot(player, 1, Optional.of(MushoSpells.EX_FLAME.get().ref()));
                     MoveService.setSlot(player, 2, Optional.of(MushoSpells.EARTH_LANCE.get().ref()));
                     MoveService.setSlot(player, 3, Optional.of(MushoSpells.EXPLOSION.get().ref()));
-                    player.teleportTo(player.serverLevel(), player.getX() + 4, player.getY(), player.getZ(), 0.0F, 25.0F);
+                    player.setXRot(25.0F);
                 });
             }),
             new Step(315, () -> onServer(player -> MoveService.use(player, 0))),
@@ -106,17 +117,53 @@ public final class ShowcaseDirector {
             new Step(458, () -> shoot("09_earth_lance")),
             new Step(470, () -> onServer(player -> MoveService.use(player, 3))),
             new Step(507, () -> shoot("10_explosion")),
-            new Step(520, () -> onServer(player -> {
+            new Step(520, () -> {
+                Minecraft.getInstance().options.setCameraType(CameraType.THIRD_PERSON_FRONT);
+                onServer(player -> {
+                    player.getInventory().clearContent();
+                    player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.IRON_SWORD));
+                    player.setXRot(0.0F);
+                    List.of(MushoTechniques.ARM_CHOP, MushoTechniques.SWORD_THROWING, MushoTechniques.MOONLIGHT_CLEAVE,
+                            MushoTechniques.LONGSWORD_OF_LIGHT).forEach(technique -> SwordService.learn(player, technique.get()));
+                    SwordService.adopt(player, SwordStyle.SWORD_GOD);
+                    MoveService.setSlot(player, 0, Optional.of(MushoTechniques.ARM_CHOP.get().ref()));
+                    MoveService.setSlot(player, 1, Optional.of(MushoTechniques.MOONLIGHT_CLEAVE.get().ref()));
+                    MoveService.setSlot(player, 2, Optional.of(MushoTechniques.SWORD_THROWING.get().ref()));
+                    MoveService.setSlot(player, 3, Optional.of(MushoTechniques.LONGSWORD_OF_LIGHT.get().ref()));
+                    for (int i = 0; i < 3; i++) {
+                        Zombie zombie = EntityType.HUSK.create(player.serverLevel());
+                        zombie.moveTo(player.getX() - 1.5 + i * 1.5, player.getY(), player.getZ() + 2.5, 180.0F, 0.0F);
+                        zombie.setNoAi(true);
+                        zombie.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.STONE_SWORD));
+                        player.serverLevel().addFreshEntity(zombie);
+                    }
+                });
+            }),
+            new Step(540, () -> onServer(player -> logUse(player, 0))),
+            new Step(546, () -> shoot("13_arm_chop")),
+            new Step(600, () -> onServer(player -> {
+                CooldownService.clear(player);
+                logUse(player, 1);
+            })),
+            new Step(606, () -> shoot("14_moonlight_cleave")),
+            new Step(660, () -> onServer(player -> {
+                CooldownService.clear(player);
+                player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(EpicFightItems.IRON_TACHI.get()));
+            })),
+            new Step(670, () -> onServer(player -> logUse(player, 3))),
+            new Step(674, () -> shoot("15_longsword_of_light")),
+            new Step(720, () -> onServer(player -> {
+                CooldownService.clear(player);
+                logUse(player, 2);
+            })),
+            new Step(723, () -> shoot("16_sword_throwing")),
+            new Step(760, () -> onServer(player -> {
                 setBattleMode(player, false);
                 LifeService.rebirth(player);
             })),
-            new Step(550, () -> {
-                Minecraft.getInstance().options.setCameraType(CameraType.THIRD_PERSON_BACK);
-            }),
-            new Step(560, () -> shoot("11_baby_third_person")),
-            new Step(570, () -> Minecraft.getInstance().options.setCameraType(CameraType.FIRST_PERSON)),
-            new Step(580, () -> shoot("12_baby_hud")),
-            new Step(600, () -> Minecraft.getInstance().stop())
+            new Step(790, () -> Minecraft.getInstance().options.setCameraType(CameraType.THIRD_PERSON_BACK)),
+            new Step(800, () -> shoot("17_baby_third_person")),
+            new Step(820, () -> Minecraft.getInstance().stop())
     );
 
     private static final int FLIGHT_TICKS_BEFORE_SHOT = 3;
@@ -158,6 +205,14 @@ public final class ShowcaseDirector {
         return false;
     }
 
+    private static void logUse(ServerPlayer player, int slot) {
+        var result = MoveService.use(player, slot);
+        MushoCraft.LOGGER.info("Showcase move slot {}: success {} {}", slot, result.success(),
+                result.failure().map(net.minecraft.network.chat.Component::getString).orElse(""));
+        player.serverLevel().getEntitiesOfClass(Zombie.class, player.getBoundingBox().inflate(8.0))
+                .forEach(zombie -> MushoCraft.LOGGER.info("Showcase target health {}", zombie.getHealth()));
+    }
+
     private static void onServer(Consumer<ServerPlayer> action) {
         MinecraftServer server = Minecraft.getInstance().getSingleplayerServer();
         if (server != null) {
@@ -168,8 +223,8 @@ public final class ShowcaseDirector {
     /** A clear stage high above the terrain, so nothing hides the spells. */
     private static void standOnSkyPlatform(ServerPlayer player) {
         BlockPos center = new BlockPos(player.getBlockX(), 200, player.getBlockZ());
-        for (int dx = -6; dx <= 6; dx++) {
-            for (int dz = -6; dz <= 12; dz++) {
+        for (int dx = -16; dx <= 16; dx++) {
+            for (int dz = -16; dz <= 24; dz++) {
                 player.serverLevel().setBlockAndUpdate(center.offset(dx, -1, dz), Blocks.SMOOTH_STONE.defaultBlockState());
             }
         }

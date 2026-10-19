@@ -6,6 +6,7 @@ import fr.xopi.mushocraft.combat.move.MoveService;
 import fr.xopi.mushocraft.combat.move.MovesSync;
 import fr.xopi.mushocraft.core.MushoAttachments;
 import fr.xopi.mushocraft.core.MushoRegistries;
+import fr.xopi.mushocraft.core.Rank;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -87,7 +88,7 @@ public final class MagicService {
     /**
      * The magician's title: the rank of the most advanced spell they know (wiki, page <i>Magic</i>).
      */
-    public static Optional<SpellRank> title(ServerPlayer player) {
+    public static Optional<Rank> title(ServerPlayer player) {
         return knownSpells(player).stream()
                 .map(MushoRegistries.SPELL::get)
                 .filter(Objects::nonNull)

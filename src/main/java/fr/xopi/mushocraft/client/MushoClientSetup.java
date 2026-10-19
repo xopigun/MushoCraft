@@ -6,6 +6,7 @@ import fr.xopi.mushocraft.client.hud.MoveBarLayer;
 import fr.xopi.mushocraft.client.input.MushoKeyMappings;
 import fr.xopi.mushocraft.client.render.SpellOrbModel;
 import fr.xopi.mushocraft.client.render.SpellProjectileRenderer;
+import fr.xopi.mushocraft.client.render.ThrownWeaponRenderer;
 import fr.xopi.mushocraft.core.MushoEntities;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -32,6 +33,7 @@ public final class MushoClientSetup {
     @SubscribeEvent
     public static void onRegisterRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(MushoEntities.SPELL_PROJECTILE.get(), SpellProjectileRenderer::new);
+        event.registerEntityRenderer(MushoEntities.THROWN_WEAPON.get(), ThrownWeaponRenderer::new);
     }
 
     @SubscribeEvent

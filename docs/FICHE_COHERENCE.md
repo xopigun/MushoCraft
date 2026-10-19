@@ -51,6 +51,10 @@ Dernière mise à jour : 19/10/2026.
 | S5 | Certains n'obtiennent jamais l'aura | Rudeus et Laplace n'en ont pas. | WN ch. 80 ; Q&A de l'auteur, réponse 187 | à relever | écart E2 |
 | S6 | Contrôle de l'aura et rang | Contrôle conscient = Avancé, contrôle complet = Saint (propos de Ghislaine, style du Dieu de l'Épée). | wiki *Battle Aura* (pas de tome cité) | à relever | à vérifier |
 | S7 | Maîtres de différents niveaux | Chaque style a des pratiquants de tous rangs. | pages des trois styles | à relever | conforme |
+| S7b | Avancé = aura consciente, Saint = aura complète | « A standard Advanced practitioner can self consciously use their Battle Aura » (trois styles) ; un Saint du Dieu de l'Épée contrôle complètement son aura. | pages des trois styles | à relever | conforme (`StyleRules.requiredAura`) ; Saint étendu aux trois styles (à valider) |
+| S11 | *Longsword of Light* à deux mains | Il faut maîtriser l'épée à deux mains avant de l'apprendre. | page *Sword God Style* | à relever | conforme (`WeaponRequirement.TWO_HANDED_BLADE`) |
+| S12 | *Flow* | Technique fondamentale de contre du Dieu de l'Eau : recevoir, détourner, contre-attaquer. À haut niveau, le style détourne même la magie. | page *Water God Style* | à relever | conforme (posture, contre ×1,5, projectiles à partir de Saint) |
+| S13 | Le Dieu du Nord ne tient pas à l'épée | « there is no need to stick to the sword » (Kalman II). | page *North God Style* | à relever | conforme (techniques du Nord avec n'importe quelle arme) |
 | S8 | Un maître forme jusqu'à son propre rang | Aucune source trouvée. | — | — | écart E4 |
 | S9 | Stats force, vitalité, vitesse, résistance | Mécanique de jeu. | — | — | jeu |
 | S10 | Recharge commune par style | Mécanique de jeu. | — | — | jeu |
