@@ -7,6 +7,7 @@ import fr.xopi.mushocraft.combat.move.MoveRef;
 import fr.xopi.mushocraft.core.MushoRegistries;
 import fr.xopi.mushocraft.core.Rank;
 import fr.xopi.mushocraft.sword.StyleRules;
+import fr.xopi.mushocraft.sword.ai.TechniqueGoal;
 import fr.xopi.mushocraft.sword.SwordService;
 import fr.xopi.mushocraft.sword.SwordStyle;
 import fr.xopi.mushocraft.sword.technique.Technique;
@@ -44,6 +45,7 @@ import javax.annotation.Nullable;
  * A master of one of the three sword styles (wiki: each style has practitioners of every rank). A master takes the
  * player as a disciple and leads them rank by rank up to their own: a trained body first, then each technique of the
  * rank shown and mastered by repetition, then the rank itself (see {@link TeacherEntity#teach}).
+ * In a fight, the master uses the techniques of their style up to their rank (see {@link TechniqueGoal}).
  * Each style carries its own weapon, which also gives the master Epic Fight's matching combat behaviour:
  * a two-handed tachi for the Sword God Style, sword and shield for the Water God Style, two swords for the North God.
  */
@@ -196,6 +198,19 @@ public class SwordMasterEntity extends TeacherEntity {
             return Rank.SAINT;
         }
         return Rank.KING;
+    }
+
+    @Override
+    protected void registerGoals() {
+        super.registerGoals();
+        goalSelector.addGoal(2, new TechniqueGoal(this, this::repertoire, this::rank));
+    }
+
+    /** The techniques this master fights with: those of their style, up to their rank. */
+    private List<Technique> repertoire() {
+        return MushoRegistries.TECHNIQUE.stream()
+                .filter(technique -> technique.style() == style() && rank().isAtLeast(technique.rank()))
+                .toList();
     }
 
     @Override

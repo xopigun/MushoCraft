@@ -40,6 +40,12 @@ public final class StrikeAction implements TechniqueAction {
         return new Builder(animation, damageMultiplier);
     }
 
+    /** A lunge carries the blow further. */
+    @Override
+    public double maxRange() {
+        return 3.5 + lunge * 3.0;
+    }
+
     @Override
     public boolean perform(TechniqueContext context) {
         if (!EpicFightAnimations.canAct(context.user())) {
@@ -49,7 +55,7 @@ public final class StrikeAction implements TechniqueAction {
         TechniqueStrikes.arm(context.user(), accessor.registryName(), (float) (damageMultiplier * context.power()),
                 STRIKE_WINDOW_TICKS, onHit);
         if (lunge > 0.0) {
-            Vec3 look = context.user().getLookAngle().multiply(1.0, 0.0, 1.0).normalize();
+            Vec3 look = context.heading();
             context.user().push(look.x * lunge, 0.15, look.z * lunge);
             context.user().hurtMarked = true;
         }

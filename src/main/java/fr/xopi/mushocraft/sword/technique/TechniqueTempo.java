@@ -3,7 +3,7 @@ package fr.xopi.mushocraft.sword.technique;
 import fr.xopi.mushocraft.MushoCraft;
 import fr.xopi.mushocraft.combat.move.CooldownService;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -27,31 +27,31 @@ public final class TechniqueTempo {
     /**
      * @param speedFactor 1.0 for a mastered technique, below 1.0 for a slower one
      */
-    public static void apply(ServerPlayer player, double speedFactor, int durationTicks) {
-        AttributeInstance speed = player.getAttribute(Attributes.ATTACK_SPEED);
+    public static void apply(LivingEntity fighter, double speedFactor, int durationTicks) {
+        AttributeInstance speed = fighter.getAttribute(Attributes.ATTACK_SPEED);
         if (speed == null) {
             return;
         }
         if (speedFactor >= 1.0) {
-            clear(player);
+            clear(fighter);
             return;
         }
         speed.addOrUpdateTransientModifier(new AttributeModifier(MODIFIER, speedFactor - 1.0,
                 AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
-        ENDS_AT.put(player.getUUID(), CooldownService.now(player) + durationTicks);
+        ENDS_AT.put(fighter.getUUID(), CooldownService.now(fighter) + durationTicks);
     }
 
     /** Called every tick: restores the normal pace once the technique is over. */
-    public static void tick(ServerPlayer player) {
-        Long end = ENDS_AT.get(player.getUUID());
-        if (end != null && CooldownService.now(player) >= end) {
-            clear(player);
+    public static void tick(LivingEntity fighter) {
+        Long end = ENDS_AT.get(fighter.getUUID());
+        if (end != null && CooldownService.now(fighter) >= end) {
+            clear(fighter);
         }
     }
 
-    public static void clear(ServerPlayer player) {
-        ENDS_AT.remove(player.getUUID());
-        AttributeInstance speed = player.getAttribute(Attributes.ATTACK_SPEED);
+    public static void clear(LivingEntity fighter) {
+        ENDS_AT.remove(fighter.getUUID());
+        AttributeInstance speed = fighter.getAttribute(Attributes.ATTACK_SPEED);
         if (speed != null) {
             speed.removeModifier(MODIFIER);
         }

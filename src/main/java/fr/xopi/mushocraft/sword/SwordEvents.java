@@ -15,6 +15,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -44,10 +45,11 @@ public final class SwordEvents {
 
     /** A hit dealt by the animation of an armed technique is multiplied and carries the technique's effect. */
     private static void onEpicFightHit(DealDamageEvent.Pre event) {
-        if (!(event.getEntityPatch().getOriginal() instanceof ServerPlayer player) || event.getDamageSource().getAnimation() == null) {
+        LivingEntity fighter = event.getEntityPatch().getOriginal();
+        if (fighter.level().isClientSide || event.getDamageSource().getAnimation() == null) {
             return;
         }
-        TechniqueStrikes.matching(player, event.getDamageSource().getAnimation().registryName()).ifPresent(strike -> {
+        TechniqueStrikes.matching(fighter, event.getDamageSource().getAnimation().registryName()).ifPresent(strike -> {
             event.setModifiedDamage(event.getModifiedDamage() * strike.damageMultiplier());
             strike.applyTo(event.getTarget());
         });
@@ -65,7 +67,8 @@ public final class SwordEvents {
     /** Water God Style, Flow: the awaited attack is redirected and answered. */
     @SubscribeEvent
     public static void onIncomingDamage(LivingIncomingDamageEvent event) {
-        if (!(event.getEntity() instanceof ServerPlayer player)) {
+        LivingEntity player = event.getEntity();
+        if (player.level().isClientSide) {
             return;
         }
         CounterStances.active(player).ifPresent(stance -> {
@@ -77,12 +80,13 @@ public final class SwordEvents {
                 CounterStances.clear(player);
                 EpicFightAnimations.play(player, Animations.LONGSWORD_GUARD_ACTIVE_HIT1);
                 float counter = (float) (player.getAttributeValue(Attributes.ATTACK_DAMAGE) * stance.counterMultiplier());
-                attacker.hurt(player.damageSources().playerAttack(player), counter);
-                player.serverLevel().playSound(null, player.blockPosition(), SoundEvents.ANVIL_LAND, SoundSource.PLAYERS, 0.6F, 1.6F);
+                attacker.hurt(player instanceof Player p ? player.damageSources().playerAttack(p) : player.damageSources().mobAttack(player),
+                        counter);
+                player.level().playSound(null, player.blockPosition(), SoundEvents.ANVIL_LAND, SoundSource.PLAYERS, 0.6F, 1.6F);
             } else if (missile && stance.deflectsProjectiles()) {
                 event.setCanceled(true);
                 CounterStances.clear(player);
-                player.serverLevel().playSound(null, player.blockPosition(), SoundEvents.SHIELD_BLOCK, SoundSource.PLAYERS, 1.0F, 1.2F);
+                player.level().playSound(null, player.blockPosition(), SoundEvents.SHIELD_BLOCK, SoundSource.PLAYERS, 1.0F, 1.2F);
             }
         });
     }

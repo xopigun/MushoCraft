@@ -21,6 +21,12 @@ public final class CounterStanceAction implements TechniqueAction {
         this.deflectsProjectilesFrom = deflectsProjectilesFrom;
     }
 
+    /** Taken when the enemy is about to strike. */
+    @Override
+    public double maxRange() {
+        return 3.0;
+    }
+
     @Override
     public boolean perform(TechniqueContext context) {
         CounterStances.enter(context.user(), windowTicks, (float) (counterMultiplier * context.power()),

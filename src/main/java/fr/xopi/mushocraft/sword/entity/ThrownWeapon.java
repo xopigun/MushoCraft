@@ -9,7 +9,9 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.projectile.ThrowableProjectile;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -76,9 +78,17 @@ public class ThrownWeapon extends ThrowableProjectile {
         }
     }
 
+    /**
+     * The weapon falls where it struck: a player must go and pick it up. A creature cannot, so it returns to its
+     * hand ([À VALIDER] simplification).
+     */
     private void dropWeapon() {
         if (!weapon().isEmpty()) {
-            spawnAtLocation(weapon());
+            if (getOwner() instanceof Mob mob && mob.isAlive() && mob.getMainHandItem().isEmpty()) {
+                mob.setItemSlot(EquipmentSlot.MAINHAND, weapon());
+            } else {
+                spawnAtLocation(weapon());
+            }
             entityData.set(WEAPON, ItemStack.EMPTY);
         }
         discard();

@@ -1,9 +1,9 @@
 package fr.xopi.mushocraft.compat.epicfight;
 
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.LivingEntity;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
-import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
+import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 import yesman.epicfight.world.capabilities.item.CapabilityItem;
 import yesman.epicfight.world.capabilities.item.Style;
 import yesman.epicfight.world.capabilities.item.WeaponCategory;
@@ -29,27 +29,27 @@ public final class EpicFightWeapons {
     private EpicFightWeapons() {
     }
 
-    private static CapabilityItem mainHand(ServerPlayer player) {
-        return EpicFightCapabilities.getItemStackCapability(player.getItemInHand(InteractionHand.MAIN_HAND));
+    private static CapabilityItem mainHand(LivingEntity fighter) {
+        return EpicFightCapabilities.getItemStackCapability(fighter.getItemInHand(InteractionHand.MAIN_HAND));
     }
 
     /** A sword of any kind: sword, longsword, tachi, uchigatana, greatsword or dagger. */
-    public static boolean holdsBlade(ServerPlayer player) {
-        return BLADES.contains(mainHand(player).getWeaponCategory());
+    public static boolean holdsBlade(LivingEntity fighter) {
+        return BLADES.contains(mainHand(fighter).getWeaponCategory());
     }
 
     /** Any real weapon: the North God Style does not insist on swords. */
-    public static boolean holdsWeapon(ServerPlayer player) {
-        return !NOT_WEAPONS.contains(mainHand(player).getWeaponCategory());
+    public static boolean holdsWeapon(LivingEntity fighter) {
+        return !NOT_WEAPONS.contains(mainHand(fighter).getWeaponCategory());
     }
 
     /** Whether the weapon is held with both hands, as the Longsword of Light requires. */
-    public static boolean holdsWithBothHands(ServerPlayer player) {
-        PlayerPatch<?> patch = EpicFightCapabilities.getPlayerPatch(player);
+    public static boolean holdsWithBothHands(LivingEntity fighter) {
+        LivingEntityPatch<?> patch = EpicFightCapabilities.getEntityPatch(fighter, LivingEntityPatch.class);
         if (patch == null) {
             return false;
         }
-        CapabilityItem weapon = mainHand(player);
+        CapabilityItem weapon = mainHand(fighter);
         Style style = weapon.getStyle(patch);
         return style == CapabilityItem.Styles.TWO_HAND
                 || (style instanceof EpicFightSwordStyles && StyleMovesets.heldWithBothHands(weapon));

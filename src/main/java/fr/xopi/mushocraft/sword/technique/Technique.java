@@ -13,6 +13,8 @@ import fr.xopi.mushocraft.sword.SwordStyle;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -124,6 +126,21 @@ public final class Technique implements Move {
         SwordService.gainExperience(user, style, PRACTICE_EXPERIENCE);
         MasteryService.succeeded(user, ref());
         return MoveUseResult.SUCCESS;
+    }
+
+    /**
+     * A creature (a master) performs the technique, aimed at a point. It needs the right weapon, like a player.
+     *
+     * @return whether it was performed
+     */
+    public boolean performAs(LivingEntity fighter, Rank styleRank, Vec3 aimedAt) {
+        if (!weapon.isMetBy(fighter)) {
+            return false;
+        }
+        double power = 1.0 + POWER_PER_RANK * Math.max(0, styleRank.ordinal() - rank.ordinal());
+        Vec3 look = aimedAt.subtract(fighter.getEyePosition());
+        return action.perform(new TechniqueContext(fighter, this, styleRank, power,
+                look.lengthSqr() < 1.0E-6 ? fighter.getLookAngle() : look.normalize()));
     }
 
     public static final class Builder {

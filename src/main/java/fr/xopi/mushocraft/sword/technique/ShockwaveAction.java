@@ -33,13 +33,18 @@ public final class ShockwaveAction implements TechniqueAction {
     }
 
     @Override
+    public double maxRange() {
+        return radius;
+    }
+
+    @Override
     public boolean perform(TechniqueContext context) {
         if (!EpicFightAnimations.canAct(context.user())) {
             return false;
         }
         EpicFightAnimations.play(context.user(), animation.get());
         Vec3 origin = context.user().position();
-        Vec3 look = context.user().getLookAngle().multiply(1.0, 0.0, 1.0).normalize();
+        Vec3 look = context.heading();
         float damage = (float) (context.user().getAttributeValue(Attributes.ATTACK_DAMAGE) * damageMultiplier * context.power());
         for (LivingEntity target : context.level().getEntitiesOfClass(LivingEntity.class,
                 context.user().getBoundingBox().inflate(radius), entity -> entity != context.user())) {
@@ -47,7 +52,7 @@ public final class ShockwaveAction implements TechniqueAction {
             if (toTarget.lengthSqr() > radius * radius || toTarget.normalize().dot(look) < FRONT_CONE_COS) {
                 continue;
             }
-            target.hurt(context.level().damageSources().playerAttack(context.user()), damage);
+            target.hurt(context.meleeSource(), damage);
             Vec3 push = toTarget.normalize().scale(launch);
             target.push(push.x, launch * 0.6, push.z);
             target.hurtMarked = true;

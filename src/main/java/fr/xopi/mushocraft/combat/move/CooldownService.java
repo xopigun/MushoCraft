@@ -3,6 +3,7 @@ package fr.xopi.mushocraft.combat.move;
 import fr.xopi.mushocraft.core.MushoAttachments;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 
 import java.util.Optional;
 
@@ -31,7 +32,8 @@ public final class CooldownService {
         MovesSync.push(player);
     }
 
-    public static long now(ServerPlayer player) {
-        return player.server.overworld().getGameTime();
+    /** The world's clock (the overworld's game time, shared by every dimension). */
+    public static long now(Entity entity) {
+        return entity.getServer() == null ? entity.level().getGameTime() : entity.getServer().overworld().getGameTime();
     }
 }

@@ -21,6 +21,17 @@ public final class ThrowWeaponAction implements TechniqueAction {
         this.speed = speed;
     }
 
+    /** Thrown at an enemy out of sword's reach. */
+    @Override
+    public double minRange() {
+        return 5.0;
+    }
+
+    @Override
+    public double maxRange() {
+        return 16.0;
+    }
+
     @Override
     public boolean perform(TechniqueContext context) {
         ItemStack weapon = context.user().getItemInHand(InteractionHand.MAIN_HAND);
@@ -29,7 +40,7 @@ public final class ThrowWeaponAction implements TechniqueAction {
         }
         float damage = (float) (context.user().getAttributeValue(Attributes.ATTACK_DAMAGE) * damageMultiplier * context.power());
         ThrownWeapon thrown = ThrownWeapon.create(context.level(), context.user(), weapon, damage);
-        Vec3 look = context.user().getLookAngle();
+        Vec3 look = context.look();
         thrown.setPos(context.user().getEyePosition().add(look.scale(0.8)).subtract(0.0, 0.3, 0.0));
         thrown.shoot(look.x, look.y, look.z, speed, 0.5F);
         context.level().addFreshEntity(thrown);

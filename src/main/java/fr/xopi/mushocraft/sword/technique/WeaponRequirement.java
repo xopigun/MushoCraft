@@ -1,7 +1,7 @@
 package fr.xopi.mushocraft.sword.technique;
 
 import fr.xopi.mushocraft.compat.epicfight.EpicFightWeapons;
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.LivingEntity;
 
 import java.util.Locale;
 import java.util.function.Predicate;
@@ -17,14 +17,14 @@ public enum WeaponRequirement {
     /** Any weapon: « there is no need to stick to the sword » (Kalman II, North God Style). */
     ANY_WEAPON(EpicFightWeapons::holdsWeapon);
 
-    private final Predicate<ServerPlayer> check;
+    private final Predicate<LivingEntity> check;
 
-    WeaponRequirement(Predicate<ServerPlayer> check) {
+    WeaponRequirement(Predicate<LivingEntity> check) {
         this.check = check;
     }
 
-    public boolean isMetBy(ServerPlayer player) {
-        return check.test(player);
+    public boolean isMetBy(LivingEntity fighter) {
+        return check.test(fighter);
     }
 
     public String failureKey() {
