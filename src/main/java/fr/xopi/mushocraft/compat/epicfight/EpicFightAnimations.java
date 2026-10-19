@@ -1,10 +1,13 @@
 package fr.xopi.mushocraft.compat.epicfight;
 
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.asset.AssetAccessor;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
+import yesman.epicfight.world.damagesource.StunType;
 
 /**
  * Façade for playing Epic Fight animations from MushoCraft. Existing Epic Fight animations are only referenced,
@@ -18,6 +21,17 @@ public final class EpicFightAnimations {
     public static boolean canAct(LivingEntity fighter) {
         LivingEntityPatch<?> patch = EpicFightCapabilities.getEntityPatch(fighter, LivingEntityPatch.class);
         return patch != null && patch.getEntityState().canUseSkill();
+    }
+
+    /**
+     * Stuns the creature for a while with Epic Fight's own short stun (it reels, cannot act). A creature Epic Fight does
+     * not animate is held in place instead.
+     */
+    public static void stun(LivingEntity creature, float seconds) {
+        LivingEntityPatch<?> patch = EpicFightCapabilities.getEntityPatch(creature, LivingEntityPatch.class);
+        if (patch == null || !patch.applyStun(StunType.SHORT, seconds)) {
+            creature.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, Math.round(seconds * 20.0F), 9));
+        }
     }
 
     /** Plays the animation for everyone around; attack animations deal their hits by themselves. */

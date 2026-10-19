@@ -3,9 +3,10 @@ package fr.xopi.mushocraft.client.render;
 import com.mojang.blaze3d.vertex.PoseStack;
 import fr.xopi.mushocraft.client.render.spell.CrescentVisual;
 import fr.xopi.mushocraft.client.render.spell.CrystalClusterVisual;
+import fr.xopi.mushocraft.client.render.spell.DiscVisual;
 import fr.xopi.mushocraft.client.render.spell.FireVisuals;
 import fr.xopi.mushocraft.client.render.spell.GlowShellVisuals;
-import fr.xopi.mushocraft.client.render.spell.IcicleVisual;
+import fr.xopi.mushocraft.client.render.spell.IceShardVisual;
 import fr.xopi.mushocraft.client.render.spell.ProjectileVisual;
 import fr.xopi.mushocraft.client.render.spell.RibbonTrail;
 import fr.xopi.mushocraft.client.render.spell.RockVisuals;
@@ -66,7 +67,9 @@ public class SpellProjectileRenderer extends EntityRenderer<SpellProjectile> {
      * sheds drops, rock is heavy.
      */
     private static Optional<Integer> trailColour(SpellProjectile projectile) {
-        if (projectile.shape() == ProjectileShape.CRYSTAL_CLUSTER) {
+        // nor do chunks of ice: neither the cluster of Ice Smash nor the shards of Icicle Break (anime)
+        if (projectile.shape() == ProjectileShape.CRYSTAL_CLUSTER
+                || projectile.element() == SpellElement.ICE && projectile.shape() == ProjectileShape.BOLT) {
             return Optional.empty();
         }
         return switch (projectile.element()) {
@@ -83,6 +86,9 @@ public class SpellProjectileRenderer extends EntityRenderer<SpellProjectile> {
         if (projectile.shape() == ProjectileShape.CRYSTAL_CLUSTER) {
             return Optional.of(crystalCluster);
         }
+        if (projectile.shape() == ProjectileShape.DISC) {
+            return Optional.of(DiscVisual.ICICLE_EDGE);
+        }
         if (projectile.shape() == ProjectileShape.CRESCENT) {
             return switch (projectile.element()) {
                 case ICE, WATER -> Optional.of(CrescentVisual.ICE);
@@ -91,7 +97,7 @@ public class SpellProjectileRenderer extends EntityRenderer<SpellProjectile> {
             };
         }
         if (projectile.element() == SpellElement.ICE && projectile.shape() == ProjectileShape.BOLT) {
-            return Optional.of(IcicleVisual.ICICLE);
+            return Optional.of(IceShardVisual.SHARD_VISUAL);
         }
         if (projectile.element() == SpellElement.FIRE) {
             return Optional.of(FireVisuals.FIREBALL);

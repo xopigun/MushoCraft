@@ -21,6 +21,7 @@ public final class ZoneEffect implements SpellEffect {
     private final int durationTicks;
     private final double range;
     private final SoundEvent sound;
+    private final boolean followsCaster;
 
     /**
      * @param range how far the zone can be cast; 0 sets it around the caster
@@ -34,12 +35,23 @@ public final class ZoneEffect implements SpellEffect {
      */
     public ZoneEffect(Supplier<SpellZone.Behavior> behavior, ZoneVisual visual, double radius, int durationTicks, double range,
                       SoundEvent sound) {
+        this(behavior, visual, radius, durationTicks, range, sound, false);
+    }
+
+    private ZoneEffect(Supplier<SpellZone.Behavior> behavior, ZoneVisual visual, double radius, int durationTicks, double range,
+                       SoundEvent sound, boolean followsCaster) {
         this.behavior = behavior;
         this.visual = visual;
         this.radius = radius;
         this.durationTicks = durationTicks;
         this.range = range;
         this.sound = sound;
+        this.followsCaster = followsCaster;
+    }
+
+    /** The zone goes with the caster wherever they move, and its body is drawn on them (a flame jet from the hands). */
+    public ZoneEffect followingCaster() {
+        return new ZoneEffect(behavior, visual, radius, durationTicks, range, sound, true);
     }
 
     @Override
@@ -49,6 +61,9 @@ public final class ZoneEffect implements SpellEffect {
         SpellZone zone = SpellZone.create(context.level(), context.caster(), behavior.get(), visual, radius * context.scale(),
                 context.power(), durationTicks);
         zone.setPos(center);
+        if (followsCaster) {
+            zone.following(context.caster());
+        }
         context.level().addFreshEntity(zone);
         context.level().playSound(null, zone.blockPosition(), sound, SoundSource.PLAYERS, 2.0F, 0.8F);
         return true;

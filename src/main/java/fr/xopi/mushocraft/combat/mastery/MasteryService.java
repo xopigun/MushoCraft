@@ -1,5 +1,6 @@
 package fr.xopi.mushocraft.combat.mastery;
 
+import fr.xopi.mushocraft.combat.move.Move;
 import fr.xopi.mushocraft.combat.move.MoveRef;
 import fr.xopi.mushocraft.combat.move.MovesSync;
 import fr.xopi.mushocraft.core.MushoAttachments;
@@ -23,16 +24,21 @@ public final class MasteryService {
         return mastery(player).repetitions(move);
     }
 
+    /** How practice masters this move (the standard curve for a move that no longer exists). */
+    public static MasteryCurve curve(MoveRef move) {
+        return move.resolve().map(Move::masteryCurve).orElse(MasteryCurve.STANDARD);
+    }
+
     public static boolean isMastered(ServerPlayer player, MoveRef move) {
-        return MasteryRules.isMastered(repetitions(player, move));
+        return curve(move).isMastered(repetitions(player, move));
     }
 
     public static double powerFactor(ServerPlayer player, MoveRef move) {
-        return MasteryRules.powerFactor(repetitions(player, move));
+        return curve(move).powerFactor(repetitions(player, move));
     }
 
     public static double speedFactor(ServerPlayer player, MoveRef move) {
-        return MasteryRules.speedFactor(repetitions(player, move));
+        return curve(move).speedFactor(repetitions(player, move));
     }
 
     /**
@@ -41,7 +47,7 @@ public final class MasteryService {
      * @return true if the move is botched
      */
     public static boolean botches(ServerPlayer player, MoveRef move) {
-        if (player.getRandom().nextDouble() >= MasteryRules.failureChance(repetitions(player, move))) {
+        if (player.getRandom().nextDouble() >= curve(move).failureChance(repetitions(player, move))) {
             return false;
         }
         practise(player, move, MasteryRules.FAILED_ATTEMPT);
@@ -76,6 +82,6 @@ public final class MasteryService {
 
     /** « 12/50 » for messages. */
     public static Component progressText(ServerPlayer player, MoveRef move) {
-        return Component.literal((int) Math.floor(repetitions(player, move)) + "/" + (int) MasteryRules.REPETITIONS_TO_MASTER);
+        return Component.literal((int) Math.floor(repetitions(player, move)) + "/" + (int) curve(move).repetitionsToMaster());
     }
 }

@@ -19,7 +19,13 @@ public enum SpellSchool implements StringRepresentable {
     BARRIER(0xFFE680),
     DIVINE_STRIKE(0xFFF4C0),
     SUMMONING(0xC08CFF),
-    MIXED(0xE0E0FF);
+    MIXED(0xE0E0FF),
+    /**
+     * Inherent magic: arts born of a race's own body (Disturb Magic, Howling...). No incantation reproduces them; a
+     * pupil of another race reproduces some after understanding their theory and long training (wiki, page
+     * <i>Magic</i> § Inherent Magic). Taught only by the rare masters who know them.
+     */
+    INHERENT(0xFF8FB8);
 
     public static final Codec<SpellSchool> CODEC = StringRepresentable.fromEnum(SpellSchool::values);
 

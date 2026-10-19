@@ -12,6 +12,9 @@ import fr.xopi.mushocraft.magic.entity.SpellZone;
 import fr.xopi.mushocraft.magic.entity.WaterSheet;
 import fr.xopi.mushocraft.magic.fx.SpellFx;
 import fr.xopi.mushocraft.magic.mana.ManaService;
+import fr.xopi.mushocraft.magic.spell.ChantBroadcast;
+import fr.xopi.mushocraft.magic.spell.MushoSpells;
+import fr.xopi.mushocraft.magic.spell.Spell;
 import fr.xopi.mushocraft.magic.spell.SpellContext;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
@@ -127,6 +130,14 @@ public final class GalleryDirector {
                 })));
         // a sword technique's slash, as Technique draws it
         all.add(new Exhibit("fx_slash", player -> SpellFx.slash(player.serverLevel(), player, player.getLookAngle(), 1.6F, 0xDDEEFF)));
+        // Disturb Magic on a spell taking shape in the dummy's hands
+        all.add(new Exhibit("fx_disturb_chant", player -> player.serverLevel().getEntitiesOfClass(Husk.class,
+                player.getBoundingBox().inflate(16.0)).stream().findFirst().ifPresent(dummy -> {
+                    Spell disturb = MushoSpells.DISTURB_MAGIC.get();
+                    ChantBroadcast.started(dummy, MushoSpells.WATER_CANNON.get(), 40);
+                    disturb.effect().cast(new SpellContext(player, disturb, 1.0));
+                    ChantBroadcast.stopped(dummy);
+                })));
         return all;
     }
 

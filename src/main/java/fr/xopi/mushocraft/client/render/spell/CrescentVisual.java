@@ -61,7 +61,7 @@ public final class CrescentVisual {
      * Turns the pose so +Y points the way the blade flies, +X to its right and +Z up (as level as the flight allows),
      * whatever the direction: the blade keeps the same bearing however it is thrown.
      */
-    private static void faceFlight(PoseStack poseStack, Vec3 motion) {
+    static void faceFlight(PoseStack poseStack, Vec3 motion) {
         if (motion.lengthSqr() < 1.0E-6) {
             return;
         }

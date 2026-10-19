@@ -73,8 +73,13 @@ public class SpellZoneRenderer extends EntityRenderer<SpellZone> {
             case DUST_STORM -> ZoneBodies.dustStorm(zone, age, poseStack, buffers, light);
             case STORM_CLOUD -> ZoneBodies.stormCloud(zone, age, poseStack, buffers);
             case THUNDERHEAD -> ZoneBodies.thunderhead(zone, age, poseStack, buffers, 8.5F, 30.0F);
-            case CHARGED_CLOUD -> ZoneBodies.thunderhead(zone, age, poseStack, buffers, 3.5F, 12.0F);
+            case CHARGED_CLOUD -> ZoneBodies.chargedCloud(zone, age, poseStack, buffers);
             case SPLASH_CROWN -> ZoneBodies.splashCrown(zone, age, poseStack, buffers, light);
+            case FLAME_JET -> {
+                if (followed != null) {
+                    FireVisuals.renderJet(zone, followed, age, partialTicks, poseStack, buffers);
+                }
+            }
             case NONE -> {
             }
         }

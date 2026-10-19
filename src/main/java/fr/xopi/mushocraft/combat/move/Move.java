@@ -1,5 +1,6 @@
 package fr.xopi.mushocraft.combat.move;
 
+import fr.xopi.mushocraft.combat.mastery.MasteryCurve;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -23,4 +24,9 @@ public interface Move {
 
     /** Server side: try to use the move. Applying the cooldown is the move's responsibility. */
     MoveUseResult use(ServerPlayer user);
+
+    /** How practice masters this move; most moves follow the standard curve. */
+    default MasteryCurve masteryCurve() {
+        return MasteryCurve.STANDARD;
+    }
 }

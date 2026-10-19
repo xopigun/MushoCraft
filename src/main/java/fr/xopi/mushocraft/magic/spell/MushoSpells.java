@@ -1,6 +1,7 @@
 package fr.xopi.mushocraft.magic.spell;
 
 import fr.xopi.mushocraft.MushoCraft;
+import fr.xopi.mushocraft.combat.mastery.MasteryCurve;
 import fr.xopi.mushocraft.core.MushoBlocks;
 import fr.xopi.mushocraft.core.MushoItems;
 import fr.xopi.mushocraft.core.MushoMobEffects;
@@ -17,6 +18,7 @@ import fr.xopi.mushocraft.magic.spell.effect.ConeBlastEffect;
 import fr.xopi.mushocraft.magic.spell.effect.ConjureItemEffect;
 import fr.xopi.mushocraft.magic.spell.effect.CureEffect;
 import fr.xopi.mushocraft.magic.spell.effect.CurvedWallEffect;
+import fr.xopi.mushocraft.magic.spell.effect.DisturbMagicEffect;
 import fr.xopi.mushocraft.magic.spell.effect.EruptionEffect;
 import fr.xopi.mushocraft.magic.spell.effect.EruptionVisual;
 import fr.xopi.mushocraft.magic.spell.effect.ExplosionEffect;
@@ -24,6 +26,7 @@ import fr.xopi.mushocraft.magic.spell.effect.FallingProjectileEffect;
 import fr.xopi.mushocraft.magic.spell.effect.FortressEffect;
 import fr.xopi.mushocraft.magic.spell.effect.FreezeFieldEffect;
 import fr.xopi.mushocraft.magic.spell.effect.HealEffect;
+import fr.xopi.mushocraft.magic.spell.effect.HowlingEffect;
 import fr.xopi.mushocraft.magic.spell.effect.PiercingRayEffect;
 import fr.xopi.mushocraft.magic.spell.effect.ProjectileEffect;
 import fr.xopi.mushocraft.magic.spell.effect.ProjectileProfile;
@@ -397,18 +400,21 @@ public final class MushoSpells {
 
     // ---- Spells the wiki gives no rank (ranks chosen for the game: docs/ECARTS.md, E19) ----
 
-    /** Launches a barrage of ice bolts at a target (wiki, Water; WN vol. 4 ch. 3.5). */
+    /** Launches a barrage of ice bolts at a target (wiki, Water; WN vol. 4 ch. 3.5): jagged chunks of ice (anime S1 ep. 13). */
     public static final DeferredHolder<Spell, Spell> ICICLE_BREAK = SPELLS.register("icicle_break",
             () -> Spell.builder(SpellSchool.WATER, Rank.INTERMEDIATE).manaCost(16).cooldownTicks(60)
                     .effect(new VolleyEffect(ProjectileProfile.of(SpellElement.ICE, 3.0F)
-                            .speed(2.2F).size(0.25F).slow(30).shape(ProjectileShape.BOLT).build(), 6, SoundEvents.GLASS_PLACE))
+                            .speed(2.2F).size(0.3F).slow(30).shape(ProjectileShape.BOLT).build(), 6, SoundEvents.GLASS_PLACE))
                     .build());
 
-    /** Launches a crescent-shaped blade of ice at the enemy (LN vol. 12 ch. 6). */
+    /**
+     * Launches a blade of ice at the enemy (LN vol. 12 ch. 6): a thin disc of frosted ice spinning edge first, as in the
+     * anime (S2, Roxy). The wiki's « crescent-shaped » is how its edge reads in flight.
+     */
     public static final DeferredHolder<Spell, Spell> ICICLE_EDGE = SPELLS.register("icicle_edge",
             () -> Spell.builder(SpellSchool.WATER, Rank.INTERMEDIATE).manaCost(14).cooldownTicks(50)
                     .effect(new ProjectileEffect(ProjectileProfile.of(SpellElement.ICE, 8.0F)
-                            .speed(2.4F).size(0.7F).slow(60).shape(ProjectileShape.CRESCENT).build(), SoundEvents.GLASS_PLACE))
+                            .speed(2.4F).size(0.7F).slow(60).shape(ProjectileShape.DISC).build(), SoundEvents.GLASS_PLACE))
                     .build());
 
     /** An ice spike springs from the ground and impales the enemy (LN vol. 16 ch. 7). */
@@ -418,17 +424,24 @@ public final class MushoSpells {
                             ParticleTypes.SNOWFLAKE, SoundEvents.GLASS_PLACE).lookingLike(EruptionVisual.pillar(PillarKind.ICE_LANCE, 6.0F)))
                     .build());
 
-    /** Raises walls of ice around the caster (manga, Depressed Magician arc ch. 7). */
+    /**
+     * Creates a wall of ice (wiki; manga, Depressed Magician arc ch. 7): a rampart of jagged slabs bursting slantwise out
+     * of the ground ahead, wider and taller than an earth wall.
+     */
     public static final DeferredHolder<Spell, Spell> ICE_FORTRESS = SPELLS.register("ice_fortress",
             () -> Spell.builder(SpellSchool.WATER, Rank.ADVANCED).intent(SpellIntent.DEFEND).manaCost(40).cooldownTicks(600)
-                    .effect(new FortressEffect(MushoBlocks.CONJURED_ICE, 2, 3, 400, SoundEvents.GLASS_PLACE)
+                    .effect(new WallEffect(MushoBlocks.CONJURED_ICE, 3, 4, 3, 400, SoundEvents.GLASS_PLACE)
                             .lookingLike(PillarKind.ICE_FORTRESS))
                     .build());
 
-    /** Attacks with a jet of flames over a wide area (LN vol. 7 ch. 3): it pours for a second where the caster looks. */
+    /**
+     * Attacks with a jet of flames over a wide area (LN vol. 7 ch. 3): a torrent pouring for a second where the caster
+     * looks, as in the anime (S2, Roxy).
+     */
     public static final DeferredHolder<Spell, Spell> FLAMETHROWER = SPELLS.register("flamethrower",
             () -> Spell.builder(SpellSchool.FIRE, Rank.INTERMEDIATE).manaCost(16).cooldownTicks(80)
-                    .effect(new ZoneEffect(() -> ZoneBehaviors.flameJet(8.0, 16.0, 5.0F, 5), 1.0, 20, 0.0, SoundEvents.BLAZE_SHOOT))
+                    .effect(new ZoneEffect(() -> ZoneBehaviors.flameJet(8.0, 16.0, 5.0F, 5), ZoneVisual.FLAME_JET, 8.0, 20, 0.0,
+                            SoundEvents.BLAZE_SHOOT).followingCaster())
                     .build());
 
     /** A gust of strong wind that pushes everything ahead away, without harm (LN vol. 21 ch. 3). */
@@ -578,6 +591,30 @@ public final class MushoSpells {
                     .effect(new ConeBlastEffect(9.0, 35.0, 7.0F, 2.0, ParticleTypes.SNOWFLAKE, SoundEvents.POWDER_SNOW_BREAK)
                             .freezing(120, new CloudEffect.Affliction(MobEffects.MOVEMENT_SLOWDOWN, 120, 3),
                                     new CloudEffect.Affliction(MobEffects.DIG_SLOWDOWN, 120, 2)))
+                    .build());
+
+    // ---- Inherent magic (wiki, Magic § Inherent Magic): no incantation reproduces it; the rare masters who know it
+    // teach it, and it takes long training to master (MasteryCurve.LONG_TRAINING; decision of Xopi, 19/10). Ranked
+    // Intermediate only so that its masters teach it at that tier (docs/ECARTS.md, E26). ----
+
+    /**
+     * Interfering mana sent into magic still taking shape, which scatters (wiki, page Disturb Magic; LN vol. 6 ch. 9,
+     * vol. 10 ch. 9). Economical; released at once, with no chant.
+     */
+    public static final DeferredHolder<Spell, Spell> DISTURB_MAGIC = SPELLS.register("disturb_magic",
+            () -> Spell.builder(SpellSchool.INHERENT, Rank.INTERMEDIATE).incantationTicks(0).manaCost(4).cooldownTicks(30)
+                    .masteryCurve(MasteryCurve.LONG_TRAINING)
+                    .effect(new DisturbMagicEffect())
+                    .build());
+
+    /**
+     * The Beast Race's howl infused with mana, which stuns whoever hears it (LN vol. 4 ch. 6); much weaker in a human's
+     * mouth (wiki, Magic Spells).
+     */
+    public static final DeferredHolder<Spell, Spell> HOWLING = SPELLS.register("howling",
+            () -> Spell.builder(SpellSchool.INHERENT, Rank.INTERMEDIATE).intent(SpellIntent.DEFEND).incantationTicks(0).manaCost(10)
+                    .cooldownTicks(200).masteryCurve(MasteryCurve.LONG_TRAINING)
+                    .effect(new HowlingEffect())
                     .build());
 
     private MushoSpells() {

@@ -48,6 +48,10 @@ public final class SpellCasting {
             // shut inside a Confinement Barrier: magic cannot be used there
             return MoveUseResult.fail("message.mushocraft.magic.confined");
         }
+        if (caster.hasEffect(MushoMobEffects.DISTURBED)) {
+            // Disturb Magic has scattered one's mana: nothing takes shape until it settles
+            return MoveUseResult.fail("message.mushocraft.magic.disturbed");
+        }
         if (ManaService.snapshot(caster).current() < spell.manaCost()) {
             return MoveUseResult.fail("message.mushocraft.magic.not_enough_mana", spell.displayName());
         }
@@ -83,6 +87,11 @@ public final class SpellCasting {
     public static void tick(ServerPlayer caster) {
         ActiveCast cast = ACTIVE.get(caster.getUUID());
         if (cast == null) {
+            return;
+        }
+        if (caster.hasEffect(MushoMobEffects.DISTURBED)) {
+            finish(caster);
+            caster.displayClientMessage(Component.translatable("message.mushocraft.magic.scattered", cast.spell().displayName()), true);
             return;
         }
         long now = CooldownService.now(caster);

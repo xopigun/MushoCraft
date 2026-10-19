@@ -1,7 +1,6 @@
 package fr.xopi.mushocraft.client.hud;
 
 import fr.xopi.mushocraft.client.ClientMoveState;
-import fr.xopi.mushocraft.combat.mastery.MasteryRules;
 import fr.xopi.mushocraft.combat.move.Move;
 import fr.xopi.mushocraft.combat.move.MoveLoadout;
 import fr.xopi.mushocraft.combat.move.MoveRef;
@@ -63,7 +62,7 @@ public final class MoveBarLayer implements LayeredDraw.Layer {
 
     /** A thin gauge under a move not yet mastered, filling as it is repeated (like an item's durability bar). */
     private static void drawMastery(GuiGraphics graphics, Move move, int x, int y) {
-        double progress = MasteryRules.progress(ClientMoveState.repetitions(move.ref()));
+        double progress = move.masteryCurve().progress(ClientMoveState.repetitions(move.ref()));
         if (progress >= 1.0) {
             return;
         }

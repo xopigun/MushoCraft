@@ -160,7 +160,7 @@ final class ZoneBodies {
 
     /**
      * Lightning: a dark cloud gathering over the target, tighter as the energy condenses, lit from within by flickers
-     * just before the bolt falls. Electric draws the same cloud, lower and gathered faster.
+     * just before the bolt falls.
      *
      * @param height      how high above the target the cloud floats
      * @param gatherTicks how long it takes to condense
@@ -170,6 +170,18 @@ final class ZoneBodies {
         float flash = gather > 0.75F && Mth.sin(age * 3.1F) > 0.3F ? 1.0F : 0.0F;
         float shade = 0.36F + 0.5F * flash;
         banks(zone, age, poseStack, buffers, shade, shade, shade + 0.08F, 0.03F, 0.6F, height, 4, 1.6F - 0.8F * gather);
+    }
+
+    /**
+     * Electric, after the anime (S3 ep. 5, Rudeus' Electric): the storm cloud compressed into a small ball, near black,
+     * churning fast, lit from within by violet flickers as it charges.
+     */
+    static void chargedCloud(SpellZone zone, float age, PoseStack poseStack, MultiBufferSource buffers) {
+        float gather = Mth.clamp(age / 12.0F, 0.0F, 1.0F);
+        boolean flicker = Mth.sin(age * 4.3F) > 0.2F;
+        float shade = 0.1F + (flicker ? 0.12F * gather : 0.0F);
+        banks(zone, age, poseStack, buffers, shade + (flicker ? 0.1F : 0.0F), shade, shade + (flicker ? 0.22F : 0.04F), 0.12F,
+                0.55F, 3.2F, 5, 0.75F - 0.35F * gather);
     }
 
     /** Water Splash: a crown of water leaping up from the ground, ragged at its rim, then falling back. */

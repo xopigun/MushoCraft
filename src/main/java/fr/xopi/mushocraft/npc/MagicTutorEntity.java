@@ -48,6 +48,11 @@ public class MagicTutorEntity extends TeacherEntity {
     private static final double POWER_PER_RANK = 0.1;
     private static final List<SpellSchool> TEACHABLE = List.of(SpellSchool.WATER, SpellSchool.FIRE, SpellSchool.WIND,
             SpellSchool.EARTH, SpellSchool.HEALING, SpellSchool.DETOXIFICATION, SpellSchool.BARRIER, SpellSchool.DIVINE_STRIKE);
+    /**
+     * One tutor in this many knows inherent magic instead: its practitioners are few (the author counts those of
+     * Disturb Magic on one hand; wiki, page Disturb Magic).
+     */
+    private static final int INHERENT_RARITY = 12;
 
     public MagicTutorEntity(EntityType<? extends MagicTutorEntity> type, Level level) {
         super(type, level);
@@ -84,8 +89,16 @@ public class MagicTutorEntity extends TeacherEntity {
         return school() == SpellSchool.BARRIER || school() == SpellSchool.DIVINE_STRIKE;
     }
 
+    /** A master of inherent magic: arts no incantation reproduces, learnt by long training at their side. */
+    public boolean isInherentMaster() {
+        return school() == SpellSchool.INHERENT;
+    }
+
     @Override
     protected Component title() {
+        if (isInherentMaster()) {
+            return Component.translatable("entity.mushocraft.magic_tutor.title.inherent");
+        }
         return Component.translatable(isMilisKnight() ? "entity.mushocraft.magic_tutor.title.milis" : "entity.mushocraft.magic_tutor.title",
                 rank().displayName(), school().displayName());
     }
@@ -104,9 +117,15 @@ public class MagicTutorEntity extends TeacherEntity {
                 .toList();
     }
 
-    /** A tutor first demands a reservoir able to carry the rank's spells. */
+    /**
+     * A tutor first demands a reservoir able to carry the rank's spells. A master of inherent magic also demands a sure
+     * control of mana, which their art needs (wiki, page Disturb Magic): a school already at Intermediate.
+     */
     @Override
     protected Optional<Component> unreadyFor(ServerPlayer player, Rank tier) {
+        if (isInherentMaster() && !controlsMana(player)) {
+            return Optional.of(Component.translatable("message.mushocraft.tutor.inherent_control"));
+        }
         double capacity = ManaService.snapshot(player).capacity();
         double required = ManaRules.capacityToStudy(tier);
         if (capacity >= required) {
@@ -114,6 +133,12 @@ public class MagicTutorEntity extends TeacherEntity {
         }
         return Optional.of(Component.translatable("message.mushocraft.tutor.mana", tier.displayName(),
                 String.format(Locale.ROOT, "%.0f", capacity), String.format(Locale.ROOT, "%.0f", required)));
+    }
+
+    private static boolean controlsMana(ServerPlayer player) {
+        MagicProficiency proficiency = MagicService.proficiency(player);
+        return Arrays.stream(SpellSchool.values())
+                .anyMatch(school -> school != SpellSchool.INHERENT && proficiency.rank(school).isAtLeast(Rank.INTERMEDIATE));
     }
 
     @Override
@@ -148,8 +173,13 @@ public class MagicTutorEntity extends TeacherEntity {
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType spawnType,
                                         @Nullable SpawnGroupData data) {
         RandomSource random = level.getRandom();
-        setSchool(TEACHABLE.get(random.nextInt(TEACHABLE.size())));
-        setRank(random.nextInt(100) < 70 ? Rank.INTERMEDIATE : Rank.ADVANCED);
+        if (random.nextInt(INHERENT_RARITY) == 0) {
+            setSchool(SpellSchool.INHERENT);
+            setRank(Rank.INTERMEDIATE);
+        } else {
+            setSchool(TEACHABLE.get(random.nextInt(TEACHABLE.size())));
+            setRank(random.nextInt(100) < 70 ? Rank.INTERMEDIATE : Rank.ADVANCED);
+        }
         return super.finalizeSpawn(level, difficulty, spawnType, data);
     }
 

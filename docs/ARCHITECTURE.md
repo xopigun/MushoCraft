@@ -115,7 +115,13 @@ Estimation : une quinzaine de classes d'effets génériques, plus une classe pou
 - `FreezeFieldEffect.aroundCaster()` et `.freezingWater()` : le champ centré sur le lanceur, et l'eau qui gèle en glace fragile, qui fond d'elle-même (*Absolute Zero*).
 - `ZoneBehaviors.flameJet` (*Flamethrower*, un jet d'une seconde qui suit le regard) et `ZoneBehaviors.electric` (*Electric*).
 - Type de dégâts `mushocraft:electric` : ignore l'armure, donc l'Aura de combat ; atténué par le *Magic Shield*.
-- Formes `PillarKind.ICE_LANCE` et `ICE_FORTRESS` : les modèles de la pointe et de la forteresse de terre, en glace translucide.
+- Forme `PillarKind.ICE_LANCE` : le modèle de la pointe de terre, en glace translucide ; `ICE_FORTRESS` : le rempart de glace.
+
+**Magie innée (19/10, décision de Xopi : maître + long entraînement, sans incantation)** :
+- École `SpellSchool.INHERENT`, enseignée seulement par de rares tuteurs (`MagicTutorEntity`, un sur 12), qui exigent une école déjà Intermédiaire.
+- `MasteryCurve` : chaque move a sa courbe de maîtrise (`Move.masteryCurve()`). `STANDARD` : 50 répétitions, un échec sur deux au début ; `LONG_TRAINING` (magie innée) : 300 répétitions, 90 % d'échec au début.
+- *Disturb Magic* (`DisturbMagicEffect`) : disperse le sort en formation de la créature visée (portée 10, à vue, pas dans une *Deep Mist*) en lui posant l'effet `DISTURBED` ; défait aussi boucliers et barrières ; sans cible, on s'exerce sur son propre mana. `ChantBroadcast` retient côté serveur qui incante et quel sort. Visuel d'après l'anime (S1 ép. 21) : pas de rayon, le sort se déchire en lambeaux de sa propre couleur.
+- *Howling* (`HowlingEffect`) : étourdit (étourdissement court d'Epic Fight) tout ce qui est à 5 blocs ; grandes ondes pâles devant soi, d'après l'anime (S1 ép. 13).
 
 ### 4.2 bis Baguettes et bâtons (wiki, page *Magic Tools and Magic Items* ; rappel de Xopi du 19/10)
 
@@ -147,10 +153,14 @@ Estimation : une quinzaine de classes d'effets génériques, plus une classe pou
   - **Piliers en modèles Blockbench** (entité `SpellPillar`, GeckoLib) : *Ice Pillar* (fût de glace à facettes, cristaux à la base), *Earth Lance* (pointe de roche brune en couches), *Earth Hedgehog* (pointes de pierre sombre penchées dans tous les sens), *Icicle Field* (monticules de givre qui engloutissent les cibles, comme dans l'anime). Animations « rise » (jaillit du sol), « idle » (frémit), « crumble » (s'effrite). Les blocs de collision sont cachés (propriété `hidden` de `ConjuredBlock`). L'apparence d'une éruption est une stratégie (`EruptionVisual`).
   - **Murs de terre** (même entité `SpellPillar`) : *Earth Wall* (dalles de pierre empilées de travers, crête irrégulière, gravats au pied) et *Earth Fortress* (quatre murs et un toit de grandes pierres, qui montent l'un après l'autre). `WallEffect` et `FortressEffect` cachent leurs blocs de collision et posent le modèle (`.lookingLike(PillarKind)`). Modèles générés directement en `.geo.json`, sans `.bbmodel` pour l'instant.
   - **Ondes de choc et entailles** (`OrientedParticle`) : plans orientés dont les images viennent d'une bande à part (`SmoothSheet`, `textures/effect/`), lue en filtrage linéaire sans mipmap. L'atlas des particules, lu texel par texel avec mipmaps, donnait des bords en escalier aux grands plans vus de biais.
-  - **Lames en croissant** (`ProjectileShape.CRESCENT`, `CrescentVisual`) : une lame courbe qui vole face en avant, pointes en arrière, inclinée à sa façon ; *Icicle Edge*, *Wind Slice*, *Flame Slice*, *Sonic Boom*.
-  - **Glaçons** (`IcicleVisual`) : traits de glace à six facettes (*Icicle Break*).
+  - **Règle de travail** (rappel de Xopi) : chaque visuel part d'images de référence de l'anime ou du manga, tirées des galeries du wiki et gardées hors du dépôt.
+  - **Lames en croissant** (`ProjectileShape.CRESCENT`, `CrescentVisual`) : une lame courbe qui vole face en avant, pointes en arrière, inclinée à sa façon ; *Wind Slice*, *Flame Slice* (manga), *Sonic Boom* (anime S2).
+  - **Disque de glace** (`ProjectileShape.DISC`, `DiscVisual`, texture `ice_disc.png`) : *Icicle Edge*, d'après l'anime (S2) : disque lenticulaire au bord tranchant, strié de givre, dressé dans le sens du vol et tournant comme une lame de scie.
+  - **Éclats de glace** (`IceShardVisual`) : morceaux de glace déchiquetés et facettés, chacun brisé à sa façon (*Icicle Break*, anime S1 ép. 13).
+  - **Torrent de feu** (`ZoneVisual.FLAME_JET`, `FireVisuals.renderJet`) : *Flamethrower*, d'après l'anime (S2) : un cône de flammes qui roule en volutes, part de devant les yeux, suit le regard (zone attachée au lanceur, `ZoneEffect.followingCaster()`).
+  - **Rempart de glace** (modèle `ice_rampart.geo.json`) : *Ice Fortress*, d'après le manga : deux rangées de dalles dentelées penchées vers l'ennemi, une crête de pointes, des éclats au pied.
   - **Traits de vent** (`StreakParticle`) : des lignes d'air étirées dans le sens du mouvement, comme le vent dessiné dans l'anime ; elles remplacent les bouffées vanilla pixelisées des souffles de vent.
-  - **Nuage chargé** (`ZoneVisual.CHARGED_CLOUD`) : le nuage de *Lightning*, plus bas et plus vite formé, pour *Electric*.
+  - **Nuage chargé** (`ZoneVisual.CHARGED_CLOUD`) : *Electric*, d'après l'anime (S3 ép. 5) : une petite boule de nuage presque noire, lueurs violettes ; la décharge fait tomber plusieurs grands éclairs blancs autour de la cible.
   - **Impacts dessinés** (`FlipbookParticle`) : étincelle teintée par l'élément (`IMPACT`), explosion dessinée (`BLAST`) par-dessus la boule de feu. Même lecture lissée que les ondes de choc (`SmoothSheet`).
   - **Ice Blade** : des points de lumière glacée convergent vers la main, qui s'illumine quand l'épée se forme (`SpellFx.conjureInHand`).
   - **Heat Hand** : tant que l'effet dure, lueurs orange et étincelles montent des deux mains (`HeatedHandsEffect`, `SpellFx.heatedHands`).

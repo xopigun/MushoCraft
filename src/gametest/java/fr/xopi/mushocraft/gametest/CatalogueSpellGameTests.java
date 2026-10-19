@@ -108,11 +108,11 @@ public final class CatalogueSpellGameTests {
     }
 
     @GameTest(template = EMPTY)
-    public static void iceFortressWallsTheCasterIn(GameTestHelper helper) {
+    public static void iceFortressRaisesARampartAhead(GameTestHelper helper) {
         ServerPlayer player = caster(helper, 0.0F);
         helper.assertTrue(cast(player, MushoSpells.ICE_FORTRESS.get()), "cast");
         helper.assertTrue(around(helper, player, SpellPillar.class).stream().anyMatch(pillar -> pillar.kind() == PillarKind.ICE_FORTRESS),
-                "walls of ice rise");
+                "a rampart of ice rises");
         boolean iceWall = false;
         for (BlockPos pos : BlockPos.betweenClosed(player.blockPosition().offset(-3, 0, -3), player.blockPosition().offset(3, 3, 3))) {
             iceWall |= helper.getLevel().getBlockState(pos).is(MushoBlocks.CONJURED_ICE.get());

@@ -1,5 +1,6 @@
 package fr.xopi.mushocraft.magic.spell;
 
+import fr.xopi.mushocraft.combat.mastery.MasteryCurve;
 import fr.xopi.mushocraft.combat.move.Move;
 import fr.xopi.mushocraft.combat.move.MoveRef;
 import fr.xopi.mushocraft.combat.move.MoveUseResult;
@@ -30,6 +31,7 @@ public final class Spell implements Move {
     private final SpellIntent intent;
     @Nullable
     private final MeldRecipe meld;
+    private final MasteryCurve masteryCurve;
 
     private Spell(Builder builder) {
         this.school = Objects.requireNonNull(builder.school, "school");
@@ -40,6 +42,7 @@ public final class Spell implements Move {
         this.effect = Objects.requireNonNull(builder.effect, "effect");
         this.intent = builder.intent;
         this.meld = builder.meld;
+        this.masteryCurve = builder.masteryCurve;
         if ((school == SpellSchool.MIXED) != (meld != null)) {
             throw new IllegalStateException("Mixed magic, and only it, is melded from other spells");
         }
@@ -115,6 +118,11 @@ public final class Spell implements Move {
         return SpellCasting.begin(user, this);
     }
 
+    @Override
+    public MasteryCurve masteryCurve() {
+        return masteryCurve;
+    }
+
     public static final class Builder {
         private final SpellSchool school;
         private final Rank rank;
@@ -124,6 +132,7 @@ public final class Spell implements Move {
         private SpellEffect effect;
         private SpellIntent intent = SpellIntent.ATTACK;
         private MeldRecipe meld;
+        private MasteryCurve masteryCurve = MasteryCurve.STANDARD;
 
         private Builder(SpellSchool school, Rank rank) {
             this.school = school;
@@ -160,6 +169,12 @@ public final class Spell implements Move {
         /** Mixed magic: the spells it is melded from; it is discovered by mastering them all. */
         public Builder meldedFrom(MeldIngredient... ingredients) {
             this.meld = MeldRecipe.of(ingredients);
+            return this;
+        }
+
+        /** How practice masters the spell, if not the standard way (inherent magic: long training). */
+        public Builder masteryCurve(MasteryCurve value) {
+            this.masteryCurve = value;
             return this;
         }
 

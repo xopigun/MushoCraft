@@ -25,8 +25,11 @@ public enum PillarKind {
     EARTH_WALL("earth_wall", "earth_rock", 3.0F, false, ParticleTypes.ASH, SoundEvents.STONE_BREAK),
     /** Earth Fortress: four such walls and a roof of flat stones round the caster. */
     EARTH_FORTRESS("earth_fortress", "earth_rock", 3.69F, false, ParticleTypes.ASH, SoundEvents.STONE_BREAK),
-    /** Ice Fortress: the walls and roof of the earth fortress, of ice one can half see through. */
-    ICE_FORTRESS("earth_fortress", "ice_crystal", 3.69F, true, ParticleTypes.SNOWFLAKE, SoundEvents.GLASS_BREAK),
+    /**
+     * Ice Fortress, after the manga (Depressed Magician arc, ch. 7): a rampart of great jagged slabs of ice bursting
+     * slantwise out of the ground at the enemy.
+     */
+    ICE_FORTRESS("ice_rampart", "ice_crystal", 4.0F, true, ParticleTypes.SNOWFLAKE, SoundEvents.GLASS_BREAK),
     /** Icicle Field: a billowing mound of frost that swallows what it catches, as in the anime. */
     FROST_MOUND(null, "frost", 1.0F, false, ParticleTypes.SNOWFLAKE, SoundEvents.POWDER_SNOW_BREAK);
 

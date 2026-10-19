@@ -447,7 +447,18 @@ public final class ZoneBehaviors {
                 return;
             }
             if (age == gatherTicks) {
-                // the discharge: three crackling strands from the cloud down to the ground, a flash, a ring along the ground
+                // the discharge, as in the anime: tall white bolts falling all about the target, crackling strands from
+                // the cloud, a flash, a ring along the ground and a burst of steam
+                for (int bolt = 0; bolt < 4; bolt++) {
+                    LightningBolt strike = EntityType.LIGHTNING_BOLT.create(level);
+                    if (strike != null) {
+                        double angle = random.nextDouble() * Math.PI * 2.0;
+                        double distance = bolt == 0 ? 0.0 : zone.radius() * (0.4 + 0.6 * random.nextDouble());
+                        strike.moveTo(zone.getX() + Math.cos(angle) * distance, zone.getY(), zone.getZ() + Math.sin(angle) * distance);
+                        strike.setVisualOnly(true);
+                        level.addFreshEntity(strike);
+                    }
+                }
                 for (int strand = 0; strand < 3; strand++) {
                     double offsetX = (random.nextDouble() - 0.5) * zone.radius();
                     double offsetZ = (random.nextDouble() - 0.5) * zone.radius();
@@ -456,6 +467,8 @@ public final class ZoneBehaviors {
                                 zone.getZ() + offsetZ * y / 3.2, 0, 2.0, 0.0, 0.0, 1.0);
                     }
                 }
+                level.sendParticles(MushoParticles.SMOKE.get(), zone.getX(), zone.getY() + 0.5, zone.getZ(), 14, zone.radius() * 0.5, 0.3,
+                        zone.radius() * 0.5, 0.03);
                 level.sendParticles(MushoParticles.FLASH.get(), zone.getX(), zone.getY() + 1.0, zone.getZ(), 0, 1.0, 0.0, 0.0, 1.0);
                 level.sendParticles(MushoParticles.SHOCK_RING.get(), zone.getX(), zone.getY() + 0.1, zone.getZ(), 0, zone.radius() * 1.4,
                         0.0, 0.0, 1.0);

@@ -7,11 +7,13 @@ import fr.xopi.mushocraft.client.render.mesh.BillowCluster;
 import fr.xopi.mushocraft.client.render.mesh.LatheMesh;
 import fr.xopi.mushocraft.client.render.mesh.Premultiplied;
 import fr.xopi.mushocraft.magic.entity.SpellFire;
+import fr.xopi.mushocraft.magic.entity.SpellZone;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
@@ -200,6 +202,50 @@ public final class FireVisuals {
                 FLAME, 14, 20, age, GLOW);
         poseStack.scale(1.2F, 1.05F, 1.2F);
         LatheMesh.render(poseStack.last(), glow(buffers), tower, tongues, HALO, 12, 18, age + 5.0F, GLOW);
+        poseStack.popPose();
+    }
+
+    /**
+     * Flamethrower, after the anime (S2, Roxy's Flamethrower against the hydra): a torrent of flame poured from the
+     * hands, red and orange with yellow patches, widening as it goes and rolling in billows, its far end rounded. It
+     * starts a little ahead of the caster's eyes (so the eye is never inside it), shoots out over a few ticks, follows
+     * the gaze, and dies down at the end.
+     */
+    static void renderJet(SpellZone zone, Entity caster, float age, float partialTicks, PoseStack poseStack, MultiBufferSource buffers) {
+        float grow = Mth.clamp(age / 4.0F, 0.0F, 1.0F);
+        float fade = Mth.clamp((zone.visualLifetime() - age) / 5.0F, 0.0F, 1.0F);
+        float length = zone.visualRadius() * grow;
+        if (length < 0.1F || fade <= 0.0F) {
+            return;
+        }
+        Vec3 look = caster.getViewVector(partialTicks);
+        float mouth = 0.18F;
+        float spread = 0.3F * zone.visualRadius();
+        LatheMesh.Profile torrent = t -> {
+            float radius = mouth + (spread - mouth) * (float) Math.pow(t, 0.85);
+            if (t > 0.85F) {
+                float cap = (t - 0.85F) / 0.15F;
+                radius *= (float) Math.sqrt(Math.max(0.0F, 1.0F - cap * cap));
+            }
+            return new float[]{t, radius};
+        };
+        LatheMesh.Deform billows = (point, t, angle) -> {
+            float roll = 1.0F + 0.28F * t * Mth.sin(angle * 5.0F + t * 14.0F - age * 1.4F) * Mth.cos(angle * 3.0F - age * 0.7F);
+            point.mul(roll, 1.0F, roll);
+        };
+        poseStack.pushPose();
+        poseStack.translate(look.x * 1.2, caster.getEyeHeight() - 0.35 + look.y * 1.2, look.z * 1.2);
+        WaterVisuals.alignWithFlight(poseStack, look);
+        poseStack.scale(1.0F, length, 1.0F);
+        poseStack.pushPose();
+        poseStack.scale(0.45F, 0.9F, 0.45F);
+        LatheMesh.render(poseStack.last(), buffers.getBuffer(RenderType.entityTranslucentEmissive(FIRE)), torrent, billows,
+                withAlpha(HEART, fade), 16, 14, age, GLOW);
+        poseStack.popPose();
+        LatheMesh.render(poseStack.last(), buffers.getBuffer(RenderType.entityTranslucentEmissive(FIRE)), torrent, billows,
+                withAlpha(BLAST_OUTER, fade), 20, 22, age + 3.0F, GLOW);
+        poseStack.scale(1.15F, 1.0F, 1.15F);
+        LatheMesh.render(poseStack.last(), glow(buffers), torrent, billows, withAlpha(HALO, fade), 16, 18, age + 6.0F, GLOW);
         poseStack.popPose();
     }
 

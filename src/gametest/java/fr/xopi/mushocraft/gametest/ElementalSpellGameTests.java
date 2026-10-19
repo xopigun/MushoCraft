@@ -172,7 +172,8 @@ public final class ElementalSpellGameTests {
 
     @GameTest(template = EMPTY)
     public static void earthHedgehogRaisesLeaningSpikes(GameTestHelper helper) {
-        ServerPlayer player = caster(helper, 30.0F);
+        // aimed straight down, so that every spike stays inside the test's own plot
+        ServerPlayer player = caster(helper, 89.0F);
         cast(player, MushoSpells.EARTH_HEDGEHOG.get());
         List<SpellPillar> spikes = helper.getLevel().getEntitiesOfClass(SpellPillar.class, player.getBoundingBox().inflate(25.0),
                 pillar -> pillar.kind() == PillarKind.EARTH_SPIKE);
@@ -198,7 +199,9 @@ public final class ElementalSpellGameTests {
 
     @GameTest(template = EMPTY)
     public static void icicleFieldSwallowsItsPreyInFrost(GameTestHelper helper) {
-        ServerPlayer player = caster(helper, 30.0F);
+        // aimed straight down, so that the whole field stays inside the test's own plot: a test runs far out in the
+        // world, and creatures beyond its plot may stand in chunks not loaded for entities
+        ServerPlayer player = caster(helper, 89.0F);
         cast(player, MushoSpells.ICICLE_FIELD.get());
         List<SpellPillar> mounds = helper.getLevel().getEntitiesOfClass(SpellPillar.class, player.getBoundingBox().inflate(25.0),
                 pillar -> pillar.kind() == PillarKind.FROST_MOUND);

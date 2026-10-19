@@ -1,7 +1,7 @@
 package fr.xopi.mushocraft.client.screen;
 
 import fr.xopi.mushocraft.client.ClientMoveState;
-import fr.xopi.mushocraft.combat.mastery.MasteryRules;
+import fr.xopi.mushocraft.combat.mastery.MasteryCurve;
 import fr.xopi.mushocraft.combat.move.Move;
 import fr.xopi.mushocraft.combat.move.MoveLoadout;
 import fr.xopi.mushocraft.combat.move.MoveRef;
@@ -57,12 +57,13 @@ public final class MoveTooltips {
 
     private static Component masteryLine(Move move) {
         float repetitions = ClientMoveState.repetitions(move.ref());
-        if (MasteryRules.isMastered(repetitions)) {
+        MasteryCurve curve = move.masteryCurve();
+        if (curve.isMastered(repetitions)) {
             return Component.translatable("screen.mushocraft.moves.mastered").withStyle(style -> style.withColor(0x80FF80));
         }
         return Component.translatable("screen.mushocraft.moves.mastery", (int) Math.floor(repetitions),
-                (int) MasteryRules.REPETITIONS_TO_MASTER,
-                String.format(Locale.ROOT, "%.0f", MasteryRules.failureChance(repetitions) * 100.0))
+                (int) curve.repetitionsToMaster(),
+                String.format(Locale.ROOT, "%.0f", curve.failureChance(repetitions) * 100.0))
                 .withStyle(style -> style.withColor(0xFFD060));
     }
 }

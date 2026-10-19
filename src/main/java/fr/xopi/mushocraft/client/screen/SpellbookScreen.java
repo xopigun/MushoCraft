@@ -2,7 +2,6 @@ package fr.xopi.mushocraft.client.screen;
 
 import fr.xopi.mushocraft.MushoCraft;
 import fr.xopi.mushocraft.client.ClientMoveState;
-import fr.xopi.mushocraft.combat.mastery.MasteryRules;
 import fr.xopi.mushocraft.combat.move.Move;
 import fr.xopi.mushocraft.combat.move.MoveLoadout;
 import fr.xopi.mushocraft.combat.move.MoveRef;
@@ -237,7 +236,7 @@ public class SpellbookScreen extends Screen {
         List<FormattedCharSequence> name = font.split(move.displayName(), PAGE_W - 24);
         graphics.drawString(font, name.getFirst(), x + 22, y + (known ? 2 : 5), known ? INK : INK_FADED, false);
         if (known) {
-            double progress = MasteryRules.progress(ClientMoveState.repetitions(move.ref()));
+            double progress = move.masteryCurve().progress(ClientMoveState.repetitions(move.ref()));
             int barWidth = PAGE_W - 24;
             graphics.fill(x + 22, y + 13, x + 22 + barWidth, y + 15, 0x40000000);
             int color = progress >= 1.0 ? 0xFFD4A84A : 0xFF4E8AC8;

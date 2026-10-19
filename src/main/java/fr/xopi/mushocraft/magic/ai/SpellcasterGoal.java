@@ -60,7 +60,7 @@ public class SpellcasterGoal extends Goal {
 
     @Override
     public boolean canUse() {
-        if (now() < nextSpellAt || caster.hasEffect(MushoMobEffects.CONFINED)) {
+        if (now() < nextSpellAt || caster.hasEffect(MushoMobEffects.CONFINED) || caster.hasEffect(MushoMobEffects.DISTURBED)) {
             return false;
         }
         Optional<Spell> choice = choose();
@@ -92,8 +92,8 @@ public class SpellcasterGoal extends Goal {
         if (target != null) {
             caster.getLookControl().setLookAt(target);
         }
-        if (caster.getHealth() < healthAtStart) {
-            // A blow breaks the chant, as it does for a player.
+        if (caster.getHealth() < healthAtStart || caster.hasEffect(MushoMobEffects.DISTURBED)) {
+            // A blow breaks the chant, as it does for a player; so does Disturb Magic, scattering the spell's mana.
             stopChanting(PAUSE_BETWEEN_SPELLS);
             return;
         }

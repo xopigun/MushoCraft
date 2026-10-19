@@ -36,6 +36,14 @@ public final class MushoMobEffects {
             () -> new MobEffect(MobEffectCategory.HARMFUL, 0xE8D88A) {
             });
 
+    /**
+     * Disturb Magic: interfering mana has scattered the spell taking shape; the chant breaks and no new one can start
+     * until the mana settles (wiki, page <i>Disturb Magic</i>).
+     */
+    public static final DeferredHolder<MobEffect, MobEffect> DISTURBED = MOB_EFFECTS.register("disturbed",
+            () -> new MobEffect(MobEffectCategory.HARMFUL, 0xFF8FB8) {
+            });
+
     private MushoMobEffects() {
     }
 
