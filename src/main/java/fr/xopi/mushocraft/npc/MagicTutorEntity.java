@@ -177,10 +177,28 @@ public class MagicTutorEntity extends TeacherEntity {
             setSchool(SpellSchool.INHERENT);
             setRank(Rank.INTERMEDIATE);
         } else {
-            setSchool(TEACHABLE.get(random.nextInt(TEACHABLE.size())));
-            setRank(random.nextInt(100) < 70 ? Rank.INTERMEDIATE : Rank.ADVANCED);
+            SpellSchool school = TEACHABLE.get(random.nextInt(TEACHABLE.size()));
+            setSchool(school);
+            setRank(randomRank(school, random));
         }
         return super.finalizeSpawn(level, difficulty, spawnType, data);
+    }
+
+    /**
+     * Tutors met by chance are mostly Intermediate or Advanced; Saints are rare, Kings very rare, an Emperor almost never
+     * met (wiki, page Magic: even an Advanced magician is one mage in a hundred). A tutor is never ranked above the
+     * highest spell their school has (the wiki names no Saint healing spell, for instance): the rank falls back to it.
+     */
+    public static Rank randomRank(SpellSchool school, RandomSource random) {
+        int roll = random.nextInt(1000);
+        Rank rank = roll < 5 ? Rank.EMPEROR : roll < 40 ? Rank.KING : roll < 150 ? Rank.SAINT : roll < 450 ? Rank.ADVANCED
+                : Rank.INTERMEDIATE;
+        Rank highest = MushoRegistries.SPELL.stream().filter(spell -> spell.school() == school).map(Spell::rank)
+                .max(Comparator.naturalOrder()).orElse(Rank.INTERMEDIATE);
+        if (!highest.isAtLeast(rank)) {
+            rank = highest;
+        }
+        return rank.isAtLeast(Rank.INTERMEDIATE) ? rank : Rank.INTERMEDIATE;
     }
 
     /** The spells this tutor casts: those of their school, up to their rank. */

@@ -358,7 +358,7 @@ Limite à connaître : je n'ai accès qu'au wiki et à ses références. Je ne p
    - **Tests automatiques** : `src/gametest`, lancés par `gradlew runGameTestServer` (9 tests). Ils ne sont pas inclus dans le jar.
 3. ✅ `ManaData` + jauge de mana + circulation pour s'entraîner (nuit du 19/10, voir `docs/nuits/2026-10-19.md`).
 4. ✅ Abstraction `Move`, `Cooldowns`, barre de move branchée sur le mode Epic Fight, écran des moves (nuit du 19/10).
-5. 🟡 Moteur de sorts + 58 sorts (Débutant à Roi, les 11 sans rang du wiki, les 7 sorts de magie mixte) + maîtrise par école + incantation abrégée et silencieuse (19/10). Au-delà du rang Saint, le wiki ne nomme que *Lightning* et *Confinement Barrier* (E23). Invocation par papiers (§4.3 ter). Les sorts Saint et Roi n'ont pas encore de source d'apprentissage en jeu.
+5. 🟡 Moteur de sorts + 58 sorts (Débutant à Roi, les 11 sans rang du wiki, les 7 sorts de magie mixte) + maîtrise par école + incantation abrégée et silencieuse (19/10). Au-delà du rang Saint, le wiki ne nomme que *Lightning* et *Confinement Barrier* (E23). Invocation par papiers (§4.3 ter). Les sorts Saint, Roi et Empereur s'apprennent auprès de tuteurs de ce rang, rarissimes (E27).
 6. ✅ Stats physiques + entraînement + aura de combat (nuit du 19/10).
 7. 🟡 Styles + 7 techniques + recharge partagée + règles de rang + enchaînements de base propres à chaque style sur l'épée et le tachi (nuit du 19/10) ; restent les autres armes et les autres techniques.
 8. 🟡 Maîtres PNJ : maîtres d'épée et précepteurs de magie, avec patch Epic Fight, skins originaux, œufs d'apparition et apparition naturelle rare (nuit du 19/10). Restent des lieux dédiés (dojos, église de Milis).

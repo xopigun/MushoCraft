@@ -11,6 +11,7 @@ import fr.xopi.mushocraft.combat.move.MoveRef;
 import fr.xopi.mushocraft.core.MushoEntities;
 import fr.xopi.mushocraft.core.Rank;
 import fr.xopi.mushocraft.life.LifeService;
+import fr.xopi.mushocraft.magic.mana.ManaService;
 import fr.xopi.mushocraft.magic.spell.MagicService;
 import fr.xopi.mushocraft.magic.spell.MushoSpells;
 import fr.xopi.mushocraft.magic.spell.SpellSchool;
@@ -35,6 +36,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.gametest.GameTestHolder;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
+import java.util.EnumSet;
 import java.util.Optional;
 
 @GameTestHolder(MushoCraft.MODID)
@@ -189,6 +191,36 @@ public final class TeacherGameTests {
                 "every Intermediate spell mastered: Intermediate in water magic");
         helper.assertFalse(MagicService.knows(player, MushoSpells.BLIZZARD_STORM.get()), "nothing above the tutor's rank");
         tutor.discard();
+        TestPlayers.leave(player);
+        helper.succeed();
+    }
+
+    @GameTest(template = EMPTY)
+    public static void tutorRanksStayWithinWhatTheirSchoolTeaches(GameTestHelper helper) {
+        RandomSource random = RandomSource.create(7L);
+        EnumSet<Rank> water = EnumSet.noneOf(Rank.class);
+        EnumSet<Rank> healing = EnumSet.noneOf(Rank.class);
+        for (int i = 0; i < 4000; i++) {
+            water.add(MagicTutorEntity.randomRank(SpellSchool.WATER, random));
+            healing.add(MagicTutorEntity.randomRank(SpellSchool.HEALING, random));
+        }
+        helper.assertTrue(water.contains(Rank.SAINT) && water.contains(Rank.KING) && water.contains(Rank.EMPEROR),
+                "water tutors may be Saints, Kings, even an Emperor (Absolute Zero): " + water);
+        helper.assertFalse(healing.contains(Rank.SAINT), "no Saint healing spell is named: no Saint healing tutor (" + healing + ")");
+        helper.succeed();
+    }
+
+    @GameTest(template = EMPTY)
+    public static void aWaterKingLeadsOnToLightning(GameTestHelper helper) {
+        ServerPlayer player = pupil(helper);
+        ManaService.setTrained(player, 1.0E7);
+        MagicTutorEntity king = tutor(helper, SpellSchool.WATER, Rank.KING);
+        lessons(king, player, 40);
+        helper.assertTrue(MagicService.knows(player, MushoSpells.CUMULONIMBUS.get()), "the Saint spells are shown");
+        helper.assertTrue(MagicService.knows(player, MushoSpells.LIGHTNING.get()), "then Lightning");
+        helper.assertValueEqual(MagicService.proficiency(player).rank(SpellSchool.WATER), Rank.KING, "a King leads on to King");
+        helper.assertFalse(MagicService.knows(player, MushoSpells.ABSOLUTE_ZERO.get()), "the Emperor spell is beyond a King");
+        king.discard();
         TestPlayers.leave(player);
         helper.succeed();
     }
