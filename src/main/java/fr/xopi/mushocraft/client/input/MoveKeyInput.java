@@ -1,7 +1,7 @@
 package fr.xopi.mushocraft.client.input;
 
 import fr.xopi.mushocraft.MushoCraft;
-import fr.xopi.mushocraft.client.screen.MovesScreen;
+import fr.xopi.mushocraft.client.screen.SpellbookScreen;
 import fr.xopi.mushocraft.compat.epicfight.EpicFightModes;
 import fr.xopi.mushocraft.network.ToggleAuraPayload;
 import fr.xopi.mushocraft.network.UseMovePayload;
@@ -29,7 +29,7 @@ public final class MoveKeyInput {
             return;
         }
         while (MushoKeyMappings.OPEN_MOVES.consumeClick()) {
-            minecraft.setScreen(new MovesScreen());
+            minecraft.setScreen(new SpellbookScreen());
         }
         while (MushoKeyMappings.TOGGLE_AURA.consumeClick()) {
             PacketDistributor.sendToServer(new ToggleAuraPayload());

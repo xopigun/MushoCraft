@@ -1,6 +1,7 @@
 package fr.xopi.mushocraft.gametest.showcase;
 
 import fr.xopi.mushocraft.MushoCraft;
+import fr.xopi.mushocraft.client.screen.SpellbookScreen;
 import fr.xopi.mushocraft.combat.mastery.MasteryRules;
 import fr.xopi.mushocraft.combat.mastery.MasteryService;
 import fr.xopi.mushocraft.combat.move.CooldownService;
@@ -258,6 +259,9 @@ public final class ShowcaseDirector {
                 logUse(player, 5);
             })),
             new Step(1283, () -> shoot("26_flash_over")),
+            new Step(1288, () -> Minecraft.getInstance().setScreen(new SpellbookScreen())),
+            new Step(1294, () -> shoot("27_spellbook")),
+            new Step(1297, () -> Minecraft.getInstance().setScreen(null)),
             new Step(1300, () -> onServer(player -> {
                 setBattleMode(player, false);
                 LifeService.rebirth(player);
