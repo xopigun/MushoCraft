@@ -218,7 +218,7 @@ Limite à connaître : je n'ai accès qu'au wiki et à ses références. Je ne p
    - **Talents** : six talents, loi normale (moyenne 1,0, écart-type 0,15, bornes 0,5-1,5, réglables), stratégie `TalentRoller` à décliner par race plus tard.
    - **Commandes** (opérateurs) : `/mushocraft life info|setage|rebirth`, `/mushocraft talents show|reroll|set`.
    - **Tests automatiques** : `src/gametest`, lancés par `gradlew runGameTestServer` (9 tests). Ils ne sont pas inclus dans le jar.
-3. `ManaData` + jauge de mana.
+3. ✅ `ManaData` + jauge de mana + circulation pour s'entraîner (nuit du 19/10, voir `docs/nuits/2026-10-19.md`).
 4. Abstraction `Move`, `Cooldowns`, barre de move branchée sur le mode Epic Fight.
 5. Moteur de sorts + les sorts débutants de l'eau (premier lot vertical), puis les autres écoles.
 6. `BodyStats` + entraînement.

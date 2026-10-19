@@ -21,7 +21,8 @@ public final class MushoCommands {
 
     private static final List<MushoSubcommand> SUBCOMMANDS = List.of(
             new LifeCommand(),
-            new TalentCommand()
+            new TalentCommand(),
+            new ManaCommand()
     );
 
     private MushoCommands() {

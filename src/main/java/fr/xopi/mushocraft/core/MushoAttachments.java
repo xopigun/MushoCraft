@@ -2,6 +2,7 @@ package fr.xopi.mushocraft.core;
 
 import fr.xopi.mushocraft.MushoCraft;
 import fr.xopi.mushocraft.life.LifeData;
+import fr.xopi.mushocraft.magic.mana.ManaData;
 import fr.xopi.mushocraft.talent.Talents;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.attachment.AttachmentType;
@@ -23,6 +24,9 @@ public final class MushoAttachments {
 
     public static final Supplier<AttachmentType<Talents>> TALENTS = ATTACHMENT_TYPES.register("talents",
             () -> AttachmentType.builder(Talents::neutral).serialize(Talents.CODEC).copyOnDeath().build());
+
+    public static final Supplier<AttachmentType<ManaData>> MANA = ATTACHMENT_TYPES.register("mana",
+            () -> AttachmentType.builder(ManaData::empty).serialize(ManaData.CODEC).copyOnDeath().build());
 
     private MushoAttachments() {
     }

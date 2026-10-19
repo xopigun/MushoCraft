@@ -16,6 +16,16 @@ public final class MushoConfig {
     public static final ModConfigSpec.DoubleValue TALENT_MIN;
     public static final ModConfigSpec.DoubleValue TALENT_MAX;
 
+    public static final ModConfigSpec.DoubleValue MANA_NEWBORN_CAPACITY;
+    public static final ModConfigSpec.DoubleValue MANA_ADULT_CAPACITY;
+    public static final ModConfigSpec.DoubleValue MANA_CEILING;
+    public static final ModConfigSpec.DoubleValue MANA_GROWTH_RATE;
+    public static final ModConfigSpec.DoubleValue MANA_ADULT_GROWTH_FACTOR;
+    public static final ModConfigSpec.DoubleValue MANA_EXHAUSTION_BONUS;
+    public static final ModConfigSpec.DoubleValue MANA_REGEN_PER_SECOND;
+    public static final ModConfigSpec.DoubleValue MANA_SLEEP_REGEN_MULTIPLIER;
+    public static final ModConfigSpec.DoubleValue MANA_TRAINING_DRAIN_PER_SECOND;
+
     static {
         ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
 
@@ -39,6 +49,38 @@ public final class MushoConfig {
         TALENT_MAX = builder
                 .comment("Highest talent a character can be born with.")
                 .defineInRange("max", 1.5, 0.0, 10.0);
+        builder.pop();
+
+        builder.push("mana");
+        MANA_NEWBORN_CAPACITY = builder
+                .comment("Natural mana capacity of a newborn with an ordinary mana potential (1.0).")
+                .defineInRange("newbornCapacity", 10.0, 0.0, 1.0E6);
+        MANA_ADULT_CAPACITY = builder
+                .comment("Natural mana capacity of an untrained adult with an ordinary mana potential.",
+                        "Natural capacity grows linearly from the newborn value to this one until adulthood.")
+                .defineInRange("adultCapacity", 100.0, 0.0, 1.0E6);
+        MANA_CEILING = builder
+                .comment("Highest capacity a character with an ordinary potential can ever reach through training.",
+                        "The real ceiling is this value times the square of the mana potential talent.")
+                .defineInRange("ceiling", 2000.0, 1.0, 1.0E7);
+        MANA_GROWTH_RATE = builder
+                .comment("Capacity gained per point of mana spent, for a young child far from their ceiling.")
+                .defineInRange("growthRate", 0.05, 0.0, 10.0);
+        MANA_ADULT_GROWTH_FACTOR = builder
+                .comment("Multiplier on growth once adult (growth slows from age 5 to this value at 15).")
+                .defineInRange("adultGrowthFactor", 0.05, 0.0, 1.0);
+        MANA_EXHAUSTION_BONUS = builder
+                .comment("Growth multiplier when spending leaves the reservoir almost empty (training to exhaustion).")
+                .defineInRange("exhaustionBonus", 2.0, 1.0, 10.0);
+        MANA_REGEN_PER_SECOND = builder
+                .comment("Fraction of the capacity regenerated each second.")
+                .defineInRange("regenPerSecond", 0.01, 0.0, 1.0);
+        MANA_SLEEP_REGEN_MULTIPLIER = builder
+                .comment("Regeneration multiplier while sleeping.")
+                .defineInRange("sleepRegenMultiplier", 3.0, 1.0, 100.0);
+        MANA_TRAINING_DRAIN_PER_SECOND = builder
+                .comment("Fraction of the capacity spent each second while circulating mana to train it.")
+                .defineInRange("trainingDrainPerSecond", 0.05, 0.0, 1.0);
         builder.pop();
 
         SPEC = builder.build();

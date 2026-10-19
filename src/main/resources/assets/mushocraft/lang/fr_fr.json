@@ -3,17 +3,14 @@
   "life_stage.mushocraft.child": "Enfant",
   "life_stage.mushocraft.adolescent": "Adolescent",
   "life_stage.mushocraft.adult": "Adulte",
-
   "talent.mushocraft.mana_potential": "Potentiel de mana",
   "talent.mushocraft.strength": "Force",
   "talent.mushocraft.vitality": "Vitalité",
   "talent.mushocraft.speed": "Vitesse",
   "talent.mushocraft.resistance": "Résistance",
   "talent.mushocraft.battle_aura_ease": "Aptitude à l'aura de combat",
-
   "message.mushocraft.life.born": "Vous venez de naître.",
   "message.mushocraft.life.stage_changed": "Vous êtes maintenant : %s.",
-
   "command.mushocraft.life.unborn": "%s n'est pas encore né.",
   "command.mushocraft.life.info": "%s : %s ans (%s), né au tick de jeu %s.",
   "command.mushocraft.life.setage": "Âge de %s joueur(s) fixé à %s ans.",
@@ -22,5 +19,11 @@
   "command.mushocraft.talents.header": "Talents de %s :",
   "command.mushocraft.talents.line": "  %s : %s",
   "command.mushocraft.talents.reroll": "Talents de %s joueur(s) tirés à nouveau.",
-  "command.mushocraft.talents.set": "%s fixé à %s pour %s joueur(s)."
+  "command.mushocraft.talents.set": "%s fixé à %s pour %s joueur(s).",
+  "key.categories.mushocraft": "MushoCraft",
+  "key.mushocraft.circulate_mana": "Faire circuler le mana (entraînement)",
+  "command.mushocraft.mana.info": "%s : %s / %s mana (entraîné %s, plafond %s).",
+  "command.mushocraft.mana.fill": "Mana de %s joueur(s) rempli.",
+  "command.mushocraft.mana.set": "Mana de %s joueur(s) fixé à %s.",
+  "command.mushocraft.mana.trained": "Capacité entraînée de %s joueur(s) fixée à %s."
 }

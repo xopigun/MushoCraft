@@ -19,7 +19,9 @@ Dernière mise à jour : 19/10/2026.
 | # | Fonctionnalité | Ce que dit la source | Source | Citation du roman | Statut |
 |---|---|---|---|---|---|
 | M1 | Réservoir de mana fixé à la naissance | On croit généralement la réserve de mana héritée et déterminée à la naissance. | wiki *Magic* § Mana (pas de tome cité) | à relever | à vérifier |
-| M2 | Croissance du réservoir par l'usage | Tout le monde peut augmenter sa mana en la stimulant dès le plus jeune âge (exemple : Julie). | wiki *Magic* § Mana (pas de tome cité) | à relever | conforme, voir E3 pour l'âge adulte |
+| M2 | Croissance du réservoir par l'usage | Tout le monde peut augmenter sa mana en la stimulant dès le plus jeune âge (exemple : Julie). Rudeus l'a développée en l'épuisant encore et encore pendant son enfance (propos d'Orsted). | wiki *Magic* § Mana ; wiki *Mana* § Mana Capacity (pas de tome cité) | à relever | conforme (`ManaRules.growth`, bonus d'épuisement), voir E3 pour l'âge adulte |
+| M2b | Corps capable de contenir beaucoup de mana ≠ réserve réelle | Rudeus avait un corps capable de contenir une quantité extraordinaire de mana, mais sans entraînement il aurait eu à peine plus qu'une personne ordinaire. | wiki *Mana* § Mana Capacity | à relever | conforme (plafond par talent, capacité réelle à entraîner) |
+| M2c | Circulation du mana pour s'entraîner | Le wiki parle de « stimuler » son mana enfant, sans décrire de méthode jouable. | wiki *Magic*, *Mana* | à relever | jeu (touche de circulation) |
 | M3 | Plafond par personnage | Pas de source explicite. Le plafond sert à garder le facteur de naissance déterminant. | — | — | jeu |
 | M4 | Tout le monde peut faire de la magie | Une personne sur vingt naît capable d'utiliser la mana. | wiki *Magic* § Magic Rank Title (pas de tome cité) | à relever | écart E1 |
 | M5 | Apprentissage obligatoire avant de lancer un sort | Rudeus apprend la magie avec un manuel. | LN vol. 1 ch. 3 « A Textbook of Magic » | à relever | conforme |
