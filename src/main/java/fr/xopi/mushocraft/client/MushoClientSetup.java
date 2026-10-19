@@ -73,8 +73,8 @@ public final class MushoClientSetup {
         event.registerSpecial(MushoParticles.SLASH.get(), new OrientedParticle.SlashProvider());
         event.registerSpriteSet(MushoParticles.ARC.get(), ArcParticle.Provider::new);
         event.registerSpriteSet(MushoParticles.RISING_LIGHT.get(), RisingLight.Provider::new);
-        event.registerSpriteSet(MushoParticles.IMPACT.get(), FlipbookParticle.ImpactProvider::new);
-        event.registerSpriteSet(MushoParticles.BLAST.get(), FlipbookParticle.BlastProvider::new);
+        event.registerSpecial(MushoParticles.IMPACT.get(), new FlipbookParticle.ImpactProvider());
+        event.registerSpecial(MushoParticles.BLAST.get(), new FlipbookParticle.BlastProvider());
     }
 
     @SubscribeEvent

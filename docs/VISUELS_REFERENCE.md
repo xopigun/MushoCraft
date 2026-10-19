@@ -36,7 +36,7 @@ Pas de shader, pas de post-traitement, pas de bloom : uniquement des types de re
 6. ✅ Éclairs procéduraux (*Lightning*, *Cumulonimbus*).
 7. ✅ Traînées en ruban avec halo (feu, vent, lumière, glace).
 8. ✅ Particules émises depuis les os des modèles Blockbench (pointe du pilier de glace, éclats des pics de terre).
-9. ✅ Flipbooks dessinés en haute résolution (128 px), générés par script pour MushoCraft :
+9. ✅ Flipbooks dessinés en haute résolution (256 px, dessinés en 1024 px puis réduits pour des contours lisses), générés par script pour MushoCraft, lus comme les ondes de choc (`SmoothSheet`) :
    - étincelle d'impact en 8 images, teintée par l'élément, à la fin de chaque projectile ;
    - explosion en 12 images : boule blanche à rayons, boule orange cernée de sombre qui se déchire, fumée qui se disperse.
 

@@ -10,8 +10,8 @@ import fr.xopi.mushocraft.magic.entity.SpellPillar;
 import fr.xopi.mushocraft.magic.entity.SpellProjectile;
 import fr.xopi.mushocraft.magic.entity.SpellZone;
 import fr.xopi.mushocraft.magic.entity.WaterSheet;
+import fr.xopi.mushocraft.magic.fx.SpellFx;
 import fr.xopi.mushocraft.magic.mana.ManaService;
-import fr.xopi.mushocraft.magic.spell.Spell;
 import fr.xopi.mushocraft.magic.spell.SpellContext;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
@@ -31,6 +31,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
@@ -39,7 +40,8 @@ import java.util.function.Consumer;
 /**
  * Development only (run {@code runClientGallery}): casts every spell of the catalogue in turn, seen in first person
  * the way a player sees it, on a stone arena in the sky, at a dummy standing ahead, and saves two screenshots of each (just after the cast, and a
- * moment later) as run/screenshots/gallery_NN_spell_a/b.png. An audit of what every spell looks like.
+ * moment later) as run/screenshots/gallery_NN_spell_a/b.png. An audit of what every spell looks like. A few effects
+ * that no spell shows (a sword slash) close the round.
  */
 @EventBusSubscriber(modid = MushoCraft.MODID, value = Dist.CLIENT)
 public final class GalleryDirector {
@@ -54,7 +56,7 @@ public final class GalleryDirector {
     private static BlockPos arena;
 
     private static int ticksInWorld;
-    private static List<Spell> spells;
+    private static List<Exhibit> exhibits;
 
     private GalleryDirector() {
     }
@@ -84,33 +86,48 @@ public final class GalleryDirector {
         if (ticksInWorld < START_TICK) {
             return;
         }
-        if (spells == null) {
-            spells = MushoRegistries.SPELL.stream().sorted(Comparator.comparing(spell -> spell.id().toString())).toList();
+        if (exhibits == null) {
+            exhibits = exhibits();
         }
         int elapsed = ticksInWorld - START_TICK;
         int index = elapsed / TICKS_PER_SPELL;
         int phase = elapsed % TICKS_PER_SPELL;
-        if (index >= spells.size()) {
+        if (index >= exhibits.size()) {
             minecraft.stop();
             return;
         }
-        Spell spell = spells.get(index);
-        String name = String.format(Locale.ROOT, "gallery_%02d_%s", index, spell.id().getPath());
+        Exhibit exhibit = exhibits.get(index);
+        String name = String.format(Locale.ROOT, "gallery_%02d_%s", index, exhibit.name());
         if (phase == 0) {
             onServer(player -> setUp(player));
         } else if (phase == 2) {
             onServer(player -> {
                 player.removeAllEffects();
                 ManaService.refill(player);
-                boolean cast = spell.effect().cast(new SpellContext(player, spell, 1.0));
-                MushoCraft.LOGGER.info("Gallery {}: cast {}", spell.id(), cast);
+                exhibit.show().accept(player);
             });
         } else if (phase == 2 + FIRST_SHOT) {
-            logVisible(minecraft, spell);
+            logVisible(minecraft, exhibit.name());
             shoot(minecraft, name + "_a");
         } else if (phase == 2 + SECOND_SHOT) {
             shoot(minecraft, name + "_b");
         }
+    }
+
+    /** Something to show: every spell, in order, then the effects no spell shows. */
+    private record Exhibit(String name, Consumer<ServerPlayer> show) {
+    }
+
+    private static List<Exhibit> exhibits() {
+        List<Exhibit> all = new ArrayList<>();
+        MushoRegistries.SPELL.stream().sorted(Comparator.comparing(spell -> spell.id().toString())).forEach(spell ->
+                all.add(new Exhibit(spell.id().getPath(), player -> {
+                    boolean cast = spell.effect().cast(new SpellContext(player, spell, 1.0));
+                    MushoCraft.LOGGER.info("Gallery {}: cast {}", spell.id(), cast);
+                })));
+        // a sword technique's slash, as Technique draws it
+        all.add(new Exhibit("fx_slash", player -> SpellFx.slash(player.serverLevel(), player, player.getLookAngle(), 1.6F, 0xDDEEFF)));
+        return all;
     }
 
     /** A clean stage: the caster at the arena's middle facing south, slightly down, a dummy ahead. */
@@ -142,7 +159,7 @@ public final class GalleryDirector {
     }
 
     /** Logs which spell bodies the client can see, to tell a spell drawn wrongly from one never drawn. */
-    private static void logVisible(Minecraft minecraft, Spell spell) {
+    private static void logVisible(Minecraft minecraft, String exhibit) {
         StringBuilder seen = new StringBuilder();
         for (Entity entity : minecraft.level.entitiesForRendering()) {
             if (entity instanceof WaterSheet || entity instanceof SpellZone || entity instanceof SpellPillar
@@ -151,7 +168,7 @@ public final class GalleryDirector {
                         .append(String.format(Locale.ROOT, "@%.1f ", entity.distanceTo(minecraft.player)));
             }
         }
-        MushoCraft.LOGGER.info("Gallery {}: visible bodies [{}] player at {}", spell.id(), seen.toString().trim(),
+        MushoCraft.LOGGER.info("Gallery {}: visible bodies [{}] player at {}", exhibit, seen.toString().trim(),
                 minecraft.player.position());
     }
 

@@ -25,6 +25,10 @@ public final class SmoothSheet {
     public static final SmoothSheet SHOCK_WAVE = new SmoothSheet("shock_wave", 6, false);
     /** Slashes: crescents that sweep and dissolve (textures/effect/slash.png, drawn for MushoCraft). */
     public static final SmoothSheet SLASH = new SmoothSheet("slash", 8, true);
+    /** Hit sparks: rays and a torn ring, tinted by the element (textures/effect/impact.png, drawn for MushoCraft). */
+    public static final SmoothSheet IMPACT = new SmoothSheet("impact", 8, false);
+    /** Explosions: a white-hot ball, an orange ball that tears open, smoke (textures/effect/blast.png, drawn for MushoCraft). */
+    public static final SmoothSheet BLAST = new SmoothSheet("blast", 12, false);
 
     private final ResourceLocation texture;
     private final int frames;
