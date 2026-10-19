@@ -1,0 +1,26 @@
+{
+  "life_stage.mushocraft.baby": "Baby",
+  "life_stage.mushocraft.child": "Child",
+  "life_stage.mushocraft.adolescent": "Adolescent",
+  "life_stage.mushocraft.adult": "Adult",
+
+  "talent.mushocraft.mana_potential": "Mana potential",
+  "talent.mushocraft.strength": "Strength",
+  "talent.mushocraft.vitality": "Vitality",
+  "talent.mushocraft.speed": "Speed",
+  "talent.mushocraft.resistance": "Resistance",
+  "talent.mushocraft.battle_aura_ease": "Battle Aura aptitude",
+
+  "message.mushocraft.life.born": "You have just been born.",
+  "message.mushocraft.life.stage_changed": "You are now: %s.",
+
+  "command.mushocraft.life.unborn": "%s has not been born yet.",
+  "command.mushocraft.life.info": "%s: %s years old (%s), born at game tick %s.",
+  "command.mushocraft.life.setage": "Set the age of %s player(s) to %s years.",
+  "command.mushocraft.life.rebirth": "%s player(s) were born again.",
+  "command.mushocraft.talents.none": "%s has no talents yet.",
+  "command.mushocraft.talents.header": "Talents of %s:",
+  "command.mushocraft.talents.line": "  %s: %s",
+  "command.mushocraft.talents.reroll": "Rerolled the talents of %s player(s).",
+  "command.mushocraft.talents.set": "Set %s to %s for %s player(s)."
+}
