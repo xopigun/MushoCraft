@@ -1,9 +1,11 @@
 package fr.xopi.mushocraft.core;
 
 import fr.xopi.mushocraft.MushoCraft;
+import fr.xopi.mushocraft.magic.focus.MagicFocusItem;
 import fr.xopi.mushocraft.magic.item.ConjuredSwordItem;
 import fr.xopi.mushocraft.magic.item.SpellBookItem;
 import fr.xopi.mushocraft.magic.spell.MushoSpells;
+import fr.xopi.mushocraft.magic.spell.SpellSchool;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.SwordItem;
@@ -14,6 +16,7 @@ import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Items of the mod.
@@ -40,6 +43,23 @@ public final class MushoItems {
                     MushoSpells.HEALING.get(), MushoSpells.DETOXIFICATION.get())));
 
     /** Beginner barrier and divine strike: the only rank of these schools Milis allows to be taught. */
+    // ---- Wands and staffs (wiki, page Magic Tools and Magic Items): never required, they strengthen spells ----
+
+    /** A plain wooden wand with a small magic stone. */
+    public static final DeferredItem<MagicFocusItem> APPRENTICE_WAND = ITEMS.register("apprentice_wand",
+            () -> new MagicFocusItem(new Item.Properties(), 0.10, Map.of()));
+
+    /** A magician's staff of good wood, crowned with a larger magic stone. */
+    public static final DeferredItem<MagicFocusItem> MAGE_STAFF = ITEMS.register("mage_staff",
+            () -> new MagicFocusItem(new Item.Properties().rarity(Rarity.UNCOMMON), 0.20, Map.of()));
+
+    /**
+     * Aqua Heartia, the A-rank staff made for Rudeus: Elder Treant wood and a dragon's magic stone; it greatly improves
+     * water magic and, to a lesser extent, earth, wind and fire (wiki). Unique: not craftable.
+     */
+    public static final DeferredItem<MagicFocusItem> AQUA_HEARTIA = ITEMS.register("aqua_heartia",
+            () -> new MagicFocusItem(new Item.Properties().rarity(Rarity.EPIC), 0.15, Map.of(SpellSchool.WATER, 0.25)));
+
     public static final DeferredItem<SpellBookItem> MILIS_PRAYER_BOOK = ITEMS.register("milis_prayer_book",
             () -> new SpellBookItem(new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON), () -> List.of(
                     MushoSpells.MAGIC_SHIELD.get(), MushoSpells.EXORCIST_LIGHT.get())));

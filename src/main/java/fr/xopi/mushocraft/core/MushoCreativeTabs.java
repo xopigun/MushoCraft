@@ -24,6 +24,9 @@ public final class MushoCreativeTabs {
                         output.accept(MushoItems.MILIS_PRAYER_BOOK.get());
                         output.accept(MushoItems.INTERMEDIATE_ATTACK_TREATISE.get());
                         output.accept(MushoItems.INTERMEDIATE_HEALING_TREATISE.get());
+                        output.accept(MushoItems.APPRENTICE_WAND.get());
+                        output.accept(MushoItems.MAGE_STAFF.get());
+                        output.accept(MushoItems.AQUA_HEARTIA.get());
                         output.accept(MushoItems.SWORD_MASTER_SPAWN_EGG.get());
                         output.accept(MushoItems.MAGIC_TUTOR_SPAWN_EGG.get());
                     })

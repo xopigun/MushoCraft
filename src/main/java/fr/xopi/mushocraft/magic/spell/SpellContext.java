@@ -1,5 +1,6 @@
 package fr.xopi.mushocraft.magic.spell;
 
+import fr.xopi.mushocraft.magic.focus.MagicFocus;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
@@ -28,6 +29,14 @@ public record SpellContext(LivingEntity caster, Spell spell, double power, Vec3 
 
     public Vec3 eyes() {
         return caster.getEyePosition();
+    }
+
+    /**
+     * How much bigger the spell takes shape: a wand or staff in hand enlarges it as much as it strengthens it
+     * (a water ball 20% stronger is 20% larger). Without one, 1.0.
+     */
+    public double scale() {
+        return MagicFocus.multiplier(caster, spell.school());
     }
 
     public long gameTime() {

@@ -1,5 +1,6 @@
 package fr.xopi.mushocraft.magic.ai;
 
+import fr.xopi.mushocraft.magic.focus.MagicFocus;
 import fr.xopi.mushocraft.magic.spell.Spell;
 import fr.xopi.mushocraft.magic.spell.SpellContext;
 import fr.xopi.mushocraft.magic.spell.SpellIntent;
@@ -112,11 +113,12 @@ public class SpellcasterGoal extends Goal {
 
     private void release(LivingEntity target) {
         Spell spell = chanting;
+        double strength = power.applyAsDouble(spell) * MagicFocus.multiplier(caster, spell.school());
         SpellContext context = switch (spell.intent()) {
-            case ATTACK -> target == null ? null : SpellContext.aimedAt(caster, spell, power.applyAsDouble(spell), target.getEyePosition());
+            case ATTACK -> target == null ? null : SpellContext.aimedAt(caster, spell, strength, target.getEyePosition());
             // Healing and barriers are aimed at the caster itself: looking straight up, no one else is in reach.
-            case SUPPORT -> new SpellContext(caster, spell, power.applyAsDouble(spell), new Vec3(0.0, 1.0, 0.0));
-            case DEFEND, UTILITY -> new SpellContext(caster, spell, power.applyAsDouble(spell));
+            case SUPPORT -> new SpellContext(caster, spell, strength, new Vec3(0.0, 1.0, 0.0));
+            case DEFEND, UTILITY -> new SpellContext(caster, spell, strength);
         };
         if (context != null && spell.effect().cast(context)) {
             readyAt.put(spell, now() + spell.cooldownTicks());

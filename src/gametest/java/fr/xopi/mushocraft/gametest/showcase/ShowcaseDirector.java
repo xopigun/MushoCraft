@@ -7,6 +7,7 @@ import fr.xopi.mushocraft.combat.move.CooldownService;
 import fr.xopi.mushocraft.combat.move.MoveRef;
 import fr.xopi.mushocraft.combat.move.MoveService;
 import fr.xopi.mushocraft.core.MushoEntities;
+import fr.xopi.mushocraft.core.MushoItems;
 import fr.xopi.mushocraft.core.Rank;
 import fr.xopi.mushocraft.life.LifeService;
 import fr.xopi.mushocraft.magic.entity.SpellProjectile;
@@ -191,6 +192,7 @@ public final class ShowcaseDirector {
                 Minecraft.getInstance().options.setCameraType(CameraType.THIRD_PERSON_BACK);
                 onServer(player -> {
                     player.getInventory().clearContent();
+                    player.setItemInHand(InteractionHand.OFF_HAND, new ItemStack(MushoItems.AQUA_HEARTIA.get()));
                     player.setXRot(0.0F);
                     List.of(MushoSpells.BLIZZARD_STORM, MushoSpells.EARTH_HEDGEHOG, MushoSpells.EARTH_FORTRESS)
                             .forEach(spell -> MagicService.learn(player, spell.get()));

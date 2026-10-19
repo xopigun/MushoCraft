@@ -1,6 +1,7 @@
 package fr.xopi.mushocraft.npc;
 
 import fr.xopi.mushocraft.combat.move.MoveRef;
+import fr.xopi.mushocraft.core.MushoItems;
 import fr.xopi.mushocraft.core.MushoRegistries;
 import fr.xopi.mushocraft.core.Rank;
 import fr.xopi.mushocraft.magic.ai.SpellcasterGoal;
@@ -19,11 +20,13 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.SpawnGroupData;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 
@@ -65,6 +68,15 @@ public class MagicTutorEntity extends TeacherEntity {
     public void setSchool(SpellSchool school) {
         entityData.set(SCHOOL, school.ordinal());
         refreshName();
+    }
+
+    @Override
+    public void setRank(Rank rank) {
+        super.setRank(rank);
+        // A tutor's staff grows with their rank: a wand for an Intermediate, a staff above.
+        setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(rank.isAtLeast(Rank.ADVANCED) ? MushoItems.MAGE_STAFF.get()
+                : MushoItems.APPRENTICE_WAND.get()));
+        setDropChance(EquipmentSlot.MAINHAND, 0.0F);
     }
 
     /** Holy Knights of Milis guard barrier and divine strike magic. */

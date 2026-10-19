@@ -26,7 +26,7 @@ public final class FallingProjectileEffect implements SpellEffect {
     @Override
     public boolean cast(SpellContext context) {
         Vec3 target = SpellTargeting.aimedPoint(context, range);
-        SpellProjectile boulder = SpellProjectile.create(context.level(), context.caster(), profile.scaled(context.power()));
+        SpellProjectile boulder = SpellProjectile.create(context.level(), context.caster(), profile.scaled(context.power()).enlarged(context.scale()));
         boulder.setPos(target.x, target.y + height, target.z);
         boulder.setDeltaMovement(0.0, -profile.speed(), 0.0);
         context.level().addFreshEntity(boulder);

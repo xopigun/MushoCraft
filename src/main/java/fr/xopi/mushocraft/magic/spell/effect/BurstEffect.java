@@ -28,7 +28,7 @@ public final class BurstEffect implements SpellEffect {
     @Override
     public boolean cast(SpellContext context) {
         Vec3 chest = context.caster().position().add(0.0, context.caster().getBbHeight() * 0.6, 0.0);
-        ProjectileProfile scaled = profile.scaled(context.power());
+        ProjectileProfile scaled = profile.scaled(context.power()).enlarged(context.scale());
         for (int i = 0; i < count; i++) {
             double angle = 2.0 * Math.PI * i / count;
             Vec3 direction = new Vec3(Math.cos(angle), (i % 3 - 1) * FAN, Math.sin(angle)).normalize();

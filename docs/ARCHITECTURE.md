@@ -108,6 +108,17 @@ Le même schéma vaut pour les **techniques d'épée** : un objet `Technique` pa
 
 Estimation : une quinzaine de classes d'effets génériques, plus une classe pour chaque sort au comportement unique, couvrent toutes les entrées du glossaire.
 
+### 4.2 bis Baguettes et bâtons (wiki, page *Magic Tools and Magic Items* ; rappel de Xopi du 19/10)
+
+- **On lance des sorts sans baguette ni bâton.** Un focus tenu dans l'une ou l'autre main multiplie la puissance des sorts et, dans la même proportion, leur taille. Exemple : une boule d'eau 20 % plus forte est 20 % plus grosse ; le rayon d'explosion grandit aussi.
+- La taille d'un projectile est un paramètre synchronisé, que le rendu applique au modèle : pas besoin de Pehkui.
+- `MagicFocusItem` : un bonus général et des affinités par école. Seul le meilleur focus tenu compte.
+  - *Baguette d'apprenti* : +10 % (bâtons et éclat d'améthyste).
+  - *Bâton de magicien* : +20 % (bâtons, or et amas d'améthyste).
+  - *Aqua Heartia* : +40 % en magie de l'eau, +15 % ailleurs ; unique, non fabricable.
+- La pierre magique n'existe pas encore : l'améthyste la remplace dans les recettes **[À VALIDER]**.
+- Les précepteurs portent une baguette (Intermédiaire) ou un bâton (Avancé et plus), qui renforce aussi leurs sorts.
+
 ### 4.3 Modes d'incantation (wiki, page *Magic*)
 
 | Mode | Comportement |

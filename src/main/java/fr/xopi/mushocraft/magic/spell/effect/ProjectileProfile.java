@@ -50,6 +50,12 @@ public record ProjectileProfile(
                 igniteSeconds, slowTicks, undeadMultiplier, explosionRadius);
     }
 
+    /** The same projectile, larger (and with a wider blast) by this factor. */
+    public ProjectileProfile enlarged(double factor) {
+        return new ProjectileProfile(element, damage, speed, gravity, (float) (size * factor), knockback,
+                igniteSeconds, slowTicks, undeadMultiplier, (float) (explosionRadius * factor));
+    }
+
     public static final class Builder {
         private final SpellElement element;
         private final float damage;

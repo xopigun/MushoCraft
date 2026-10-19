@@ -4,6 +4,7 @@ import fr.xopi.mushocraft.MushoCraft;
 import fr.xopi.mushocraft.combat.mastery.MasteryService;
 import fr.xopi.mushocraft.combat.move.CooldownService;
 import fr.xopi.mushocraft.combat.move.MoveUseResult;
+import fr.xopi.mushocraft.magic.focus.MagicFocus;
 import fr.xopi.mushocraft.magic.mana.ManaService;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
@@ -107,7 +108,8 @@ public final class SpellCasting {
             return MoveUseResult.fail("message.mushocraft.move.botched", spell.displayName(),
                     MasteryService.progressText(caster, spell.ref()));
         }
-        double power = MagicService.proficiency(caster).power(spell) * MasteryService.powerFactor(caster, spell.ref());
+        double power = MagicService.proficiency(caster).power(spell) * MasteryService.powerFactor(caster, spell.ref())
+                * MagicFocus.multiplier(caster, spell.school());
         if (!spell.effect().cast(new SpellContext(caster, spell, power))) {
             ManaService.restore(caster, spell.manaCost());
             return MoveUseResult.fail("message.mushocraft.magic.fizzled", spell.displayName());

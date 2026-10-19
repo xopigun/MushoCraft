@@ -207,7 +207,8 @@ public final class TeacherGameTests {
         helper.succeed();
     }
 
-    @GameTest(template = EMPTY)
+    /** Its own batch: the rule looks 128 blocks around, where other tests' teachers would stand. */
+    @GameTest(template = EMPTY, batch = "teacher_spawn")
     public static void teachersNeverSpawnNextToAnother(GameTestHelper helper) {
         helper.setBlock(new BlockPos(2, 0, 2), Blocks.GRASS_BLOCK);
         BlockPos spot = helper.absolutePos(new BlockPos(2, 1, 2));
