@@ -19,6 +19,14 @@ public final class MushoKeyMappings {
             GLFW.GLFW_KEY_V,
             CATEGORY);
 
+    /** Opens the screen where known moves are put into the move bar. */
+    public static final KeyMapping OPEN_MOVES = new KeyMapping(
+            "key.mushocraft.open_moves",
+            KeyConflictContext.IN_GAME,
+            InputConstants.Type.KEYSYM,
+            GLFW.GLFW_KEY_J,
+            CATEGORY);
+
     private MushoKeyMappings() {
     }
 }

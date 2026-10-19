@@ -1,8 +1,11 @@
 package fr.xopi.mushocraft.core;
 
 import fr.xopi.mushocraft.MushoCraft;
+import fr.xopi.mushocraft.combat.move.Cooldowns;
+import fr.xopi.mushocraft.combat.move.MoveLoadout;
 import fr.xopi.mushocraft.life.LifeData;
 import fr.xopi.mushocraft.magic.mana.ManaData;
+import fr.xopi.mushocraft.magic.spell.MagicKnowledge;
 import fr.xopi.mushocraft.talent.Talents;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.attachment.AttachmentType;
@@ -27,6 +30,15 @@ public final class MushoAttachments {
 
     public static final Supplier<AttachmentType<ManaData>> MANA = ATTACHMENT_TYPES.register("mana",
             () -> AttachmentType.builder(ManaData::empty).serialize(ManaData.CODEC).copyOnDeath().build());
+
+    public static final Supplier<AttachmentType<MagicKnowledge>> MAGIC_KNOWLEDGE = ATTACHMENT_TYPES.register("magic_knowledge",
+            () -> AttachmentType.builder(MagicKnowledge::none).serialize(MagicKnowledge.CODEC).copyOnDeath().build());
+
+    public static final Supplier<AttachmentType<MoveLoadout>> LOADOUT = ATTACHMENT_TYPES.register("move_loadout",
+            () -> AttachmentType.builder(MoveLoadout::empty).serialize(MoveLoadout.CODEC).copyOnDeath().build());
+
+    public static final Supplier<AttachmentType<Cooldowns>> COOLDOWNS = ATTACHMENT_TYPES.register("cooldowns",
+            () -> AttachmentType.builder(Cooldowns::none).serialize(Cooldowns.CODEC).copyOnDeath().build());
 
     private MushoAttachments() {
     }

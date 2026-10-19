@@ -1,0 +1,34 @@
+package fr.xopi.mushocraft.core;
+
+import fr.xopi.mushocraft.MushoCraft;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.CreativeModeTab;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
+
+/**
+ * The MushoCraft creative tab.
+ */
+public final class MushoCreativeTabs {
+    private static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MushoCraft.MODID);
+
+    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> MAIN = TABS.register("main",
+            () -> CreativeModeTab.builder()
+                    .title(Component.translatable("itemGroup.mushocraft"))
+                    .icon(() -> MushoItems.MAGIC_TEXTBOOK.get().getDefaultInstance())
+                    .displayItems((parameters, output) -> {
+                        output.accept(MushoItems.MAGIC_TEXTBOOK.get());
+                        output.accept(MushoItems.HEALING_PRIMER.get());
+                        output.accept(MushoItems.MILIS_PRAYER_BOOK.get());
+                    })
+                    .build());
+
+    private MushoCreativeTabs() {
+    }
+
+    public static void register(IEventBus modEventBus) {
+        TABS.register(modEventBus);
+    }
+}

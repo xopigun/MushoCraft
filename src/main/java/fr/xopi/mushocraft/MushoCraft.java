@@ -2,7 +2,14 @@ package fr.xopi.mushocraft;
 
 import com.mojang.logging.LogUtils;
 import fr.xopi.mushocraft.core.MushoAttachments;
+import fr.xopi.mushocraft.core.MushoBlocks;
 import fr.xopi.mushocraft.core.MushoConfig;
+import fr.xopi.mushocraft.core.MushoCreativeTabs;
+import fr.xopi.mushocraft.core.MushoDataComponents;
+import fr.xopi.mushocraft.core.MushoEntities;
+import fr.xopi.mushocraft.core.MushoItems;
+import fr.xopi.mushocraft.core.MushoMobEffects;
+import fr.xopi.mushocraft.magic.spell.MushoSpells;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -21,6 +28,13 @@ public final class MushoCraft {
 
     public MushoCraft(IEventBus modEventBus, ModContainer modContainer) {
         MushoAttachments.register(modEventBus);
+        MushoDataComponents.register(modEventBus);
+        MushoBlocks.register(modEventBus);
+        MushoItems.register(modEventBus);
+        MushoEntities.register(modEventBus);
+        MushoMobEffects.register(modEventBus);
+        MushoCreativeTabs.register(modEventBus);
+        MushoSpells.register(modEventBus);
         modContainer.registerConfig(ModConfig.Type.SERVER, MushoConfig.SPEC);
     }
 

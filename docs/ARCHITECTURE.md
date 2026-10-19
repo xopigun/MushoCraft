@@ -219,8 +219,8 @@ Limite à connaître : je n'ai accès qu'au wiki et à ses références. Je ne p
    - **Commandes** (opérateurs) : `/mushocraft life info|setage|rebirth`, `/mushocraft talents show|reroll|set`.
    - **Tests automatiques** : `src/gametest`, lancés par `gradlew runGameTestServer` (9 tests). Ils ne sont pas inclus dans le jar.
 3. ✅ `ManaData` + jauge de mana + circulation pour s'entraîner (nuit du 19/10, voir `docs/nuits/2026-10-19.md`).
-4. Abstraction `Move`, `Cooldowns`, barre de move branchée sur le mode Epic Fight.
-5. Moteur de sorts + les sorts débutants de l'eau (premier lot vertical), puis les autres écoles.
+4. ✅ Abstraction `Move`, `Cooldowns`, barre de move branchée sur le mode Epic Fight, écran des moves (nuit du 19/10).
+5. 🟡 Moteur de sorts + 11 sorts Débutants (nuit du 19/10) ; restent les rangs supérieurs, l'incantation abrégée et silencieuse.
 6. `BodyStats` + entraînement.
 7. Styles Epic Fight + techniques + recharge partagée.
 8. Maîtres PNJ.

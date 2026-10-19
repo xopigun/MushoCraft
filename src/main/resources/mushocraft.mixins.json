@@ -4,8 +4,10 @@
   "package": "fr.xopi.mushocraft.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "epicfight.PlayerPatchScaleMixin"
   ],
   "client": [
+    "epicfight.AbstractClientPlayerPatchScaleMixin"
   ],
   "injectors": {
     "defaultRequire": 1

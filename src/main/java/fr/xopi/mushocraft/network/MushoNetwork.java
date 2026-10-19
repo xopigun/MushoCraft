@@ -22,5 +22,8 @@ public final class MushoNetwork {
         registrar.playToClient(ManaSyncPayload.TYPE, ManaSyncPayload.STREAM_CODEC, ManaSyncPayload::handle);
         registrar.playToServer(ManaCirculationPayload.TYPE, ManaCirculationPayload.STREAM_CODEC,
                 ManaCirculationPayload::handle);
+        registrar.playToClient(MovesSyncPayload.TYPE, MovesSyncPayload.STREAM_CODEC, MovesSyncPayload::handle);
+        registrar.playToServer(UseMovePayload.TYPE, UseMovePayload.STREAM_CODEC, UseMovePayload::handle);
+        registrar.playToServer(SetMoveSlotPayload.TYPE, SetMoveSlotPayload.STREAM_CODEC, SetMoveSlotPayload::handle);
     }
 }

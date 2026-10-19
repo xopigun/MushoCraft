@@ -1,0 +1,10 @@
+{
+  "values": [
+    "mushocraft:spell",
+    "minecraft:magic",
+    "minecraft:indirect_magic",
+    "minecraft:in_fire",
+    "minecraft:on_fire",
+    "minecraft:freeze"
+  ]
+}

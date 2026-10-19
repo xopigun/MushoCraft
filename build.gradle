@@ -28,6 +28,11 @@ base {
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
+// Sources contain non-ASCII characters (French comments, progress bar glyphs): never rely on the OS default.
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
 // In-game automated tests. Kept out of the main source set so they never ship in the mod jar.
 sourceSets {
     gametest {
@@ -67,6 +72,15 @@ neoForge {
             client()
             programArguments.addAll '--quickPlaySingleplayer', 'mushotest'
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+        }
+
+        // Development only: plays the scripted showcase (src/gametest, ShowcaseDirector) in the mushotest world,
+        // saves screenshots to run/screenshots, then quits.
+        clientShowcase {
+            client()
+            sourceSet = sourceSets.gametest
+            programArguments.addAll '--quickPlaySingleplayer', 'mushotest'
+            systemProperty 'mushocraft.showcase', 'true'
         }
 
         server {

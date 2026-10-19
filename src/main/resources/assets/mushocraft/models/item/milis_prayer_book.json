@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "mushocraft:item/milis_prayer_book"
+  }
+}
