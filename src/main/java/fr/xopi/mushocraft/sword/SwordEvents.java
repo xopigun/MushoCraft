@@ -90,6 +90,7 @@ public final class SwordEvents {
         ServerPlayer player = event.getEntity();
         clear(player);
         player.setData(MushoAttachments.SWORD_MASTERY, SwordMastery.none());
+        StyleSync.push(player);
     }
 
     @SubscribeEvent

@@ -50,6 +50,7 @@ public final class SwordService {
             mastery = mastery.with(style, StyleProgress.beginner());
         }
         player.setData(MushoAttachments.SWORD_MASTERY, mastery.withActive(style));
+        StyleSync.push(player);
         player.displayClientMessage(Component.translatable("message.mushocraft.style.adopted", style.displayName()), true);
     }
 
@@ -141,5 +142,6 @@ public final class SwordService {
     public static void forgetAll(ServerPlayer player) {
         player.setData(MushoAttachments.SWORD_MASTERY, SwordMastery.none());
         MovesSync.push(player);
+        StyleSync.push(player);
     }
 }

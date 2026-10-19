@@ -146,6 +146,7 @@ public final class ShowcaseDirector {
                     }
                 });
             }),
+            new Step(535, ShowcaseDirector::logClientCombo),
             new Step(540, () -> onServer(player -> logUse(player, 0))),
             new Step(546, () -> shoot("13_arm_chop")),
             new Step(600, () -> onServer(player -> {
@@ -231,6 +232,17 @@ public final class ShowcaseDirector {
                 result.failure().map(net.minecraft.network.chat.Component::getString).orElse(""));
         player.serverLevel().getEntitiesOfClass(Zombie.class, player.getBoundingBox().inflate(8.0))
                 .forEach(zombie -> MushoCraft.LOGGER.info("Showcase target health {}", zombie.getHealth()));
+    }
+
+    /** What Epic Fight's client side picks as basic combo for the local player (style sync check). */
+    private static void logClientCombo() {
+        Minecraft minecraft = Minecraft.getInstance();
+        PlayerPatch<?> patch = EpicFightCapabilities.getPlayerPatch(minecraft.player);
+        if (patch != null) {
+            var weapon = EpicFightCapabilities.getItemStackCapability(minecraft.player.getMainHandItem());
+            MushoCraft.LOGGER.info("Showcase client style {} combo {}", weapon.getStyle(patch),
+                    weapon.getAutoAttackMotion(patch).stream().map(Object::toString).toList());
+        }
     }
 
     private static void onServer(Consumer<ServerPlayer> action) {

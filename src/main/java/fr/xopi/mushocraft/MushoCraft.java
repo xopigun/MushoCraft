@@ -3,6 +3,7 @@ package fr.xopi.mushocraft;
 import com.mojang.logging.LogUtils;
 import fr.xopi.mushocraft.client.render.EpicFightRenderers;
 import fr.xopi.mushocraft.compat.epicfight.EpicFightEntities;
+import fr.xopi.mushocraft.compat.epicfight.StyleMovesets;
 import fr.xopi.mushocraft.core.MushoAttachments;
 import fr.xopi.mushocraft.core.MushoBlocks;
 import fr.xopi.mushocraft.core.MushoConfig;
@@ -43,6 +44,7 @@ public final class MushoCraft {
         MushoTechniques.register(modEventBus);
         modContainer.registerConfig(ModConfig.Type.SERVER, MushoConfig.SPEC);
         EpicFightEntities.registerPatches();
+        StyleMovesets.register(modEventBus);
         if (FMLEnvironment.dist == Dist.CLIENT) {
             EpicFightRenderers.register();
         }

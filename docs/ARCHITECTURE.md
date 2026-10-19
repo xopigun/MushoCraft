@@ -159,6 +159,17 @@ Les stats suivent aussi l'âge : un bébé est faible, et l'échelle de taille v
   - Dieu de l'Eau : *Flow*, les *Five Secret Arts*, *Deprivation Sword Kingdom*.
   - Dieu du Nord : lancer d'épée, *Four Legged Form*, *Hazy Cross*, *Teardrop Bullet*, *Crimson Ink*, *Pecking*, *Moonlight Cleave*, *Gravity Fracture*.
 
+#### Enchaînements de base par style (API ExCap d'Epic Fight)
+
+- Chaque style MushoCraft est aussi un `Style` d'Epic Fight (`EpicFightSwordStyles`, énumération extensible enregistrée dans le constructeur du mod).
+- Un `WeaponModifier` par type d'arme (`StyleMovesets`) ajoute à l'arme :
+  - trois conditions `CUSTOM` (« ce joueur combat dans ce style, main secondaire libre ») ;
+  - trois movesets enfants de celui de l'arme. Ils changent les coups de base, l'attaque en course et l'attaque en l'air, et gardent la garde, la compétence innée et les postures.
+- Animations : uniquement celles d'Epic Fight, par référence.
+- Epic Fight choisit le moveset des deux côtés. Le style actif est donc synchronisé vers le joueur et vers ceux qui le voient (`StyleSyncPayload`, `ActiveStyles`).
+- Le combat à deux armes et l'épée + bouclier gardent les movesets d'Epic Fight.
+- Pas de route datapack : Epic Fight 21.17 ignore encore les modificateurs en JSON, et ses conditions JSON n'ont pas de type `CUSTOM`.
+
 ### 5.3 Aura de combat (Battle Aura, 闘気)
 
 Le wiki (page *Battle Aura*, WN ch. 80) la décrit ainsi :
@@ -229,5 +240,5 @@ Limite à connaître : je n'ai accès qu'au wiki et à ses références. Je ne p
 4. ✅ Abstraction `Move`, `Cooldowns`, barre de move branchée sur le mode Epic Fight, écran des moves (nuit du 19/10).
 5. 🟡 Moteur de sorts + 11 sorts Débutants + 12 Intermédiaires + maîtrise par école (nuit du 19/10) ; restent les rangs Avancé et plus, la magie mixte, l'incantation abrégée et silencieuse.
 6. ✅ Stats physiques + entraînement + aura de combat (nuit du 19/10).
-7. 🟡 Styles + 7 techniques + recharge partagée + règles de rang (nuit du 19/10) ; restent les enchaînements Epic Fight propres à chaque style et les autres techniques.
-8. 🟡 Maîtres PNJ : maîtres d'épée et précepteurs de magie, avec patch Epic Fight, skins originaux et œufs d'apparition (nuit du 19/10). Reste à les faire apparaître dans le monde (structures ou villages).
+7. 🟡 Styles + 7 techniques + recharge partagée + règles de rang + enchaînements de base propres à chaque style sur l'épée et le tachi (nuit du 19/10) ; restent les autres armes et les autres techniques.
+8. 🟡 Maîtres PNJ : maîtres d'épée et précepteurs de magie, avec patch Epic Fight, skins originaux, œufs d'apparition et apparition naturelle rare (nuit du 19/10). Restent des lieux dédiés (dojos, église de Milis).

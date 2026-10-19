@@ -5,6 +5,7 @@ import net.minecraft.world.InteractionHand;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 import yesman.epicfight.world.capabilities.item.CapabilityItem;
+import yesman.epicfight.world.capabilities.item.Style;
 import yesman.epicfight.world.capabilities.item.WeaponCategory;
 
 import java.util.Set;
@@ -45,6 +46,12 @@ public final class EpicFightWeapons {
     /** Whether the weapon is held with both hands, as the Longsword of Light requires. */
     public static boolean holdsWithBothHands(ServerPlayer player) {
         PlayerPatch<?> patch = EpicFightCapabilities.getPlayerPatch(player);
-        return patch != null && mainHand(player).getStyle(patch) == CapabilityItem.Styles.TWO_HAND;
+        if (patch == null) {
+            return false;
+        }
+        CapabilityItem weapon = mainHand(player);
+        Style style = weapon.getStyle(patch);
+        return style == CapabilityItem.Styles.TWO_HAND
+                || (style instanceof EpicFightSwordStyles && StyleMovesets.heldWithBothHands(weapon));
     }
 }
