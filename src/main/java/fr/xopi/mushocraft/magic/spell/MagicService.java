@@ -1,5 +1,6 @@
 package fr.xopi.mushocraft.magic.spell;
 
+import fr.xopi.mushocraft.combat.mastery.MasteryService;
 import fr.xopi.mushocraft.combat.move.MoveKind;
 import fr.xopi.mushocraft.combat.move.MoveRef;
 import fr.xopi.mushocraft.combat.move.MoveService;
@@ -7,6 +8,7 @@ import fr.xopi.mushocraft.combat.move.MovesSync;
 import fr.xopi.mushocraft.core.MushoAttachments;
 import fr.xopi.mushocraft.core.MushoRegistries;
 import fr.xopi.mushocraft.core.Rank;
+import fr.xopi.mushocraft.life.LifeService;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -111,6 +113,25 @@ public final class MagicService {
         MoveService.offer(player, spell.ref());
         MovesSync.push(player);
         return true;
+    }
+
+    public static ManaControl manaControl(ServerPlayer player) {
+        return player.getData(MushoAttachments.MANA_CONTROL);
+    }
+
+    /** Circulating mana refines its control, the way to silent spell-casting; announced when it is reached. */
+    public static void trainControl(ServerPlayer player, double seconds) {
+        ManaControl before = manaControl(player);
+        ManaControl after = before.plus(IncantationRules.controlGain(seconds, LifeService.ageInYears(player).orElse(0.0)));
+        player.setData(MushoAttachments.MANA_CONTROL, after);
+        if (!IncantationRules.canCastSilently(before) && IncantationRules.canCastSilently(after)) {
+            player.sendSystemMessage(Component.translatable("message.mushocraft.magic.silent_unlocked"));
+        }
+    }
+
+    /** The shortest incantation this player may use for a spell. */
+    public static IncantationMode incantationMode(ServerPlayer player, Spell spell) {
+        return IncantationRules.mode(MasteryService.repetitions(player, spell.ref()), manaControl(player));
     }
 
     public static void forgetAll(ServerPlayer player) {

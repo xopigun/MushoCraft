@@ -1,8 +1,10 @@
 package fr.xopi.mushocraft.client;
 
 import fr.xopi.mushocraft.combat.move.CooldownView;
+import fr.xopi.mushocraft.combat.move.KnownMove;
 import fr.xopi.mushocraft.combat.move.MoveLoadout;
 import fr.xopi.mushocraft.combat.move.MoveRef;
+import fr.xopi.mushocraft.magic.spell.ManaControl;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.HashMap;
@@ -18,18 +20,25 @@ public final class ClientMoveState {
 
     private static volatile MoveLoadout loadout = MoveLoadout.empty();
     private static volatile List<MoveRef> known = List.of();
+    private static volatile Map<MoveRef, Float> repetitions = Map.of();
+    private static volatile ManaControl manaControl = ManaControl.none();
     private static volatile Map<ResourceLocation, ClientCooldown> cooldowns = Map.of();
 
     private ClientMoveState() {
     }
 
-    public static void update(MoveLoadout newLoadout, List<CooldownView> newCooldowns, List<MoveRef> newKnown) {
+    public static void update(MoveLoadout newLoadout, List<CooldownView> newCooldowns, List<KnownMove> newKnown,
+                              ManaControl newManaControl) {
         long now = System.currentTimeMillis();
         Map<ResourceLocation, ClientCooldown> map = new HashMap<>();
         newCooldowns.forEach(view -> map.put(view.key(),
                 new ClientCooldown(now + (long) (view.remainingTicks() * MILLIS_PER_TICK), view.totalTicks())));
         loadout = newLoadout;
-        known = List.copyOf(newKnown);
+        known = newKnown.stream().map(KnownMove::move).toList();
+        Map<MoveRef, Float> reps = new HashMap<>();
+        newKnown.forEach(move -> reps.put(move.move(), move.repetitions()));
+        repetitions = Map.copyOf(reps);
+        manaControl = newManaControl;
         cooldowns = Map.copyOf(map);
     }
 
@@ -39,6 +48,15 @@ public final class ClientMoveState {
 
     public static List<MoveRef> known() {
         return known;
+    }
+
+    public static ManaControl manaControl() {
+        return manaControl;
+    }
+
+    /** How many times the player has repeated a move they know. */
+    public static float repetitions(MoveRef move) {
+        return repetitions.getOrDefault(move, 0.0F);
     }
 
     /** Fraction of the cooldown still to wait, from 1 (just started) to 0 (ready). */

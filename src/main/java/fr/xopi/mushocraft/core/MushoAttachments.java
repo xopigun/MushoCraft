@@ -10,6 +10,7 @@ import fr.xopi.mushocraft.life.LifeData;
 import fr.xopi.mushocraft.magic.mana.ManaData;
 import fr.xopi.mushocraft.magic.spell.MagicKnowledge;
 import fr.xopi.mushocraft.magic.spell.MagicProficiency;
+import fr.xopi.mushocraft.magic.spell.ManaControl;
 import fr.xopi.mushocraft.sword.SwordMastery;
 import fr.xopi.mushocraft.talent.Talents;
 import net.neoforged.bus.api.IEventBus;
@@ -59,6 +60,9 @@ public final class MushoAttachments {
 
     public static final Supplier<AttachmentType<MoveMastery>> MOVE_MASTERY = ATTACHMENT_TYPES.register("move_mastery",
             () -> AttachmentType.builder(MoveMastery::none).serialize(MoveMastery.CODEC).copyOnDeath().build());
+
+    public static final Supplier<AttachmentType<ManaControl>> MANA_CONTROL = ATTACHMENT_TYPES.register("mana_control",
+            () -> AttachmentType.builder(ManaControl::none).serialize(ManaControl.CODEC).copyOnDeath().build());
 
     private MushoAttachments() {
     }

@@ -48,8 +48,18 @@ public final class SpellCasting {
         if (spell.incantationTicks() <= 0) {
             return complete(caster, spell);
         }
-        // A spell not yet mastered takes longer to chant.
-        int chantTicks = (int) Math.round(spell.incantationTicks() / MasteryService.speedFactor(caster, spell.ref()));
+        // A spell not yet mastered takes longer to chant; a well-practised one can be truncated, or not chanted at all.
+        IncantationMode mode = MagicService.incantationMode(caster, spell);
+        int chantTicks = (int) Math.round(spell.incantationTicks() * mode.timeFactor()
+                / MasteryService.speedFactor(caster, spell.ref()));
+        if (chantTicks <= 0) {
+            MoveUseResult result = complete(caster, spell);
+            result.failure().ifPresent(message -> caster.displayClientMessage(message, true));
+            if (result.success()) {
+                caster.displayClientMessage(Component.translatable("message.mushocraft.magic.released", spell.displayName()), true);
+            }
+            return MoveUseResult.SUCCESS;
+        }
         long now = CooldownService.now(caster);
         ACTIVE.put(caster.getUUID(), new ActiveCast(spell, now, now + chantTicks));
         setSlowed(caster, true);
@@ -115,7 +125,11 @@ public final class SpellCasting {
             return MoveUseResult.fail("message.mushocraft.magic.fizzled", spell.displayName());
         }
         MagicService.gainExperience(caster, spell.school(), spell.manaCost());
+        double before = MasteryService.repetitions(caster, spell.ref());
         MasteryService.succeeded(caster, spell.ref());
+        if (before < IncantationRules.ABBREVIATED_AT && MasteryService.repetitions(caster, spell.ref()) >= IncantationRules.ABBREVIATED_AT) {
+            caster.sendSystemMessage(Component.translatable("message.mushocraft.magic.abbreviated_unlocked", spell.displayName()));
+        }
         CooldownService.start(caster, spell.cooldownKey(), spell.cooldownTicks());
         return MoveUseResult.SUCCESS;
     }

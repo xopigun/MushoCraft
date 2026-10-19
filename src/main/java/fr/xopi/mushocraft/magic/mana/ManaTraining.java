@@ -1,5 +1,6 @@
 package fr.xopi.mushocraft.magic.mana;
 
+import fr.xopi.mushocraft.magic.spell.MagicService;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerPlayer;
 
@@ -10,7 +11,8 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Mana circulation: the player deliberately pours mana out without casting anything, to make the reservoir grow.
  * This is how Rudeus trains as a small child, by emptying his mana again and again (wiki, page <i>Mana</i>).
- * No spell knowledge is needed, so babies can train too.
+ * No spell knowledge is needed, so babies can train too. Circulating also refines the control of mana that leads
+ * to silent spell-casting.
  */
 public final class ManaTraining {
     private static final Set<UUID> CIRCULATING = ConcurrentHashMap.newKeySet();
@@ -39,6 +41,7 @@ public final class ManaTraining {
             setCirculating(player, false);
             return;
         }
+        MagicService.trainControl(player, seconds);
         player.serverLevel().sendParticles(ParticleTypes.ENCHANT,
                 player.getX(), player.getY() + player.getBbHeight() * 0.6, player.getZ(),
                 8, 0.3, 0.4, 0.3, 0.5);

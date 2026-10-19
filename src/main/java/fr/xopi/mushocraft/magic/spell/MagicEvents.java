@@ -65,6 +65,7 @@ public final class MagicEvents {
         player.setData(MushoAttachments.LOADOUT, MoveLoadout.empty());
         CooldownService.clear(player);
         MagicService.forgetAll(player);
+        player.setData(MushoAttachments.MANA_CONTROL, ManaControl.none());
     }
 
     @SubscribeEvent

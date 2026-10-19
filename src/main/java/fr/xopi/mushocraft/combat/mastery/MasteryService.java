@@ -1,6 +1,7 @@
 package fr.xopi.mushocraft.combat.mastery;
 
 import fr.xopi.mushocraft.combat.move.MoveRef;
+import fr.xopi.mushocraft.combat.move.MovesSync;
 import fr.xopi.mushocraft.core.MushoAttachments;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -62,10 +63,12 @@ public final class MasteryService {
 
     public static void setRepetitions(ServerPlayer player, MoveRef move, double count) {
         player.setData(MushoAttachments.MOVE_MASTERY, mastery(player).with(move, count));
+        MovesSync.push(player);
     }
 
     public static void forgetAll(ServerPlayer player) {
         player.setData(MushoAttachments.MOVE_MASTERY, MoveMastery.none());
+        MovesSync.push(player);
     }
 
     /** « 12/50 » for messages. */

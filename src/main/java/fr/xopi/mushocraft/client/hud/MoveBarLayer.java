@@ -1,6 +1,7 @@
 package fr.xopi.mushocraft.client.hud;
 
 import fr.xopi.mushocraft.client.ClientMoveState;
+import fr.xopi.mushocraft.combat.mastery.MasteryRules;
 import fr.xopi.mushocraft.combat.move.Move;
 import fr.xopi.mushocraft.combat.move.MoveLoadout;
 import fr.xopi.mushocraft.combat.move.MoveRef;
@@ -11,6 +12,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.Optional;
@@ -25,6 +27,7 @@ public final class MoveBarLayer implements LayeredDraw.Layer {
     private static final ResourceLocation HELD_SLOT = ResourceLocation.withDefaultNamespace("hud/hotbar_offhand_left");
     private static final int COOLDOWN_COLOR = 0x7FFFFFFF;
     private static final int KEY_LABEL_COLOR = 0xFFE0E0E0;
+    private static final int MASTERY_BACKGROUND = 0xFF000000;
 
     @Override
     public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
@@ -50,11 +53,23 @@ public final class MoveBarLayer implements LayeredDraw.Layer {
 
     private static void drawMove(GuiGraphics graphics, Move move, int x, int y) {
         graphics.blit(move.icon(), x, y, 0, 0, 16, 16, 16, 16);
+        drawMastery(graphics, move, x, y);
         float fraction = ClientMoveState.cooldownFraction(move.cooldownKey());
         if (fraction > 0.0F) {
             int height = (int) Math.ceil(16 * fraction);
             graphics.fill(x, y + 16 - height, x + 16, y + 16, COOLDOWN_COLOR);
         }
+    }
+
+    /** A thin gauge under a move not yet mastered, filling as it is repeated (like an item's durability bar). */
+    private static void drawMastery(GuiGraphics graphics, Move move, int x, int y) {
+        double progress = MasteryRules.progress(ClientMoveState.repetitions(move.ref()));
+        if (progress >= 1.0) {
+            return;
+        }
+        int width = (int) Math.round(13 * progress);
+        graphics.fill(x + 2, y + 13, x + 15, y + 15, MASTERY_BACKGROUND);
+        graphics.fill(x + 2, y + 13, x + 2 + width, y + 14, Mth.hsvToRgb((float) (progress / 3.0), 1.0F, 1.0F) | 0xFF000000);
     }
 
     private static void drawHeldItem(GuiGraphics graphics, Minecraft minecraft, LocalPlayer player, int barLeft, int screenHeight) {

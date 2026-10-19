@@ -1,9 +1,11 @@
 package fr.xopi.mushocraft.client.screen;
 
 import fr.xopi.mushocraft.client.ClientMoveState;
+import fr.xopi.mushocraft.combat.mastery.MasteryRules;
 import fr.xopi.mushocraft.combat.move.Move;
 import fr.xopi.mushocraft.combat.move.MoveLoadout;
 import fr.xopi.mushocraft.combat.move.MoveRef;
+import fr.xopi.mushocraft.magic.spell.IncantationRules;
 import fr.xopi.mushocraft.magic.spell.Spell;
 import fr.xopi.mushocraft.network.SetMoveSlotPayload;
 import fr.xopi.mushocraft.sword.technique.Technique;
@@ -113,6 +115,9 @@ public class MovesScreen extends Screen {
                     String.format(Locale.ROOT, "%.0f", spell.manaCost()),
                     String.format(Locale.ROOT, "%.1f", spell.cooldownTicks() / 20.0)).withStyle(style -> style.withColor(0xA0A0A0)));
             lines.add(spell.description().copy().withStyle(style -> style.withColor(0xC0C0C0).withItalic(true)));
+            lines.add(Component.translatable("screen.mushocraft.moves.incantation", IncantationRules.mode(
+                    ClientMoveState.repetitions(move.ref()), ClientMoveState.manaControl()).displayName())
+                    .withStyle(style -> style.withColor(0x9FD8FF)));
         } else if (move instanceof Technique technique) {
             lines.add(Component.translatable("screen.mushocraft.moves.spell_line",
                     technique.style().displayName(), technique.rank().displayName()).withStyle(style -> style.withColor(0xFFB070)));
@@ -120,7 +125,19 @@ public class MovesScreen extends Screen {
                     String.format(Locale.ROOT, "%.1f", technique.cooldownTicks() / 20.0)).withStyle(style -> style.withColor(0xA0A0A0)));
             lines.add(technique.description().copy().withStyle(style -> style.withColor(0xC0C0C0).withItalic(true)));
         }
+        lines.add(masteryLine(move));
         return lines;
+    }
+
+    private static Component masteryLine(Move move) {
+        float repetitions = ClientMoveState.repetitions(move.ref());
+        if (MasteryRules.isMastered(repetitions)) {
+            return Component.translatable("screen.mushocraft.moves.mastered").withStyle(style -> style.withColor(0x80FF80));
+        }
+        return Component.translatable("screen.mushocraft.moves.mastery", (int) Math.floor(repetitions),
+                (int) MasteryRules.REPETITIONS_TO_MASTER,
+                String.format(Locale.ROOT, "%.0f", MasteryRules.failureChance(repetitions) * 100.0))
+                .withStyle(style -> style.withColor(0xFFD060));
     }
 
     @Override
