@@ -69,8 +69,8 @@ public final class MushoClientSetup {
         event.registerSpriteSet(MushoParticles.FLASH.get(), FireParticles.FlashProvider::new);
         event.registerSpriteSet(MushoParticles.SHOCK_RING.get(), FireParticles.ShockRingProvider::new);
         event.registerSpriteSet(MushoParticles.MANA_MOTE.get(), ManaMote.Provider::new);
-        event.registerSpriteSet(MushoParticles.SHOCK_WAVE.get(), OrientedParticle.ShockWaveProvider::new);
-        event.registerSpriteSet(MushoParticles.SLASH.get(), OrientedParticle.SlashProvider::new);
+        event.registerSpecial(MushoParticles.SHOCK_WAVE.get(), new OrientedParticle.ShockWaveProvider());
+        event.registerSpecial(MushoParticles.SLASH.get(), new OrientedParticle.SlashProvider());
         event.registerSpriteSet(MushoParticles.ARC.get(), ArcParticle.Provider::new);
         event.registerSpriteSet(MushoParticles.RISING_LIGHT.get(), RisingLight.Provider::new);
         event.registerSpriteSet(MushoParticles.IMPACT.get(), FlipbookParticle.ImpactProvider::new);

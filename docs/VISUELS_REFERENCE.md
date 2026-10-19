@@ -30,7 +30,7 @@ Pas de shader, pas de post-traitement, pas de bloom : uniquement des types de re
 
 1. ✅ Tremblement de caméra pour les gros sorts (réglage client `effects.cameraShake`).
 2. ✅ Particules de feu additives, avec passage du feu à la fumée et deux teintes.
-3. ✅ Plans orientés doubles faces : entailles des techniques d'épée, anneaux de choc le long des projectiles de vent et des souffles, anneaux au sol.
+3. ✅ Plans orientés doubles faces : entailles des techniques d'épée, anneaux de choc le long des projectiles de vent et des souffles, anneaux au sol. Leurs images sont hors de l'atlas des particules, en bandes de 256 px lues en filtrage linéaire sans mipmap (`SmoothSheet`) : leurs bords restent lisses même grands et vus de biais.
 4. ✅ Rayons en prismes imbriqués (*Tornado Impact*).
 5. ✅ Coque lumineuse sur les projectiles de lumière, de vent et de glace.
 6. ✅ Éclairs procéduraux (*Lightning*, *Cumulonimbus*).
