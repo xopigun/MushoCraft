@@ -25,7 +25,8 @@ public final class MushoCommands {
             new ManaCommand(),
             new MagicCommand(),
             new BodyCommand(),
-            new StyleCommand()
+            new StyleCommand(),
+            new MaxCommand()
     );
 
     private MushoCommands() {

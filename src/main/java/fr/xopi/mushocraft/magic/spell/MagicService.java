@@ -119,6 +119,11 @@ public final class MagicService {
         return player.getData(MushoAttachments.MANA_CONTROL);
     }
 
+    /** Sets the control of mana outright (commands, tests); reaching silent casting is not announced. */
+    public static void setControl(ServerPlayer player, ManaControl control) {
+        player.setData(MushoAttachments.MANA_CONTROL, control);
+    }
+
     /** Circulating mana refines its control, the way to silent spell-casting; announced when it is reached. */
     public static void trainControl(ServerPlayer player, double seconds) {
         ManaControl before = manaControl(player);

@@ -155,6 +155,7 @@
   "command.mushocraft.magic.header": "%s : titre %s, %s sort(s) connu(s).",
   "command.mushocraft.magic.school": "  %s : %s (%s xp)",
   "command.mushocraft.magic.learn": "%s enseigné à %s joueur(s).",
+  "command.mushocraft.max": "%s joueur(s) rendu(s) aussi fort(s) que possible dans toutes les disciplines.",
   "command.mushocraft.magic.learnall": "Tous les sorts enseignés à %s joueur(s).",
   "command.mushocraft.magic.forget": "%s joueur(s) ont oublié toute leur magie.",
   "command.mushocraft.magic.xp": "Expérience en %s fixée à %s pour %s joueur(s).",

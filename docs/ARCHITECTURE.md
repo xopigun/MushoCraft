@@ -251,7 +251,7 @@ Les stats suivent aussi l'âge : un bébé est faible, et l'échelle de taille v
 - Sept rangs de maîtrise, les mêmes pour les trois styles : Débutant, Intermédiaire, Avancé, Saint, Roi, Empereur, Dieu.
 - **Branchement Epic Fight :**
   - Un `Style` Epic Fight par style MushoCraft (enum extensible).
-  - Un `Moveset` par style, sur les catégories d'armes existantes (épée, épée longue, tachi…), via `WeaponModifier`.
+  - Un `Moveset` par style, sur les catégories d'armes existantes, via `WeaponModifier` : épée, tachi, épée longue, uchigatana, épée à deux mains et dague prennent les trois styles ; la hache et la lance seulement le Style du Dieu du Nord, dont les branches se battent avec d'autres armes que l'épée (E28).
   - Sélection par `ProviderConditional.createCustom(style, joueur → style actif == X)`. C'est le conditionnel de plus haute priorité.
   - Au changement de style, appeler `changeWeaponInnateSkill` et `modifyLivingMotionByCurrentItem` (vérifié dans le code d'Epic Fight).
 - **Techniques spéciales.** Ce sont nos propres `Move`, pas des skills Epic Fight. Les slots de skills d'Epic Fight sont fixes et chaque skill a sa propre recharge, alors qu'on veut une recharge **commune au style**. L'exécution passe par `LivingEntityPatch.playAnimationSynchronized` avec une `AttackAnimation`. On commence par les animations existantes d'Epic Fight (référencées, jamais copiées) ; les nouvelles animations seront créées à partir de zéro.
@@ -354,11 +354,11 @@ Limite à connaître : je n'ai accès qu'au wiki et à ses références. Je ne p
    - **Étapes de vie** : `LifeStageChangedEvent` à chaque changement, message au joueur.
    - **Taille** par l'attribut vanilla `scale` : modificateur transitoire réappliqué chaque seconde.
    - **Talents** : six talents, loi normale (moyenne 1,0, écart-type 0,15, bornes 0,5-1,5, réglables), stratégie `TalentRoller` à décliner par race plus tard.
-   - **Commandes** (opérateurs) : `/mushocraft life info|setage|rebirth`, `/mushocraft talents show|reroll|set`.
+   - **Commandes** (opérateurs) : `/mushocraft life info|setage|rebirth`, `/mushocraft talents show|reroll|set`. `/mushocraft max [joueurs]` rend aussi fort que possible dans toutes les disciplines (`PlayerMaximizer`) : adulte, talents au maximum, corps entraîné, Aura complète, réservoir au plafond, incantation silencieuse, tous les sorts et techniques appris et maîtrisés, toutes les écoles et tous les styles au rang Dieu.
    - **Tests automatiques** : `src/gametest`, lancés par `gradlew runGameTestServer` (9 tests). Ils ne sont pas inclus dans le jar.
 3. ✅ `ManaData` + jauge de mana + circulation pour s'entraîner (nuit du 19/10, voir `docs/nuits/2026-10-19.md`).
 4. ✅ Abstraction `Move`, `Cooldowns`, barre de move branchée sur le mode Epic Fight, écran des moves (nuit du 19/10).
 5. 🟡 Moteur de sorts + 58 sorts (Débutant à Roi, les 11 sans rang du wiki, les 7 sorts de magie mixte) + maîtrise par école + incantation abrégée et silencieuse (19/10). Au-delà du rang Saint, le wiki ne nomme que *Lightning* et *Confinement Barrier* (E23). Invocation par papiers (§4.3 ter). Les sorts Saint, Roi et Empereur s'apprennent auprès de tuteurs de ce rang, rarissimes (E27).
 6. ✅ Stats physiques + entraînement + aura de combat (nuit du 19/10).
-7. 🟡 Styles + 7 techniques + recharge partagée + règles de rang + enchaînements de base propres à chaque style sur l'épée et le tachi (nuit du 19/10) ; restent les autres armes et les autres techniques.
+7. 🟡 Styles + 7 techniques + recharge partagée + règles de rang + enchaînements de base propres à chaque style sur toutes les épées, plus la hache et la lance pour le Dieu du Nord (nuit du 19/10) ; restent les autres techniques.
 8. 🟡 Maîtres PNJ : maîtres d'épée et précepteurs de magie, avec patch Epic Fight, skins originaux, œufs d'apparition et apparition naturelle rare (nuit du 19/10). Restent des lieux dédiés (dojos, église de Milis).
