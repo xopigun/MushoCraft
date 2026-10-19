@@ -77,3 +77,11 @@ Dernière mise à jour : 19/10/2026.
 | I1 | Mode combat = mode combat d'Epic Fight (touche R) | jeu |
 | I2 | Barre de 9 moves à la place de la hotbar, recharges affichées | jeu |
 | I3 | Molette = changer d'arme en mode combat | jeu |
+
+## Maîtres
+
+| # | Fonctionnalité | Source | Citation ou résumé | Statut |
+|---|---|---|---|---|
+| M1 | La magie de barrière est enseignée par l'Église de Milis | wiki, page *Protection Magic* (LN vol. 1, chapitre spécial) | Hors des ordres religieux de Milis, seul le niveau élémentaire peut normalement être enseigné. | jeu : précepteur « chevalier de Milis » pour la barrière et la frappe divine |
+| M2 | Un maître enseigne son propre style | wiki, catégorie *Swordstyle* | Les trois grands styles se transmettent dans leurs écoles (dojos, sanctuaire de l'épée). | jeu |
+| M3 | Rang transmis par un maître | aucune source | Règle décidée avec Xopi (écart E4). | jeu |

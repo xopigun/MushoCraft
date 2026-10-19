@@ -2,11 +2,14 @@ package fr.xopi.mushocraft.core;
 
 import fr.xopi.mushocraft.MushoCraft;
 import fr.xopi.mushocraft.magic.entity.SpellProjectile;
+import fr.xopi.mushocraft.npc.MagicTutorEntity;
+import fr.xopi.mushocraft.npc.SwordMasterEntity;
 import fr.xopi.mushocraft.sword.entity.ThrownWeapon;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -33,10 +36,30 @@ public final class MushoEntities {
                     .updateInterval(5)
                     .build(MushoCraft.id("thrown_weapon").toString()));
 
+    public static final DeferredHolder<EntityType<?>, EntityType<SwordMasterEntity>> SWORD_MASTER =
+            ENTITY_TYPES.register("sword_master", () -> EntityType.Builder
+                    .<SwordMasterEntity>of(SwordMasterEntity::new, MobCategory.CREATURE)
+                    .sized(0.6F, 1.8F)
+                    .clientTrackingRange(10)
+                    .build(MushoCraft.id("sword_master").toString()));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<MagicTutorEntity>> MAGIC_TUTOR =
+            ENTITY_TYPES.register("magic_tutor", () -> EntityType.Builder
+                    .<MagicTutorEntity>of(MagicTutorEntity::new, MobCategory.CREATURE)
+                    .sized(0.6F, 1.8F)
+                    .clientTrackingRange(10)
+                    .build(MushoCraft.id("magic_tutor").toString()));
+
     private MushoEntities() {
     }
 
     public static void register(IEventBus modEventBus) {
         ENTITY_TYPES.register(modEventBus);
+        modEventBus.addListener(MushoEntities::onCreateAttributes);
+    }
+
+    private static void onCreateAttributes(EntityAttributeCreationEvent event) {
+        event.put(SWORD_MASTER.get(), SwordMasterEntity.createAttributes().build());
+        event.put(MAGIC_TUTOR.get(), MagicTutorEntity.createAttributes().build());
     }
 }

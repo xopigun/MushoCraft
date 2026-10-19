@@ -3,6 +3,8 @@ package fr.xopi.mushocraft.gametest.showcase;
 import fr.xopi.mushocraft.MushoCraft;
 import fr.xopi.mushocraft.combat.move.CooldownService;
 import fr.xopi.mushocraft.combat.move.MoveService;
+import fr.xopi.mushocraft.core.MushoEntities;
+import fr.xopi.mushocraft.core.Rank;
 import fr.xopi.mushocraft.life.LifeService;
 import fr.xopi.mushocraft.magic.entity.SpellProjectile;
 import fr.xopi.mushocraft.magic.spell.SpellElement;
@@ -13,16 +15,21 @@ import fr.xopi.mushocraft.sword.technique.MushoTechniques;
 import fr.xopi.mushocraft.magic.mana.ManaService;
 import fr.xopi.mushocraft.magic.spell.MagicService;
 import fr.xopi.mushocraft.magic.spell.MushoSpells;
+import fr.xopi.mushocraft.magic.spell.SpellSchool;
+import fr.xopi.mushocraft.npc.MagicTutorEntity;
+import fr.xopi.mushocraft.npc.SwordMasterEntity;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -157,13 +164,26 @@ public final class ShowcaseDirector {
                 logUse(player, 2);
             })),
             new Step(723, () -> shoot("16_sword_throwing")),
-            new Step(760, () -> onServer(player -> {
-                setBattleMode(player, false);
-                LifeService.rebirth(player);
-            })),
-            new Step(790, () -> Minecraft.getInstance().options.setCameraType(CameraType.THIRD_PERSON_BACK)),
-            new Step(800, () -> shoot("17_baby_third_person")),
-            new Step(820, () -> Minecraft.getInstance().stop())
+            new Step(740, () -> {
+                Minecraft.getInstance().options.setCameraType(CameraType.FIRST_PERSON);
+                onServer(player -> {
+                    setBattleMode(player, false);
+                    player.serverLevel().getEntitiesOfClass(Zombie.class, player.getBoundingBox().inflate(8.0)).forEach(Entity::discard);
+                    player.setYRot(0.0F);
+                    player.setXRot(5.0F);
+                    spawnTeachers(player);
+                });
+            }),
+            new Step(780, () -> shoot("18_teachers")),
+            new Step(785, () -> onServer(player -> player.serverLevel()
+                    .getEntitiesOfClass(SwordMasterEntity.class, player.getBoundingBox().inflate(8.0)).stream()
+                    .filter(master -> master.style() == SwordStyle.SWORD_GOD)
+                    .findFirst().ifPresent(master -> master.interact(player, InteractionHand.MAIN_HAND)))),
+            new Step(795, () -> shootKeepingChat("19_master_lesson")),
+            new Step(800, () -> onServer(player -> LifeService.rebirth(player))),
+            new Step(830, () -> Minecraft.getInstance().options.setCameraType(CameraType.THIRD_PERSON_BACK)),
+            new Step(840, () -> shoot("17_baby_third_person")),
+            new Step(860, () -> Minecraft.getInstance().stop())
     );
 
     private static final int FLIGHT_TICKS_BEFORE_SHOT = 3;
@@ -242,9 +262,41 @@ public final class ShowcaseDirector {
         }
     }
 
+    /** One master of each style and two tutors, standing in a row in front of the player. */
+    private static void spawnTeachers(ServerPlayer player) {
+        ServerLevel level = player.serverLevel();
+        double x = player.getX() - 4.0;
+        for (SwordStyle style : SwordStyle.values()) {
+            SwordMasterEntity master = MushoEntities.SWORD_MASTER.get().create(level);
+            master.setStyle(style);
+            master.setRank(Rank.SAINT);
+            place(level, master, x, player.getY(), player.getZ() + 5.0);
+            x += 2.0;
+        }
+        for (SpellSchool school : List.of(SpellSchool.WATER, SpellSchool.BARRIER)) {
+            MagicTutorEntity tutor = MushoEntities.MAGIC_TUTOR.get().create(level);
+            tutor.setSchool(school);
+            tutor.setRank(Rank.ADVANCED);
+            place(level, tutor, x, player.getY(), player.getZ() + 5.0);
+            x += 2.0;
+        }
+    }
+
+    private static void place(ServerLevel level, Mob mob, double x, double y, double z) {
+        mob.moveTo(x, y, z, 180.0F, 0.0F);
+        mob.setYHeadRot(180.0F);
+        mob.setYBodyRot(180.0F);
+        mob.setNoAi(true);
+        level.addFreshEntity(mob);
+    }
+
     private static void shoot(String name) {
+        Minecraft.getInstance().gui.getChat().clearMessages(false);
+        shootKeepingChat(name);
+    }
+
+    private static void shootKeepingChat(String name) {
         Minecraft minecraft = Minecraft.getInstance();
-        minecraft.gui.getChat().clearMessages(false);
         Screenshot.grab(minecraft.gameDirectory, "showcase_" + name + ".png", minecraft.getMainRenderTarget(),
                 message -> MushoCraft.LOGGER.info("Showcase screenshot {}: {}", name, message.getString()));
     }

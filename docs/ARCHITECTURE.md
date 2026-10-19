@@ -181,7 +181,14 @@ Le refus de naître sans aptitude est un écart (voir `ECARTS.md`).
 ### 5.4 Maîtres
 
 - PNJ humanoïdes avec un patch Epic Fight (`HumanoidMobPatch`), enregistré via `EpicFightEventHooks.Registry.ENTITY_PATCH`. Ce n'est pas le bus NeoForge : la doc d'Epic Fight est périmée sur ce point.
-- IA de combat par `CombatBehaviors`. Les PNJ n'utilisent pas les movesets des objets : il faut leur donner des motions par catégorie et par style.
+- `HumanoidMobPatch` choisit l'IA de combat d'après la catégorie et le style de l'arme tenue. Chaque maître reçoit donc l'arme de son style :
+  - Dieu de l'Épée : tachi ;
+  - Dieu de l'Eau : épée et bouclier ;
+  - Dieu du Nord : deux épées.
+- Le squelette est le biped d'Epic Fight (`Armatures.registerEntityTypeArmature`, au setup commun). Le rendu est `PHumanoidRenderer` (`EpicFightClientEventHooks.Registry.ADD_PATCHED_ENTITY`, côté client seulement).
+- Classe abstraite `TeacherEntity` (patron Template Method) : rang synchronisé, titre au-dessus de la tête, clic droit = leçon. Deux sous-classes :
+  - `SwordMasterEntity` : un style. Il prend le joueur pour disciple, le promeut jusqu'à son propre rang au maximum, puis lui apprend les techniques de son style jusqu'à son rang. Sinon il dit ce qui manque : expérience, aura, ou plus rien à apprendre.
+  - `MagicTutorEntity` : une école. Il apprend les sorts de son école jusqu'à son rang, si l'élève est prêt (même règle que les livres). Les écoles de barrière et de frappe divine sont enseignées par un chevalier de Milis.
 - Chaque maître a un style et un rang. **Décidé :** il peut faire monter son élève jusqu'à un rang égal au sien, pas au-delà.
 
 ## 6. Mode combat et barre de move
@@ -223,4 +230,4 @@ Limite à connaître : je n'ai accès qu'au wiki et à ses références. Je ne p
 5. 🟡 Moteur de sorts + 11 sorts Débutants + 12 Intermédiaires + maîtrise par école (nuit du 19/10) ; restent les rangs Avancé et plus, la magie mixte, l'incantation abrégée et silencieuse.
 6. ✅ Stats physiques + entraînement + aura de combat (nuit du 19/10).
 7. 🟡 Styles + 7 techniques + recharge partagée + règles de rang (nuit du 19/10) ; restent les enchaînements Epic Fight propres à chaque style et les autres techniques.
-8. Maîtres PNJ.
+8. 🟡 Maîtres PNJ : maîtres d'épée et précepteurs de magie, avec patch Epic Fight, skins originaux et œufs d'apparition (nuit du 19/10). Reste à les faire apparaître dans le monde (structures ou villages).

@@ -1,6 +1,8 @@
 package fr.xopi.mushocraft;
 
 import com.mojang.logging.LogUtils;
+import fr.xopi.mushocraft.client.render.EpicFightRenderers;
+import fr.xopi.mushocraft.compat.epicfight.EpicFightEntities;
 import fr.xopi.mushocraft.core.MushoAttachments;
 import fr.xopi.mushocraft.core.MushoBlocks;
 import fr.xopi.mushocraft.core.MushoConfig;
@@ -12,10 +14,12 @@ import fr.xopi.mushocraft.core.MushoMobEffects;
 import fr.xopi.mushocraft.magic.spell.MushoSpells;
 import fr.xopi.mushocraft.sword.technique.MushoTechniques;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
+import net.neoforged.fml.loading.FMLEnvironment;
 import org.slf4j.Logger;
 
 /**
@@ -38,6 +42,10 @@ public final class MushoCraft {
         MushoSpells.register(modEventBus);
         MushoTechniques.register(modEventBus);
         modContainer.registerConfig(ModConfig.Type.SERVER, MushoConfig.SPEC);
+        EpicFightEntities.registerPatches();
+        if (FMLEnvironment.dist == Dist.CLIENT) {
+            EpicFightRenderers.register();
+        }
     }
 
     public static ResourceLocation id(String path) {
