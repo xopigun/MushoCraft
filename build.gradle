@@ -145,6 +145,7 @@ dependencies {
     // Epic Fight (GPLv3 code, All Rights Reserved assets): referenced only, never bundled.
     // No jarJar here, so it never ends up inside our jar; players install it themselves.
     implementation "maven.modrinth:epic-fight:${epicfight_version}"
+    implementation "maven.modrinth:geckolib:${geckolib_version}"
 
     // Example mod dependency with JEI
     // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime
@@ -182,7 +183,7 @@ var generateModMetadata = tasks.register("generateModMetadata", ProcessResources
                              mod_version            : mod_version,
                              mod_authors            : mod_authors,
                              mod_description        : mod_description,
-                             epicfight_version_range: epicfight_version_range]
+                             epicfight_version_range: epicfight_version_range, geckolib_version_range: geckolib_version_range]
     inputs.properties replaceProperties
     expand replaceProperties
     from "src/main/templates"

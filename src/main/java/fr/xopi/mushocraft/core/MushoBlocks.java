@@ -17,9 +17,12 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 public final class MushoBlocks {
     private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MushoCraft.MODID);
 
-    /** Wall raised by Water Shield: stops creatures and projectiles, dissolves after a while. */
+    /**
+     * Wall raised by Water Shield: stops creatures and projectiles, dissolves after a while. Invisible: the water
+     * seen is the spell's animated {@code WaterSheet}.
+     */
     public static final DeferredBlock<ConjuredBlock> WATER_WALL = BLOCKS.register("water_wall",
-            () -> new ConjuredBlock(BlockBehaviour.Properties.of()
+            () -> new ConjuredBlock.Invisible(BlockBehaviour.Properties.of()
                     .mapColor(MapColor.WATER)
                     .strength(0.5F)
                     .sound(SoundType.WET_SPONGE)

@@ -1,6 +1,7 @@
 package fr.xopi.mushocraft.magic.spell.effect;
 
 import fr.xopi.mushocraft.magic.entity.SpellZone;
+import fr.xopi.mushocraft.magic.entity.ZoneVisual;
 import fr.xopi.mushocraft.magic.spell.SpellContext;
 import fr.xopi.mushocraft.magic.spell.SpellEffect;
 import net.minecraft.sounds.SoundEvent;
@@ -15,6 +16,7 @@ import java.util.function.Supplier;
  */
 public final class ZoneEffect implements SpellEffect {
     private final Supplier<SpellZone.Behavior> behavior;
+    private final ZoneVisual visual;
     private final double radius;
     private final int durationTicks;
     private final double range;
@@ -24,7 +26,16 @@ public final class ZoneEffect implements SpellEffect {
      * @param range how far the zone can be cast; 0 sets it around the caster
      */
     public ZoneEffect(Supplier<SpellZone.Behavior> behavior, double radius, int durationTicks, double range, SoundEvent sound) {
+        this(behavior, ZoneVisual.NONE, radius, durationTicks, range, sound);
+    }
+
+    /**
+     * @param visual the body the client draws for the zone (a tornado's funnel)
+     */
+    public ZoneEffect(Supplier<SpellZone.Behavior> behavior, ZoneVisual visual, double radius, int durationTicks, double range,
+                      SoundEvent sound) {
         this.behavior = behavior;
+        this.visual = visual;
         this.radius = radius;
         this.durationTicks = durationTicks;
         this.range = range;
@@ -35,7 +46,7 @@ public final class ZoneEffect implements SpellEffect {
     public boolean cast(SpellContext context) {
         Vec3 center = range <= 0.0 ? context.caster().position()
                 : Vec3.atBottomCenterOf(SpellTargeting.groundBelow(context, SpellTargeting.aimedPoint(context, range)));
-        SpellZone zone = SpellZone.create(context.level(), context.caster(), behavior.get(), radius * context.scale(),
+        SpellZone zone = SpellZone.create(context.level(), context.caster(), behavior.get(), visual, radius * context.scale(),
                 context.power(), durationTicks);
         zone.setPos(center);
         context.level().addFreshEntity(zone);

@@ -11,10 +11,13 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 /**
@@ -64,28 +67,48 @@ public final class ZoneBehaviors {
         };
     }
 
-    /** Tornado: a whirlwind drawing creatures in and lifting them, battering those caught inside. */
+    /**
+     * Tornado: a towering whirlwind. Creatures and loose objects inside are drawn towards its heart, whirled round and
+     * carried up the funnel; whatever reaches the top is flung outwards. Those caught are battered every second.
+     */
     public static SpellZone.Behavior vortex(double pull, double lift, float damagePerSecond) {
         return (zone, level, age) -> {
-            for (int i = 0; i < 4; i++) {
-                double angle = age * 0.4 + i * Math.PI / 2.0;
-                double height = (age % 20) / 20.0 * 8.0;
-                double ring = 0.5 + height * 0.25;
-                level.sendParticles(ParticleTypes.CLOUD, zone.getX() + Math.cos(angle) * ring, zone.getY() + height,
-                        zone.getZ() + Math.sin(angle) * ring, 1, 0.0, 0.0, 0.0, 0.0);
-            }
-            for (LivingEntity target : zone.creaturesInside(8.0)) {
+            double height = zone.radius() * 2.6;
+            AABB box = new AABB(zone.getX() - zone.radius() * 1.3, zone.getY() - 1.0, zone.getZ() - zone.radius() * 1.3,
+                    zone.getX() + zone.radius() * 1.3, zone.getY() + height, zone.getZ() + zone.radius() * 1.3);
+            for (Entity target : level.getEntities(zone, box, entity -> entity != zone.caster() && entity.isAlive()
+                    && !(entity instanceof SpellZone) && !entity.isSpectator() && (entity instanceof LivingEntity || entity instanceof ItemEntity))) {
+                double up = (target.getY() - zone.getY()) / height;
+                // the funnel widens with height: so does the region it holds
+                double reach = zone.radius() * (0.4 + up);
                 Vec3 toCenter = new Vec3(zone.getX() - target.getX(), 0.0, zone.getZ() - target.getZ());
-                Vec3 swirl = new Vec3(-toCenter.z, 0.0, toCenter.x).normalize().scale(0.3);
-                Vec3 inward = toCenter.lengthSqr() < 1.0E-4 ? Vec3.ZERO : toCenter.normalize().scale(pull);
-                target.push(inward.x + swirl.x, lift, inward.z + swirl.z);
+                double distance = toCenter.length();
+                if (distance > reach * 1.3) {
+                    continue;
+                }
+                Vec3 inward = distance < 1.0E-4 ? Vec3.ZERO : toCenter.normalize();
+                Vec3 swirl = new Vec3(-inward.z, 0.0, inward.x).scale(0.45);
+                if (up > 0.85) {
+                    // flung out of the top of the funnel
+                    target.setDeltaMovement(target.getDeltaMovement().add(inward.scale(-1.2).add(0.0, 0.3, 0.0)));
+                } else {
+                    target.setDeltaMovement(target.getDeltaMovement().scale(0.85)
+                            .add(inward.scale(pull * Math.min(1.0, distance)).add(swirl).add(0.0, lift, 0.0)));
+                }
                 target.hurtMarked = true;
-                if (age % 20 == 0) {
-                    target.hurt(MushoDamageTypes.spell(level, zone, zone.caster()), (float) (damagePerSecond * zone.power()));
+                target.fallDistance = 0.0F;
+                if (age % 20 == 0 && target instanceof LivingEntity living) {
+                    living.hurt(MushoDamageTypes.spell(level, zone, zone.caster()), (float) (damagePerSecond * zone.power()));
                 }
             }
+            if (age % 4 == 0) {
+                double angle = age * 0.5;
+                double radius = zone.radius() * 0.3;
+                level.sendParticles(ParticleTypes.POOF, zone.getX() + Math.cos(angle) * radius, zone.getY() + 0.3,
+                        zone.getZ() + Math.sin(angle) * radius, 6, 0.6, 0.1, 0.6, 0.05);
+            }
             if (age % 20 == 0) {
-                level.playSound(null, zone.blockPosition(), SoundEvents.ELYTRA_FLYING, SoundSource.PLAYERS, 0.6F, 0.6F);
+                level.playSound(null, zone.blockPosition(), SoundEvents.ELYTRA_FLYING, SoundSource.PLAYERS, 1.5F, 0.5F);
             }
         };
     }

@@ -5,6 +5,7 @@ import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.state.BlockState;
 
 /**
@@ -17,6 +18,21 @@ public class ConjuredBlock extends Block {
     public ConjuredBlock(Properties properties, ParticleOptions dissolveParticle) {
         super(properties);
         this.dissolveParticle = dissolveParticle;
+    }
+
+    /**
+     * A conjured block that cannot be seen: its spell draws its own animated look (Water Shield's water),
+     * the block only stops what comes through.
+     */
+    public static class Invisible extends ConjuredBlock {
+        public Invisible(Properties properties, ParticleOptions dissolveParticle) {
+            super(properties, dissolveParticle);
+        }
+
+        @Override
+        protected RenderShape getRenderShape(BlockState state) {
+            return RenderShape.INVISIBLE;
+        }
     }
 
     @Override

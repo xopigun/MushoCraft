@@ -4,6 +4,7 @@ import fr.xopi.mushocraft.core.MushoDamageTypes;
 import fr.xopi.mushocraft.core.MushoEntities;
 import fr.xopi.mushocraft.magic.spell.SpellElement;
 import fr.xopi.mushocraft.magic.spell.effect.ProjectileProfile;
+import fr.xopi.mushocraft.magic.spell.effect.ProjectileShape;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
@@ -25,19 +26,33 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import software.bernie.geckolib.animatable.GeoEntity;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.animation.AnimationController;
+import software.bernie.geckolib.animation.PlayState;
+import software.bernie.geckolib.animation.RawAnimation;
+import software.bernie.geckolib.util.GeckoLibUtil;
 
 /**
  * Matter conjured by an attack spell and thrown by the caster. One entity type for every element:
  * the element only changes the look and the impact.
  */
-public class SpellProjectile extends ThrowableProjectile {
+public class SpellProjectile extends ThrowableProjectile implements GeoEntity {
+    /** Models made in Blockbench (crystal clusters) burst into shape, then tumble along. */
+    private static final RawAnimation FORM_THEN_FLY = RawAnimation.begin()
+            .thenPlay("animation.ice_smash.form").thenLoop("animation.ice_smash.fly");
+
     private static final EntityDataAccessor<Integer> ELEMENT =
             SynchedEntityData.defineId(SpellProjectile.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Float> SIZE =
             SynchedEntityData.defineId(SpellProjectile.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Integer> SHAPE =
+            SynchedEntityData.defineId(SpellProjectile.class, EntityDataSerializers.INT);
     private static final int MAX_LIFETIME_TICKS = 100;
 
     private ProjectileProfile profile = ProjectileProfile.of(SpellElement.WATER, 0.0F).build();
+    private final AnimatableInstanceCache animationCache = GeckoLibUtil.createInstanceCache(this);
 
     public SpellProjectile(EntityType<? extends SpellProjectile> type, Level level) {
         super(type, level);
@@ -54,6 +69,11 @@ public class SpellProjectile extends ThrowableProjectile {
         this.profile = value;
         entityData.set(ELEMENT, value.element().ordinal());
         entityData.set(SIZE, value.size());
+        entityData.set(SHAPE, value.shape().ordinal());
+    }
+
+    public ProjectileShape shape() {
+        return ProjectileShape.values()[Math.floorMod(entityData.get(SHAPE), ProjectileShape.values().length)];
     }
 
     public SpellElement element() {
@@ -65,9 +85,21 @@ public class SpellProjectile extends ThrowableProjectile {
     }
 
     @Override
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+        controllers.add(new AnimationController<>(this, "shape", 0, state ->
+                shape() == ProjectileShape.CRYSTAL_CLUSTER ? state.setAndContinue(FORM_THEN_FLY) : PlayState.STOP));
+    }
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return animationCache;
+    }
+
+    @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         builder.define(ELEMENT, 0);
         builder.define(SIZE, 0.5F);
+        builder.define(SHAPE, 0);
     }
 
     @Override
@@ -82,6 +114,16 @@ public class SpellProjectile extends ThrowableProjectile {
             Vec3 motion = getDeltaMovement();
             level().addParticle(element().trail(), getX() - motion.x * 0.5, getY() - motion.y * 0.5,
                     getZ() - motion.z * 0.5, 0.0, 0.0, 0.0);
+            if (element() == SpellElement.WATER) {
+                // conjured water sheds drops along its flight
+                float spread = visualSize() * 0.4F;
+                for (int i = 0; i < 2; i++) {
+                    level().addParticle(ParticleTypes.FALLING_WATER,
+                            getX() - motion.x * random.nextFloat() + (random.nextFloat() - 0.5F) * spread,
+                            getY() + getBbHeight() / 2.0 - motion.y * random.nextFloat() + (random.nextFloat() - 0.5F) * spread,
+                            getZ() - motion.z * random.nextFloat() + (random.nextFloat() - 0.5F) * spread, 0.0, 0.0, 0.0);
+                }
+            }
         } else if (tickCount > MAX_LIFETIME_TICKS) {
             discard();
         }
@@ -137,6 +179,14 @@ public class SpellProjectile extends ThrowableProjectile {
                         radius * 0.4, radius * 0.6, 0.02);
             }
             server.sendParticles(element().trail(), getX(), getY(), getZ(), 12, 0.2, 0.2, 0.2, 0.05);
+            if (element() == SpellElement.WATER) {
+                // the mass bursts into a spray, as in the anime
+                double spread = visualSize();
+                server.sendParticles(ParticleTypes.SPLASH, getX(), getY(), getZ(), 50, spread * 0.6, spread * 0.4, spread * 0.6, 0.4);
+                server.sendParticles(ParticleTypes.FALLING_WATER, getX(), getY() + spread * 0.5, getZ(), 25, spread * 0.8,
+                        spread * 0.5, spread * 0.8, 0.0);
+                server.sendParticles(ParticleTypes.BUBBLE_POP, getX(), getY(), getZ(), 15, spread * 0.5, spread * 0.5, spread * 0.5, 0.1);
+            }
             server.playSound(null, getX(), getY(), getZ(), impactSound(), SoundSource.PLAYERS, 0.7F, 1.2F);
             discard();
         }

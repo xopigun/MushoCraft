@@ -119,6 +119,23 @@ Estimation : une quinzaine de classes d'effets génériques, plus une classe pou
 - La pierre magique n'existe pas encore : l'améthyste la remplace dans les recettes **[À VALIDER]**.
 - Les précepteurs portent une baguette (Intermédiaire) ou un bâton (Avancé et plus), qui renforce aussi leurs sorts.
 
+### 4.2 ter Visuels des sorts (exigence de Xopi du 19/10 : qualité professionnelle)
+
+- **Chaque sort a un vrai modèle 3D animé, jamais statique**, construit d'après sa référence dans l'anime ou le manga. Les images de référence sont téléchargées depuis le wiki dans un dossier temporaire, hors du mod, et ne sont jamais publiées.
+- **Technique hybride** (choix de Xopi, révisable vers « tout Blockbench ») :
+  - **Fluides** (eau, vent) : maillages générés par le code (`client/render/mesh`).
+    - `LatheMesh` : surfaces de révolution (sphère, goutte, flèche, entonnoir).
+    - `GridMesh` : surfaces libres (mur d'eau, transformation sphère → mur).
+    - Ombrage Fresnel (bords plus opaques et plus clairs), textures qui défilent.
+  - **Solides** (cristaux, rochers, lances) : modèles Blockbench animés, joués par GeckoLib 4.9.3 (licence MIT, dépendance requise). Les `.bbmodel` sont dans `blockbench/`.
+- **Sorts déjà refaits :**
+  - **Water Ball** : sphère d'eau claire qui ondule, s'étire en goutte avec la vitesse (volume conservé), cœur plus dense, reflet ; traînée de gouttes ; éclatement en gerbe à l'impact.
+  - **Water Arrow** : flèche d'eau effilée dont la surface ondule.
+  - **Ice Smash** : amas de pointes de glace (Blockbench + GeckoLib), animations « form » (jaillit) puis « fly » (tournoie, les pointes respirent).
+  - **Water Shield** : une bulle grossit, puis se transforme en mur d'eau ondulant aux bords hérissés, l'eau déborde du sommet, puis le mur s'effondre. Des blocs invisibles assurent le blocage physique.
+  - **Tornado** : entonnoir de vent de près de 16 blocs, deux couches qui tournent en sens contraires, colonne qui oscille. Physique : aspire, fait tourner et soulève créatures et objets jusqu'au sommet, d'où ils sont éjectés.
+- **Grimoire** (`SpellbookScreen`) : livre en cuir, rubans par école et par style, pages par rang, glisser-déposer vers la barre de move.
+
 ### 4.3 Modes d'incantation (wiki, page *Magic*)
 
 | Mode | Comportement |

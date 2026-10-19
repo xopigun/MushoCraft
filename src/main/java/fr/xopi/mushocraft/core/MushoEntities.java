@@ -3,6 +3,7 @@ package fr.xopi.mushocraft.core;
 import fr.xopi.mushocraft.MushoCraft;
 import fr.xopi.mushocraft.magic.entity.SpellProjectile;
 import fr.xopi.mushocraft.magic.entity.SpellZone;
+import fr.xopi.mushocraft.magic.entity.WaterSheet;
 import fr.xopi.mushocraft.npc.MagicTutorEntity;
 import fr.xopi.mushocraft.npc.SwordMasterEntity;
 import fr.xopi.mushocraft.npc.TeacherEntity;
@@ -52,6 +53,16 @@ public final class MushoEntities {
                     .clientTrackingRange(4)
                     .updateInterval(20)
                     .build(MushoCraft.id("spell_zone").toString()));
+
+    /** The visible water of Water Shield. */
+    public static final DeferredHolder<EntityType<?>, EntityType<WaterSheet>> WATER_SHEET =
+            ENTITY_TYPES.register("water_sheet", () -> EntityType.Builder
+                    .<WaterSheet>of(WaterSheet::new, MobCategory.MISC)
+                    .sized(0.5F, 0.5F)
+                    .noSummon()
+                    .clientTrackingRange(8)
+                    .updateInterval(40)
+                    .build(MushoCraft.id("water_sheet").toString()));
 
     public static final DeferredHolder<EntityType<?>, EntityType<SwordMasterEntity>> SWORD_MASTER =
             ENTITY_TYPES.register("sword_master", () -> EntityType.Builder

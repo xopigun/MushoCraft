@@ -1,30 +1,44 @@
 package fr.xopi.mushocraft.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import fr.xopi.mushocraft.client.render.spell.CrystalClusterVisual;
+import fr.xopi.mushocraft.client.render.spell.ProjectileVisual;
+import fr.xopi.mushocraft.client.render.spell.WaterVisuals;
 import fr.xopi.mushocraft.magic.entity.SpellProjectile;
 import fr.xopi.mushocraft.magic.spell.SpellElement;
+import fr.xopi.mushocraft.magic.spell.effect.ProjectileShape;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.resources.ResourceLocation;
+
+import java.util.Optional;
 
 /**
  * Draws a spell projectile as a spinning translucent orb of its element. Fire and light glow in the dark.
  */
 public class SpellProjectileRenderer extends EntityRenderer<SpellProjectile> {
     private final SpellOrbModel model;
+    private final CrystalClusterVisual crystalCluster;
 
     public SpellProjectileRenderer(EntityRendererProvider.Context context) {
         super(context);
         this.model = new SpellOrbModel(context.bakeLayer(SpellOrbModel.LAYER));
+        this.crystalCluster = new CrystalClusterVisual(context);
     }
 
     @Override
     public void render(SpellProjectile projectile, float yaw, float partialTicks, PoseStack poseStack,
                        MultiBufferSource buffers, int packedLight) {
+        Optional<ProjectileVisual> visual = visualFor(projectile);
+        if (visual.isPresent()) {
+            visual.get().render(projectile, partialTicks, poseStack, buffers, packedLight);
+            super.render(projectile, yaw, partialTicks, poseStack, buffers, packedLight);
+            return;
+        }
         SpellElement element = projectile.element();
         float size = projectile.visualSize();
         int light = element == SpellElement.FIRE || element == SpellElement.LIGHT ? LightTexture.FULL_BRIGHT : packedLight;
@@ -37,6 +51,17 @@ public class SpellProjectileRenderer extends EntityRenderer<SpellProjectile> {
                 light, OverlayTexture.NO_OVERLAY, -1);
         poseStack.popPose();
         super.render(projectile, yaw, partialTicks, poseStack, buffers, packedLight);
+    }
+
+    /** The animated model of this projectile, if it has one yet; otherwise the plain orb of its element. */
+    private Optional<ProjectileVisual> visualFor(SpellProjectile projectile) {
+        if (projectile.shape() == ProjectileShape.CRYSTAL_CLUSTER) {
+            return Optional.of(crystalCluster);
+        }
+        if (projectile.element() == SpellElement.WATER) {
+            return Optional.of(projectile.shape() == ProjectileShape.BOLT ? WaterVisuals.WATER_ARROW : WaterVisuals.WATER_BALL);
+        }
+        return Optional.empty();
     }
 
     @Override

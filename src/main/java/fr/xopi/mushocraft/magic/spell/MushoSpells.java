@@ -6,6 +6,7 @@ import fr.xopi.mushocraft.core.MushoItems;
 import fr.xopi.mushocraft.core.MushoMobEffects;
 import fr.xopi.mushocraft.core.MushoRegistries;
 import fr.xopi.mushocraft.core.Rank;
+import fr.xopi.mushocraft.magic.entity.ZoneVisual;
 import fr.xopi.mushocraft.magic.spell.effect.AreaBurstEffect;
 import fr.xopi.mushocraft.magic.spell.effect.BurstEffect;
 import fr.xopi.mushocraft.magic.spell.effect.CloudEffect;
@@ -22,10 +23,12 @@ import fr.xopi.mushocraft.magic.spell.effect.HealEffect;
 import fr.xopi.mushocraft.magic.spell.effect.PiercingRayEffect;
 import fr.xopi.mushocraft.magic.spell.effect.ProjectileEffect;
 import fr.xopi.mushocraft.magic.spell.effect.ProjectileProfile;
+import fr.xopi.mushocraft.magic.spell.effect.ProjectileShape;
 import fr.xopi.mushocraft.magic.spell.effect.ScatteredEruptionEffect;
 import fr.xopi.mushocraft.magic.spell.effect.ScorchCasterEffect;
 import fr.xopi.mushocraft.magic.spell.effect.SelfStatusEffect;
 import fr.xopi.mushocraft.magic.spell.effect.WallEffect;
+import fr.xopi.mushocraft.magic.spell.effect.WaterSheetEffect;
 import fr.xopi.mushocraft.magic.spell.effect.WeatherEffect;
 import fr.xopi.mushocraft.magic.spell.effect.ZoneEffect;
 import fr.xopi.mushocraft.magic.spell.zone.ZoneBehaviors;
@@ -57,21 +60,24 @@ public final class MushoSpells {
     /** Creates a spout of water from the ground forming a defensive wall. */
     public static final DeferredHolder<Spell, Spell> WATER_SHIELD = SPELLS.register("water_shield",
             () -> Spell.builder(SpellSchool.WATER, Rank.BEGINNER).intent(SpellIntent.DEFEND).manaCost(8).cooldownTicks(100)
-                    .effect(new WallEffect(MushoBlocks.WATER_WALL, 1, 3, 2, 200, SoundEvents.BUCKET_EMPTY))
+                    .effect(new CompositeEffect(new WallEffect(MushoBlocks.WATER_WALL, 1, 3, 2, 200, SoundEvents.BUCKET_EMPTY),
+                            new WaterSheetEffect(1, 3, 2, 200)))
                     .build());
 
     /** Launches a bolt of water, roughly twenty centimeters long. */
     public static final DeferredHolder<Spell, Spell> WATER_ARROW = SPELLS.register("water_arrow",
             () -> Spell.builder(SpellSchool.WATER, Rank.BEGINNER).manaCost(4).cooldownTicks(15)
                     .effect(new ProjectileEffect(ProjectileProfile.of(SpellElement.WATER, 3.0F)
-                            .speed(2.4F).size(0.3F).knockback(0.2F).build(), SoundEvents.TRIDENT_THROW.value()))
+                            .speed(2.4F).size(0.3F).knockback(0.2F).shape(ProjectileShape.BOLT).build(),
+                            SoundEvents.TRIDENT_THROW.value()))
                     .build());
 
     /** Strikes an opponent with a mound of ice. */
     public static final DeferredHolder<Spell, Spell> ICE_SMASH = SPELLS.register("ice_smash",
             () -> Spell.builder(SpellSchool.WATER, Rank.BEGINNER).manaCost(6).cooldownTicks(30)
                     .effect(new ProjectileEffect(ProjectileProfile.of(SpellElement.ICE, 5.0F)
-                            .speed(1.6F).gravity(0.02F).size(0.7F).knockback(0.4F).slow(60).build(),
+                            .speed(1.6F).gravity(0.02F).size(0.7F).knockback(0.4F).slow(60)
+                            .shape(ProjectileShape.CRYSTAL_CLUSTER).build(),
                             SoundEvents.GLASS_PLACE))
                     .build());
 
@@ -312,7 +318,8 @@ public final class MushoSpells {
     /** Creates a tornado that draws in and lifts everything around (LN vol. 7 ch. 4). */
     public static final DeferredHolder<Spell, Spell> TORNADO = SPELLS.register("tornado",
             () -> Spell.builder(SpellSchool.WIND, Rank.SAINT).manaCost(110).cooldownTicks(900)
-                    .effect(new ZoneEffect(() -> ZoneBehaviors.vortex(0.12, 0.09, 4.0F), 6.0, 200, 24.0, SoundEvents.ELYTRA_FLYING))
+                    .effect(new ZoneEffect(() -> ZoneBehaviors.vortex(0.12, 0.09, 4.0F), ZoneVisual.TORNADO, 6.0, 200, 24.0,
+                            SoundEvents.ELYTRA_FLYING))
                     .build());
 
     /** A fierce torrent of sand and wind blanketing a wide area (LN vol. 9 ch. 7). */

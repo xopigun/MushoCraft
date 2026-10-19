@@ -2,6 +2,8 @@ package fr.xopi.mushocraft.magic.entity;
 
 import fr.xopi.mushocraft.core.MushoEntities;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
@@ -10,8 +12,8 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 
-import javax.annotation.Nullable;
 import java.util.List;
+import javax.annotation.Nullable;
 
 /**
  * The place where a lasting spell rages for a few seconds: a storm cloud, a tornado, a sealing barrier.
@@ -25,6 +27,10 @@ public class SpellZone extends Entity {
         void tick(SpellZone zone, ServerLevel level, int age);
     }
 
+    private static final EntityDataAccessor<Integer> VISUAL = SynchedEntityData.defineId(SpellZone.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Float> RADIUS = SynchedEntityData.defineId(SpellZone.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Integer> LIFETIME = SynchedEntityData.defineId(SpellZone.class, EntityDataSerializers.INT);
+
     private Behavior behavior;
     private LivingEntity caster;
     private double radius;
@@ -36,15 +42,33 @@ public class SpellZone extends Entity {
         noPhysics = true;
     }
 
-    public static SpellZone create(ServerLevel level, LivingEntity caster, Behavior behavior, double radius, double power,
-                                   int lifetime) {
+    public static SpellZone create(ServerLevel level, LivingEntity caster, Behavior behavior, ZoneVisual visual, double radius,
+                                   double power, int lifetime) {
         SpellZone zone = new SpellZone(MushoEntities.SPELL_ZONE.get(), level);
         zone.caster = caster;
         zone.behavior = behavior;
         zone.radius = radius;
         zone.power = power;
         zone.lifetime = lifetime;
+        zone.entityData.set(VISUAL, visual.ordinal());
+        zone.entityData.set(RADIUS, (float) radius);
+        zone.entityData.set(LIFETIME, lifetime);
         return zone;
+    }
+
+    /** What the client draws. */
+    public ZoneVisual visual() {
+        return ZoneVisual.values()[Math.floorMod(entityData.get(VISUAL), ZoneVisual.values().length)];
+    }
+
+    /** The zone's radius, as the client knows it. */
+    public float visualRadius() {
+        return entityData.get(RADIUS);
+    }
+
+    /** The zone's lifetime in ticks, as the client knows it. */
+    public int visualLifetime() {
+        return entityData.get(LIFETIME);
     }
 
     @Override
@@ -82,6 +106,9 @@ public class SpellZone extends Entity {
 
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        builder.define(VISUAL, 0);
+        builder.define(RADIUS, 1.0F);
+        builder.define(LIFETIME, 100);
     }
 
     @Override

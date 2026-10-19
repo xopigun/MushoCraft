@@ -18,6 +18,7 @@ import fr.xopi.mushocraft.magic.spell.MushoSpells;
 import fr.xopi.mushocraft.magic.spell.SpellElement;
 import fr.xopi.mushocraft.magic.spell.SpellSchool;
 import fr.xopi.mushocraft.magic.spell.effect.ProjectileProfile;
+import fr.xopi.mushocraft.magic.spell.effect.ProjectileShape;
 import fr.xopi.mushocraft.npc.MagicTutorEntity;
 import fr.xopi.mushocraft.npc.SwordMasterEntity;
 import fr.xopi.mushocraft.sword.SwordService;
@@ -50,6 +51,7 @@ import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 
 /**
@@ -104,7 +106,14 @@ public final class ShowcaseDirector {
             new Step(265, () -> Minecraft.getInstance().options.setCameraType(CameraType.THIRD_PERSON_BACK)),
             new Step(270, () -> onServer(player -> MoveService.use(player, 3))),
             new Step(300, () -> shoot("06_water_shield")),
-            new Step(305, () -> {
+            new Step(302, () -> {
+                // Seen from beyond the wall, facing it: a third-person camera would bump into its invisible blocks.
+                Minecraft.getInstance().options.setCameraType(CameraType.FIRST_PERSON);
+                onServer(player -> player.teleportTo(player.serverLevel(), player.getX(), player.getY(), player.getZ() + 6.5,
+                        Set.of(), 180.0F, 8.0F));
+            }),
+            new Step(318, () -> shoot("06b_water_shield_wall")),
+            new Step(320, () -> {
                 Minecraft.getInstance().options.setCameraType(CameraType.FIRST_PERSON);
                 onServer(player -> {
                     List.of(MushoSpells.ICE_PILLAR, MushoSpells.EX_FLAME, MushoSpells.EARTH_LANCE, MushoSpells.EXPLOSION)
@@ -117,8 +126,8 @@ public final class ShowcaseDirector {
                     player.setXRot(25.0F);
                 });
             }),
-            new Step(315, () -> onServer(player -> MoveService.use(player, 0))),
-            new Step(350, () -> shoot("07_ice_pillar")),
+            new Step(325, () -> onServer(player -> MoveService.use(player, 0))),
+            new Step(358, () -> shoot("07_ice_pillar")),
             new Step(360, () -> onServer(player -> {
                 player.setXRot(-5.0F);
                 MoveService.use(player, 1);
@@ -131,6 +140,27 @@ public final class ShowcaseDirector {
             new Step(458, () -> shoot("09_earth_lance")),
             new Step(470, () -> onServer(player -> MoveService.use(player, 3))),
             new Step(507, () -> shoot("10_explosion")),
+            new Step(508, () -> {
+                onServer(player -> {
+                    player.setXRot(10.0F);
+                    spawnLabProjectile(player, ProjectileProfile.of(SpellElement.WATER, 0.0F).size(0.9F).gravity(0.0F).build(), 0.35, 0.2);
+                    spawnLabProjectile(player, ProjectileProfile.of(SpellElement.WATER, 0.0F).size(0.3F).gravity(0.0F)
+                            .shape(ProjectileShape.BOLT).build(), 0.45, -0.5);
+                    spawnLabProjectile(player, ProjectileProfile.of(SpellElement.ICE, 0.0F).size(0.7F).gravity(0.0F)
+                            .shape(ProjectileShape.CRYSTAL_CLUSTER).build(), 0.25, 1.3);
+                });
+            }),
+            new Step(509, () -> Minecraft.getInstance().gui.getChat().clearMessages(false)),
+            new Step(519, () -> {
+                Minecraft minecraft = Minecraft.getInstance();
+                for (Entity entity : minecraft.level.entitiesForRendering()) {
+                    if (entity instanceof SpellProjectile projectile) {
+                        MushoCraft.LOGGER.info("Showcase lab projectile {} at {} (player at {})", projectile.shape(),
+                                projectile.position(), minecraft.player.position());
+                    }
+                }
+                shoot("00_water_closeup");
+            }),
             new Step(520, () -> {
                 Minecraft.getInstance().options.setCameraType(CameraType.THIRD_PERSON_FRONT);
                 onServer(player -> {
@@ -327,6 +357,14 @@ public final class ShowcaseDirector {
             MushoCraft.LOGGER.info("Showcase client style {} combo {}", weapon.getStyle(patch),
                     weapon.getAutoAttackMotion(patch).stream().map(Object::toString).toList());
         }
+    }
+
+    /** A projectile crossing the view from left to right, 3 blocks ahead, to look at its model closely. */
+    private static void spawnLabProjectile(ServerPlayer player, ProjectileProfile profile, double speed, double height) {
+        SpellProjectile projectile = SpellProjectile.create(player.serverLevel(), player, profile);
+        projectile.setPos(player.getX() + 1.6, player.getEyeY() + height - 0.4, player.getZ() + 3.0);
+        projectile.setDeltaMovement(-speed, 0.0, 0.0);
+        player.serverLevel().addFreshEntity(projectile);
     }
 
     /** The showcase films moves at their best: everything known is mastered (no random botch). */
