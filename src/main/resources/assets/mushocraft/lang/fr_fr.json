@@ -301,5 +301,18 @@
   "spell.mushocraft.confinement_barrier": "Barrière de confinement",
   "spell.mushocraft.confinement_barrier.desc": "Enferme la créature visée dans une barrière qu'elle ne peut quitter, où aucune magie ne fonctionne.",
   "effect.mushocraft.confined": "Confiné",
-  "message.mushocraft.magic.confined": "Vous êtes enfermé dans une barrière : la magie ne fonctionne pas ici."
+  "message.mushocraft.magic.confined": "Vous êtes enfermé dans une barrière : la magie ne fonctionne pas ici.",
+  "item.mushocraft.lamplight_summoning_paper": "Papier d'invocation : esprits lumineux",
+  "item.mushocraft.spirit_summoning_paper": "Papier d'invocation : esprit",
+  "item.mushocraft.beast_summoning_paper": "Papier d'invocation : bête",
+  "item.mushocraft.summoning_paper.cost": "Versez-y %s de mana pour invoquer (le papier est consumé).",
+  "summon.mushocraft.lamplight": "Des esprits lumineux tournent autour de vous et éclairent l'obscurité, longtemps.",
+  "summon.mushocraft.spirit": "Un esprit fait de votre mana vous garde et combat vos ennemis ; il se nourrit de votre mana.",
+  "summon.mushocraft.beast": "Appelle une créature du pays et vous la lie. Trop forte pour votre mana, elle peut se libérer.",
+  "entity.mushocraft.lamplight_spirit": "Esprit lumineux",
+  "entity.mushocraft.summoned_spirit": "Esprit invoqué",
+  "message.mushocraft.summon.not_enough_mana": "Pas assez de mana : cette invocation en demande %s.",
+  "message.mushocraft.summon.nothing_answers": "Rien ne répond à l'invocation ici.",
+  "message.mushocraft.summon.bound": "%s répond à votre invocation et vous est lié.",
+  "message.mushocraft.summon.broke_loose": "%s est trop fort pour votre mana : il se libère !"
 }

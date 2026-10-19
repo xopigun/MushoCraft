@@ -168,6 +168,16 @@ Estimation : une quinzaine de classes d'effets génériques, plus une classe pou
   - *Frost Nova* : trempe puis gèle (deux fois plus longtemps sur les cibles trempées).
   - *Bora Blast* : rafale glacée en cône qui gèle et engourdit.
 
+### 4.3 ter Invocation (wiki, *Summoning Magic*)
+
+- **Papiers d'invocation** (`SummoningPaperItem`) : un cercle tracé d'avance. On y verse le mana, l'invocation a lieu, le papier est consommé. Pas d'incantation, utilisable par tous. Recettes : papier, lapis, améthyste (à la place de la pierre magique) et un ingrédient.
+- **Rituels** (`SummonRitual`, patron Stratégie) :
+  - *Esprits lumineux* : trois esprits tournent autour du lanceur et éclairent vraiment (bloc de lumière invisible qui s'efface tout seul).
+  - *Esprit* : un esprit combattant volant, dont la santé et les dégâts suivent la réserve du maître. Il prend 1 mana/s et disparaît quand il n'y en a plus.
+  - *Bête* : une créature qui vit dans le biome, liée 5 min. Elle peut se révolter si elle est trop forte pour la réserve de l'invocateur.
+- **Pacte** (`SummonBond`, sauvegardé sur la créature, `SummonBonds`, `SummonerGoals`) : la créature suit son maître, le défend, frappe ce qu'il frappe et ne s'en prend jamais à lui ni aux autres invoqués du même maître.
+- Écart E24 **[À VALIDER]**.
+
 ### 4.4 Rangs et apprentissage
 
 - Le titre de mage = le rang du sort le plus avancé qu'on sait lancer (wiki). C'est un titre affiché, pas une contrainte sur la mana.
@@ -315,7 +325,7 @@ Limite à connaître : je n'ai accès qu'au wiki et à ses références. Je ne p
    - **Tests automatiques** : `src/gametest`, lancés par `gradlew runGameTestServer` (9 tests). Ils ne sont pas inclus dans le jar.
 3. ✅ `ManaData` + jauge de mana + circulation pour s'entraîner (nuit du 19/10, voir `docs/nuits/2026-10-19.md`).
 4. ✅ Abstraction `Move`, `Cooldowns`, barre de move branchée sur le mode Epic Fight, écran des moves (nuit du 19/10).
-5. 🟡 Moteur de sorts + 58 sorts (Débutant à Roi, les 11 sans rang du wiki, les 7 sorts de magie mixte) + maîtrise par école + incantation abrégée et silencieuse (19/10). Au-delà du rang Saint, le wiki ne nomme que *Lightning* et *Confinement Barrier* (E23). Reste l'invocation. Les sorts Saint et Roi n'ont pas encore de source d'apprentissage en jeu.
+5. 🟡 Moteur de sorts + 58 sorts (Débutant à Roi, les 11 sans rang du wiki, les 7 sorts de magie mixte) + maîtrise par école + incantation abrégée et silencieuse (19/10). Au-delà du rang Saint, le wiki ne nomme que *Lightning* et *Confinement Barrier* (E23). Invocation par papiers (§4.3 ter). Les sorts Saint et Roi n'ont pas encore de source d'apprentissage en jeu.
 6. ✅ Stats physiques + entraînement + aura de combat (nuit du 19/10).
 7. 🟡 Styles + 7 techniques + recharge partagée + règles de rang + enchaînements de base propres à chaque style sur l'épée et le tachi (nuit du 19/10) ; restent les autres armes et les autres techniques.
 8. 🟡 Maîtres PNJ : maîtres d'épée et précepteurs de magie, avec patch Epic Fight, skins originaux, œufs d'apparition et apparition naturelle rare (nuit du 19/10). Restent des lieux dédiés (dojos, église de Milis).

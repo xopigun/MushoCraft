@@ -27,6 +27,9 @@ public final class MushoCreativeTabs {
                         output.accept(MushoItems.APPRENTICE_WAND.get());
                         output.accept(MushoItems.MAGE_STAFF.get());
                         output.accept(MushoItems.AQUA_HEARTIA.get());
+                        output.accept(MushoItems.LAMPLIGHT_SUMMONING_PAPER.get());
+                        output.accept(MushoItems.SPIRIT_SUMMONING_PAPER.get());
+                        output.accept(MushoItems.BEAST_SUMMONING_PAPER.get());
                         output.accept(MushoItems.SWORD_MASTER_SPAWN_EGG.get());
                         output.accept(MushoItems.MAGIC_TUTOR_SPAWN_EGG.get());
                     })

@@ -2,6 +2,7 @@ package fr.xopi.mushocraft.core;
 
 import fr.xopi.mushocraft.MushoCraft;
 import fr.xopi.mushocraft.magic.block.ConjuredBlock;
+import fr.xopi.mushocraft.magic.block.SpiritLightBlock;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -56,6 +57,19 @@ public final class MushoBlocks {
                     .noLootTable()
                     .pushReaction(PushReaction.DESTROY),
                     ParticleTypes.ASH));
+
+    /**
+     * The light of a lamplight spirit: an invisible, bodiless block of light that wipes itself away a moment after the
+     * spirit stops renewing it, so no light is ever left behind.
+     */
+    public static final DeferredBlock<SpiritLightBlock> SPIRIT_LIGHT = BLOCKS.register("spirit_light",
+            () -> new SpiritLightBlock(BlockBehaviour.Properties.of()
+                    .replaceable()
+                    .noCollission()
+                    .noLootTable()
+                    .air()
+                    .lightLevel(state -> 15)
+                    .pushReaction(PushReaction.DESTROY)));
 
     private MushoBlocks() {
     }

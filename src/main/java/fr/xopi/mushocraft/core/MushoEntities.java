@@ -6,6 +6,8 @@ import fr.xopi.mushocraft.magic.entity.SpellPillar;
 import fr.xopi.mushocraft.magic.entity.SpellProjectile;
 import fr.xopi.mushocraft.magic.entity.SpellZone;
 import fr.xopi.mushocraft.magic.entity.WaterSheet;
+import fr.xopi.mushocraft.magic.summon.LamplightSpirit;
+import fr.xopi.mushocraft.magic.summon.SummonedSpirit;
 import fr.xopi.mushocraft.npc.MagicTutorEntity;
 import fr.xopi.mushocraft.npc.SwordMasterEntity;
 import fr.xopi.mushocraft.npc.TeacherEntity;
@@ -86,6 +88,25 @@ public final class MushoEntities {
                     .updateInterval(40)
                     .build(MushoCraft.id("spell_fire").toString()));
 
+    /** A lamplight spirit circling its summoner. */
+    public static final DeferredHolder<EntityType<?>, EntityType<LamplightSpirit>> LAMPLIGHT_SPIRIT =
+            ENTITY_TYPES.register("lamplight_spirit", () -> EntityType.Builder
+                    .<LamplightSpirit>of(LamplightSpirit::new, MobCategory.MISC)
+                    .sized(0.3F, 0.3F)
+                    .noSummon()
+                    .clientTrackingRange(8)
+                    .updateInterval(2)
+                    .build(MushoCraft.id("lamplight_spirit").toString()));
+
+    /** A fighting spirit made of its summoner's mana. */
+    public static final DeferredHolder<EntityType<?>, EntityType<SummonedSpirit>> SUMMONED_SPIRIT =
+            ENTITY_TYPES.register("summoned_spirit", () -> EntityType.Builder
+                    .<SummonedSpirit>of(SummonedSpirit::new, MobCategory.MISC)
+                    .sized(0.6F, 0.6F)
+                    .noSummon()
+                    .clientTrackingRange(8)
+                    .build(MushoCraft.id("summoned_spirit").toString()));
+
     public static final DeferredHolder<EntityType<?>, EntityType<SwordMasterEntity>> SWORD_MASTER =
             ENTITY_TYPES.register("sword_master", () -> EntityType.Builder
                     .<SwordMasterEntity>of(SwordMasterEntity::new, MobCategory.CREATURE)
@@ -119,5 +140,6 @@ public final class MushoEntities {
     private static void onCreateAttributes(EntityAttributeCreationEvent event) {
         event.put(SWORD_MASTER.get(), SwordMasterEntity.createAttributes().build());
         event.put(MAGIC_TUTOR.get(), MagicTutorEntity.createAttributes().build());
+        event.put(SUMMONED_SPIRIT.get(), SummonedSpirit.createAttributes().build());
     }
 }

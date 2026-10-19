@@ -4,14 +4,12 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import fr.xopi.mushocraft.MushoCraft;
 import fr.xopi.mushocraft.client.ClientChants;
 import fr.xopi.mushocraft.client.particle.ManaMote;
-import fr.xopi.mushocraft.client.render.mesh.LatheMesh;
 import fr.xopi.mushocraft.core.MushoParticles;
 import fr.xopi.mushocraft.magic.spell.SpellSchool;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.particles.ColorParticleOption;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -36,9 +34,7 @@ import java.util.Map;
  */
 @EventBusSubscriber(modid = MushoCraft.MODID, value = Dist.CLIENT)
 public final class ChantVisuals {
-    private static final ResourceLocation MANA = MushoCraft.id("textures/entity/spell/mana_surface.png");
     private static final float MAX_ORB_RADIUS = 0.2F;
-    private static final int GLOW = 0xF000F0;
 
     private ChantVisuals() {
     }
@@ -109,30 +105,12 @@ public final class ChantVisuals {
     /** The orb gathering in the hand: small and faint at first, full and bright when the spell is about to be released. */
     private static void renderOrb(PoseStack poseStack, MultiBufferSource buffers, SpellSchool school, float progress, float time) {
         float radius = MAX_ORB_RADIUS * (0.25F + 0.75F * progress) * (1.0F + 0.06F * Mth.sin(time * 0.8F));
-        int rgb = school.colour();
-        float red = (rgb >> 16 & 0xFF) / 255.0F;
-        float green = (rgb >> 8 & 0xFF) / 255.0F;
-        float blue = (rgb & 0xFF) / 255.0F;
         ResourceLocation texture = switch (school) {
             case WATER -> WaterVisuals.WATER;
             case FIRE -> FireVisuals.FIRE;
-            default -> MANA;
+            default -> ManaOrb.MANA;
         };
-        LatheMesh.Deform swirl = (point, t, angle) -> {
-            float wave = 1.0F + 0.1F * Mth.sin(angle * 4.0F + time * 0.7F + point.y * 3.0F);
-            point.mul(wave, 1.0F, wave);
-        };
-        float glow = 0.35F + 0.6F * progress;
-        poseStack.pushPose();
-        poseStack.scale(radius, radius, radius);
-        LatheMesh.render(poseStack.last(), buffers.getBuffer(RenderType.entityTranslucentEmissive(texture)), LatheMesh.SPHERE, swirl,
-                new LatheMesh.Material(Math.min(1.0F, red + 0.35F), Math.min(1.0F, green + 0.35F), Math.min(1.0F, blue + 0.35F),
-                        glow, glow * 0.4F, 0.3F, 2.0F, 1.0F, 0.03F, -0.05F), 10, 14, time, GLOW);
-        // a faint halo of gathered mana around it
-        poseStack.scale(1.6F, 1.6F, 1.6F);
-        LatheMesh.render(poseStack.last(), buffers.getBuffer(RenderType.entityTranslucentEmissive(texture)), LatheMesh.SPHERE, swirl,
-                new LatheMesh.Material(red, green, blue, glow * 0.35F, 0.0F, 0.0F, 3.0F, 1.0F, -0.04F, 0.06F), 10, 14, time, GLOW);
-        poseStack.popPose();
+        ManaOrb.render(poseStack, buffers, texture, school.colour(), radius, 0.35F + 0.6F * progress, time);
     }
 
     /**

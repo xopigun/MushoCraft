@@ -13,6 +13,7 @@ import fr.xopi.mushocraft.client.render.ThrownWeaponRenderer;
 import fr.xopi.mushocraft.client.render.spell.SpellFireRenderer;
 import fr.xopi.mushocraft.client.render.spell.SpellPillarRenderer;
 import fr.xopi.mushocraft.client.render.spell.SpellZoneRenderer;
+import fr.xopi.mushocraft.client.render.spell.SpiritRenderers;
 import fr.xopi.mushocraft.client.render.spell.WaterSheetRenderer;
 import fr.xopi.mushocraft.core.MushoEntities;
 import fr.xopi.mushocraft.core.MushoParticles;
@@ -48,6 +49,8 @@ public final class MushoClientSetup {
         event.registerEntityRenderer(MushoEntities.WATER_SHEET.get(), WaterSheetRenderer::new);
         event.registerEntityRenderer(MushoEntities.SPELL_PILLAR.get(), SpellPillarRenderer::new);
         event.registerEntityRenderer(MushoEntities.SPELL_FIRE.get(), SpellFireRenderer::new);
+        event.registerEntityRenderer(MushoEntities.LAMPLIGHT_SPIRIT.get(), SpiritRenderers.Lamplight::new);
+        event.registerEntityRenderer(MushoEntities.SUMMONED_SPIRIT.get(), SpiritRenderers.Fighting::new);
         event.registerEntityRenderer(MushoEntities.SWORD_MASTER.get(), TeacherRenderer::new);
         event.registerEntityRenderer(MushoEntities.MAGIC_TUTOR.get(), TeacherRenderer::new);
     }

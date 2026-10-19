@@ -6,6 +6,8 @@ import fr.xopi.mushocraft.magic.item.ConjuredSwordItem;
 import fr.xopi.mushocraft.magic.item.SpellBookItem;
 import fr.xopi.mushocraft.magic.spell.MushoSpells;
 import fr.xopi.mushocraft.magic.spell.SpellSchool;
+import fr.xopi.mushocraft.magic.summon.SummonRituals;
+import fr.xopi.mushocraft.magic.summon.SummoningPaperItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.SwordItem;
@@ -76,6 +78,17 @@ public final class MushoItems {
     public static final DeferredItem<SpellBookItem> INTERMEDIATE_HEALING_TREATISE = ITEMS.register("intermediate_healing_treatise",
             () -> new SpellBookItem(new Item.Properties().stacksTo(1).rarity(Rarity.RARE), () -> List.of(
                     MushoSpells.X_HEALING.get())));
+
+    // ---- Summoning papers (wiki, Summoning Magic): circles drawn in advance, spent when used ----
+
+    public static final DeferredItem<SummoningPaperItem> LAMPLIGHT_SUMMONING_PAPER = ITEMS.register("lamplight_summoning_paper",
+            () -> new SummoningPaperItem(new Item.Properties().stacksTo(16), SummonRituals.LAMPLIGHT));
+
+    public static final DeferredItem<SummoningPaperItem> SPIRIT_SUMMONING_PAPER = ITEMS.register("spirit_summoning_paper",
+            () -> new SummoningPaperItem(new Item.Properties().stacksTo(16).rarity(Rarity.UNCOMMON), SummonRituals.SPIRIT));
+
+    public static final DeferredItem<SummoningPaperItem> BEAST_SUMMONING_PAPER = ITEMS.register("beast_summoning_paper",
+            () -> new SummoningPaperItem(new Item.Properties().stacksTo(16).rarity(Rarity.UNCOMMON), SummonRituals.BEAST));
 
     public static final DeferredItem<DeferredSpawnEggItem> SWORD_MASTER_SPAWN_EGG = ITEMS.register("sword_master_spawn_egg",
             () -> new DeferredSpawnEggItem(MushoEntities.SWORD_MASTER, 0x2B2B33, 0xC9C9D6, new Item.Properties()));

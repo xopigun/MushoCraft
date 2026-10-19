@@ -301,5 +301,18 @@
   "spell.mushocraft.confinement_barrier": "Confinement Barrier",
   "spell.mushocraft.confinement_barrier.desc": "Shuts the creature you aim at in a barrier it cannot leave, where no magic can be used.",
   "effect.mushocraft.confined": "Confined",
-  "message.mushocraft.magic.confined": "You are shut in a barrier: magic cannot be used here."
+  "message.mushocraft.magic.confined": "You are shut in a barrier: magic cannot be used here.",
+  "item.mushocraft.lamplight_summoning_paper": "Lamplight Summoning Paper",
+  "item.mushocraft.spirit_summoning_paper": "Spirit Summoning Paper",
+  "item.mushocraft.beast_summoning_paper": "Monster Summoning Paper",
+  "item.mushocraft.summoning_paper.cost": "Pour %s mana into it to perform the summoning (the paper is spent).",
+  "summon.mushocraft.lamplight": "Radiant spirits circle you and light the dark, for a long while.",
+  "summon.mushocraft.spirit": "A spirit made of your mana guards you and fights your foes; it feeds on your mana.",
+  "summon.mushocraft.beast": "Calls a creature of the land and binds it to you. Too strong for your mana, it may break loose.",
+  "entity.mushocraft.lamplight_spirit": "Lamplight Spirit",
+  "entity.mushocraft.summoned_spirit": "Summoned Spirit",
+  "message.mushocraft.summon.not_enough_mana": "Not enough mana: this summoning needs %s.",
+  "message.mushocraft.summon.nothing_answers": "Nothing answers the summoning here.",
+  "message.mushocraft.summon.bound": "%s answers your summoning and is bound to you.",
+  "message.mushocraft.summon.broke_loose": "%s is too strong for your mana: it breaks loose!"
 }

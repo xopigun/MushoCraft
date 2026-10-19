@@ -11,6 +11,7 @@ import fr.xopi.mushocraft.magic.mana.ManaData;
 import fr.xopi.mushocraft.magic.spell.MagicKnowledge;
 import fr.xopi.mushocraft.magic.spell.MagicProficiency;
 import fr.xopi.mushocraft.magic.spell.ManaControl;
+import fr.xopi.mushocraft.magic.summon.SummonBond;
 import fr.xopi.mushocraft.sword.SwordMastery;
 import fr.xopi.mushocraft.talent.Talents;
 import net.neoforged.bus.api.IEventBus;
@@ -21,7 +22,7 @@ import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import java.util.function.Supplier;
 
 /**
- * Data attached to players. Everything is saved with the player and survives death.
+ * Data attached to players (and, for summoned creatures, to them). Everything is saved; player data survives death.
  * Use {@code hasData} to know whether a value was ever set: the defaults below are never meant to be read.
  */
 public final class MushoAttachments {
@@ -63,6 +64,10 @@ public final class MushoAttachments {
 
     public static final Supplier<AttachmentType<ManaControl>> MANA_CONTROL = ATTACHMENT_TYPES.register("mana_control",
             () -> AttachmentType.builder(ManaControl::none).serialize(ManaControl.CODEC).copyOnDeath().build());
+
+    /** On a summoned creature (not a player): the covenant binding it to its summoner. Saved with the creature. */
+    public static final Supplier<AttachmentType<SummonBond>> SUMMON_BOND = ATTACHMENT_TYPES.register("summon_bond",
+            () -> AttachmentType.builder(SummonBond::none).serialize(SummonBond.CODEC).build());
 
     private MushoAttachments() {
     }
