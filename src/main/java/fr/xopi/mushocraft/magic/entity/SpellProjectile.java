@@ -1,5 +1,7 @@
 package fr.xopi.mushocraft.magic.entity;
 
+import fr.xopi.mushocraft.magic.fx.SpellFx;
+
 import fr.xopi.mushocraft.core.MushoDamageTypes;
 import fr.xopi.mushocraft.core.MushoEntities;
 import fr.xopi.mushocraft.core.MushoParticles;
@@ -195,6 +197,13 @@ public class SpellProjectile extends ThrowableProjectile implements GeoEntity {
                         profile.explosionRadius());
             } else if (element() == SpellElement.FIRE) {
                 server.addFreshEntity(SpellFire.blast(server, position(), Math.max(0.6F, visualSize() * 0.6F)));
+            }
+            if (profile.columnHeight() > 0.0F) {
+                // Ex-Flame (anime S2 ep. 1): the great ball comes down and a column of fire roars up where it lands,
+                // a ring of blast racing out over the ground around it
+                Vec3 ground = position().subtract(0.0, Math.min(1.5, visualSize() * 0.5), 0.0);
+                server.addFreshEntity(SpellFire.column(server, ground, visualSize() * 0.45F, profile.columnHeight(), 46));
+                SpellFx.shockWave(server, ground.add(0.0, 0.2, 0.0), new Vec3(0.0, 1.0, 0.0), visualSize() * 1.6F, 0xFFC880);
             }
             if (profile.blindRadius() > 0.0F) {
                 double radius = profile.blindRadius();

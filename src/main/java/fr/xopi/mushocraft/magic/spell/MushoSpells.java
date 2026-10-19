@@ -180,7 +180,7 @@ public final class MushoSpells {
     public static final DeferredHolder<Spell, Spell> EX_FLAME = SPELLS.register("ex_flame",
             () -> Spell.builder(SpellSchool.FIRE, Rank.INTERMEDIATE).manaCost(22).cooldownTicks(120)
                     .effect(new ProjectileEffect(ProjectileProfile.of(SpellElement.FIRE, 8.0F)
-                            .speed(1.0F).size(2.0F).ignite(5).explode(1.5F).build(), SoundEvents.BLAZE_SHOOT))
+                            .speed(1.0F).size(3.2F).ignite(5).explode(2.2F).column(9.0F).build(), SoundEvents.BLAZE_SHOOT))
                     .build());
 
     /** Launches a slicing wind blade that throws the target away (LN vol. 2 ch. 2). */
@@ -258,7 +258,7 @@ public final class MushoSpells {
             () -> Spell.builder(SpellSchool.FIRE, Rank.ADVANCED).manaCost(45).cooldownTicks(240)
                     .effect(new CompositeEffect(
                             new ProjectileEffect(ProjectileProfile.of(SpellElement.FIRE, 14.0F)
-                                    .speed(1.1F).size(2.4F).ignite(8).explode(3.0F).build(), SoundEvents.BLAZE_SHOOT),
+                                    .speed(1.1F).size(3.6F).ignite(8).explode(4.6F).build(), SoundEvents.BLAZE_SHOOT),
                             new ScorchCasterEffect(1.0F)))
                     .build());
 

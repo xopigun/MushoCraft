@@ -41,3 +41,8 @@ Pas de shader, pas de post-traitement, pas de bloom : uniquement des types de re
    - explosion en 12 images : boule blanche à rayons, boule orange cernée de sombre qui se déchire, fumée qui se disperse.
 
 **Outil de contrôle** : `gradlew runClientGallery` lance chaque sort du catalogue en vue à la première personne, sur une arène dans le ciel, et enregistre deux captures par sort (`run/screenshots/gallery_*`).
+
+
+## Ex-Flame et Exodus Flame (20/10)
+
+D'après l'anime (S2 ép. 1) : boule de la taille d'un homme puis colonne de feu à l'impact (`ProjectileProfile.column`), dôme d'explosion large pour Exodus Flame. *Mud Rain* : aucune image sur le wiki.

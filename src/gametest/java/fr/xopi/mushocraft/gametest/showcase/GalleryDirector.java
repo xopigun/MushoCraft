@@ -67,6 +67,7 @@ public final class GalleryDirector {
     private static final int TICKS_PER_SPELL = 34;
     private static final int FIRST_SHOT = 3;
     private static final int SECOND_SHOT = 14;
+    private static final int THIRD_SHOT = 26;
     private static final double DUMMY_DISTANCE = 10.0;
 
     /** The middle of the stone arena built high in the sky, so nothing stands in the way. */
@@ -184,7 +185,7 @@ public final class GalleryDirector {
     /** Something to show: every spell, in order, then the effects no spell shows, then the monsters. */
     record Exhibit(String name, Consumer<ServerPlayer> show, int ticks, int[] shots) {
         Exhibit(String name, Consumer<ServerPlayer> show) {
-            this(name, show, TICKS_PER_SPELL, new int[]{FIRST_SHOT, SECOND_SHOT});
+            this(name, show, TICKS_PER_SPELL, new int[]{FIRST_SHOT, SECOND_SHOT, THIRD_SHOT});
         }
     }
 
@@ -223,7 +224,14 @@ public final class GalleryDirector {
                     });
         }, 34, new int[]{2, 8, 14}));
         MonsterExhibits.add(all);
-        return all.stream().filter(exhibit -> exhibit.name().startsWith(ONLY)).toList();
+        List<Exhibit> chosen = new ArrayList<>();
+        if (!ONLY.isEmpty()) {
+            // the stage is only ready a moment after the first set-up: an empty exhibit first, with no picture
+            chosen.add(new Exhibit("warmup", player -> {
+            }, 40, new int[0]));
+        }
+        all.stream().filter(exhibit -> exhibit.name().startsWith(ONLY)).forEach(chosen::add);
+        return chosen;
     }
 
     /** A sword technique performed by the player towards the dummy, at the God rank. */
