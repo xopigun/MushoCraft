@@ -1,5 +1,6 @@
 package fr.xopi.mushocraft.client.input;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import fr.xopi.mushocraft.MushoCraft;
 import fr.xopi.mushocraft.client.screen.SpellbookScreen;
 import fr.xopi.mushocraft.compat.epicfight.EpicFightModes;
@@ -13,6 +14,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.Arrays;
 
@@ -22,6 +24,9 @@ import java.util.Arrays;
  * A spell is chanted only while its key is held: letting it go tells the server to abandon the chant. Only a fresh press
  * starts a move: the repeats the keyboard sends while a key is held down are ignored, so holding the key never starts
  * the move again once it is done.
+ * <p>
+ * Whether a key is held is read from the keyboard itself, not from Minecraft's key state: Epic Fight marks the hotbar
+ * keys as released whenever the player is busy with an action, which would otherwise abandon every chant at once.
  */
 @EventBusSubscriber(modid = MushoCraft.MODID, value = Dist.CLIENT)
 public final class MoveKeyInput {
@@ -50,7 +55,7 @@ public final class MoveKeyInput {
             return;
         }
         KeyMapping[] slots = minecraft.options.keyHotbarSlots;
-        if (heldSlot >= 0 && !slots[heldSlot].isDown()) {
+        if (heldSlot >= 0 && !physicallyDown(minecraft, slots[heldSlot])) {
             PacketDistributor.sendToServer(new ReleaseMovePayload(heldSlot));
             heldSlot = -1;
         }
@@ -59,12 +64,25 @@ public final class MoveKeyInput {
             while (slots[slot].consumeClick()) {
                 clicked = true;
             }
-            boolean freshPress = clicked && !DOWN_LAST_TICK[slot];
-            DOWN_LAST_TICK[slot] = slots[slot].isDown();
+            boolean down = physicallyDown(minecraft, slots[slot]);
+            // a press since last tick: the key went down, or a tap too quick to be seen held
+            boolean freshPress = (down || clicked) && !DOWN_LAST_TICK[slot];
+            DOWN_LAST_TICK[slot] = down;
             if (freshPress) {
                 PacketDistributor.sendToServer(new UseMovePayload(slot));
                 heldSlot = slot;
             }
         }
+    }
+
+    /** Whether the key bound to this mapping is held down on the keyboard or mouse right now. */
+    private static boolean physicallyDown(Minecraft minecraft, KeyMapping mapping) {
+        InputConstants.Key key = mapping.getKey();
+        long window = minecraft.getWindow().getWindow();
+        return switch (key.getType()) {
+            case KEYSYM -> InputConstants.isKeyDown(window, key.getValue());
+            case MOUSE -> GLFW.glfwGetMouseButton(window, key.getValue()) == GLFW.GLFW_PRESS;
+            case SCANCODE -> mapping.isDown();
+        };
     }
 }

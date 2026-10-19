@@ -83,6 +83,15 @@ neoForge {
             systemProperty 'mushocraft.showcase', 'true'
         }
 
+        // Development only: casts every spell in turn, in first person, and saves two screenshots of each
+        // (src/gametest, GalleryDirector) to run/screenshots/gallery_*.png, then quits.
+        clientGallery {
+            client()
+            sourceSet = sourceSets.gametest
+            programArguments.addAll '--quickPlaySingleplayer', 'mushotest'
+            systemProperty 'mushocraft.gallery', 'true'
+        }
+
         server {
             server()
             programArgument '--nogui'
