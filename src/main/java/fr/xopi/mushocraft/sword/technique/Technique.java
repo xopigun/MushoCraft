@@ -1,5 +1,6 @@
 package fr.xopi.mushocraft.sword.technique;
 
+import fr.xopi.mushocraft.combat.mastery.MasteryService;
 import fr.xopi.mushocraft.combat.move.CooldownService;
 import fr.xopi.mushocraft.combat.move.Move;
 import fr.xopi.mushocraft.combat.move.MoveRef;
@@ -25,6 +26,8 @@ public final class Technique implements Move {
     private static final double POWER_PER_RANK = 0.1;
     /** Style experience earned each time a technique is performed. */
     private static final double PRACTICE_EXPERIENCE = 5.0;
+    /** How long a technique's pace (see {@link TechniqueTempo}) lasts: the length of its animation, roughly. */
+    private static final int TEMPO_TICKS = 40;
 
     private final SwordStyle style;
     private final Rank rank;
@@ -104,12 +107,22 @@ public final class Technique implements Move {
         if (styleRank.isEmpty()) {
             return MoveUseResult.fail("message.mushocraft.technique.unknown", displayName());
         }
-        double power = 1.0 + POWER_PER_RANK * Math.max(0, styleRank.get().ordinal() - rank.ordinal());
+        int cooldown = (int) Math.round(cooldownTicks * StyleRules.cooldownFactor(styleRank.get()));
+        if (MasteryService.botches(user, ref())) {
+            // Not mastered yet: the technique falls apart, and only half the cooldown is lost.
+            CooldownService.start(user, cooldownKey(), cooldown / 2);
+            return MoveUseResult.fail("message.mushocraft.move.botched", displayName(), MasteryService.progressText(user, ref()));
+        }
+        double power = (1.0 + POWER_PER_RANK * Math.max(0, styleRank.get().ordinal() - rank.ordinal()))
+                * MasteryService.powerFactor(user, ref());
+        TechniqueTempo.apply(user, MasteryService.speedFactor(user, ref()), TEMPO_TICKS);
         if (!action.perform(new TechniqueContext(user, this, styleRank.get(), power))) {
+            TechniqueTempo.clear(user);
             return MoveUseResult.fail("message.mushocraft.technique.failed", displayName());
         }
-        CooldownService.start(user, cooldownKey(), (int) Math.round(cooldownTicks * StyleRules.cooldownFactor(styleRank.get())));
+        CooldownService.start(user, cooldownKey(), cooldown);
         SwordService.gainExperience(user, style, PRACTICE_EXPERIENCE);
+        MasteryService.succeeded(user, ref());
         return MoveUseResult.SUCCESS;
     }
 

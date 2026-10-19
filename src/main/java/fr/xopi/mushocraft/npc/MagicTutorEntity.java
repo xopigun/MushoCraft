@@ -1,8 +1,12 @@
 package fr.xopi.mushocraft.npc;
 
+import fr.xopi.mushocraft.combat.move.MoveRef;
 import fr.xopi.mushocraft.core.MushoRegistries;
 import fr.xopi.mushocraft.core.Rank;
 import fr.xopi.mushocraft.magic.entity.SpellProjectile;
+import fr.xopi.mushocraft.magic.mana.ManaRules;
+import fr.xopi.mushocraft.magic.mana.ManaService;
+import fr.xopi.mushocraft.magic.spell.MagicProficiency;
 import fr.xopi.mushocraft.magic.spell.MagicService;
 import fr.xopi.mushocraft.magic.spell.Spell;
 import fr.xopi.mushocraft.magic.spell.SpellElement;
@@ -30,13 +34,17 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.phys.Vec3;
 
-import javax.annotation.Nullable;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
+import javax.annotation.Nullable;
 
 /**
- * A magic tutor, teaching one school up to their own rank, the way Roxy teaches Rudeus. Barrier and divine strike
+ * A magic tutor, teaching one school up to their own rank, the way Roxy teaches Rudeus: one spell at a time, each to be
+ * mastered by repetition before the next, a reservoir large enough before each new rank (see {@link TeacherEntity#teach}). Barrier and divine strike
  * tutors are Holy Knights of Milis: only the Holy Knight orders may teach those schools above Beginner (WN ch. 69).
  * When attacked, a tutor answers with bolts of their element.
  */
@@ -77,23 +85,51 @@ public class MagicTutorEntity extends TeacherEntity {
                 rank().displayName(), school().displayName());
     }
 
-    /** Teaches every spell of the school up to the tutor's rank that the pupil is ready to study. */
     @Override
-    protected void teach(ServerPlayer player) {
-        int taught = 0;
-        boolean someNotReady = false;
-        for (Spell spell : MushoRegistries.SPELL) {
-            if (spell.school() != school() || !rank().isAtLeast(spell.rank())) {
-                continue;
-            }
-            MagicService.StudyResult result = MagicService.study(player, spell);
-            taught += result == MagicService.StudyResult.LEARNED ? 1 : 0;
-            someNotReady |= result == MagicService.StudyResult.NOT_READY;
+    protected Rank pupilRank(ServerPlayer player) {
+        return MagicService.proficiency(player).rank(school());
+    }
+
+    @Override
+    protected List<MoveRef> movesOf(Rank tier) {
+        return MushoRegistries.SPELL.stream()
+                .filter(spell -> spell.school() == school() && spell.rank() == tier)
+                .sorted(Comparator.comparing(spell -> spell.id().toString()))
+                .map(Spell::ref)
+                .toList();
+    }
+
+    /** A tutor first demands a reservoir able to carry the rank's spells. */
+    @Override
+    protected Optional<Component> unreadyFor(ServerPlayer player, Rank tier) {
+        double capacity = ManaService.snapshot(player).capacity();
+        double required = ManaRules.capacityToStudy(tier);
+        if (capacity >= required) {
+            return Optional.empty();
         }
-        if (taught == 0) {
-            player.sendSystemMessage(Component.translatable(someNotReady ? "message.mushocraft.tutor.practise"
-                    : "message.mushocraft.tutor.nothing_more", getDisplayName(), school().displayName()));
+        return Optional.of(Component.translatable("message.mushocraft.tutor.mana", tier.displayName(),
+                String.format(Locale.ROOT, "%.0f", capacity), String.format(Locale.ROOT, "%.0f", required)));
+    }
+
+    @Override
+    protected boolean knows(ServerPlayer player, MoveRef move) {
+        return MagicService.knows(player, move);
+    }
+
+    @Override
+    protected void show(ServerPlayer player, MoveRef move) {
+        Optional.ofNullable(MushoRegistries.SPELL.get(move.id())).ifPresent(spell -> MagicService.learn(player, spell));
+    }
+
+    /** Every spell of the rank mastered: the school reaches the rank (its experience is raised to the threshold). */
+    @Override
+    protected Optional<Component> grant(ServerPlayer player, Rank tier) {
+        double threshold = MagicProficiency.threshold(tier);
+        double xp = MagicService.proficiency(player).experience(school());
+        if (xp < threshold) {
+            MagicService.gainExperience(player, school(), threshold - xp);
         }
+        return Optional.empty();
     }
 
     @Override

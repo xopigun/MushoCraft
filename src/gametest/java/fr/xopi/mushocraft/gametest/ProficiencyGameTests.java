@@ -1,6 +1,8 @@
 package fr.xopi.mushocraft.gametest;
 
 import fr.xopi.mushocraft.MushoCraft;
+import fr.xopi.mushocraft.combat.mastery.MasteryRules;
+import fr.xopi.mushocraft.combat.mastery.MasteryService;
 import fr.xopi.mushocraft.combat.move.MoveService;
 import fr.xopi.mushocraft.core.MushoBlocks;
 import fr.xopi.mushocraft.core.MushoMobEffects;
@@ -77,6 +79,7 @@ public final class ProficiencyGameTests {
     public static void castingGivesSchoolExperience(GameTestHelper helper) {
         ServerPlayer player = caster(helper, 0.0F);
         MagicService.learn(player, MushoSpells.FIREBALL.get());
+        MasteryService.setRepetitions(player, MushoSpells.FIREBALL.get().ref(), MasteryRules.REPETITIONS_TO_MASTER);
         MoveService.use(player, 0);
         helper.startSequence()
                 .thenExecuteAfter(MushoSpells.FIREBALL.get().incantationTicks() + 1, () -> {

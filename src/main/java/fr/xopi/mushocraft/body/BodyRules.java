@@ -1,5 +1,6 @@
 package fr.xopi.mushocraft.body;
 
+import fr.xopi.mushocraft.core.Rank;
 import fr.xopi.mushocraft.life.LifeStage;
 
 /**
@@ -35,6 +36,13 @@ public final class BodyRules {
     public static double bodyMaturity(double ageInYears) {
         double progress = Math.clamp(ageInYears / LifeStage.ADULT.startAge(), 0.0, 1.0);
         return NEWBORN_BODY + progress * (1.0 - NEWBORN_BODY);
+    }
+
+    /** Body level a master demands before teaching a rank (average share of the four stats; gameplay choice). */
+    private static final double[] BODY_LEVEL_BY_RANK = {0.0, 0.15, 0.3, 0.5, 0.7, 0.85, 1.0};
+
+    public static double requiredBodyLevel(Rank rank) {
+        return BODY_LEVEL_BY_RANK[rank.ordinal()];
     }
 
     /** Children learn their bodies faster: training gains are doubled before adolescence. */

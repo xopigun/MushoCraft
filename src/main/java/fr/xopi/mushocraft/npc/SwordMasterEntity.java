@@ -1,10 +1,12 @@
 package fr.xopi.mushocraft.npc;
 
 import fr.xopi.mushocraft.MushoCraft;
+import fr.xopi.mushocraft.body.BodyRules;
+import fr.xopi.mushocraft.body.BodyService;
+import fr.xopi.mushocraft.combat.move.MoveRef;
 import fr.xopi.mushocraft.core.MushoRegistries;
 import fr.xopi.mushocraft.core.Rank;
 import fr.xopi.mushocraft.sword.StyleRules;
-import fr.xopi.mushocraft.sword.SwordMastery;
 import fr.xopi.mushocraft.sword.SwordService;
 import fr.xopi.mushocraft.sword.SwordStyle;
 import fr.xopi.mushocraft.sword.technique.Technique;
@@ -22,8 +24,8 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.SpawnGroupData;
-import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -31,14 +33,17 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import yesman.epicfight.registry.entries.EpicFightItems;
 
-import javax.annotation.Nullable;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
+import javax.annotation.Nullable;
 
 /**
  * A master of one of the three sword styles (wiki: each style has practitioners of every rank). A master takes the
- * player as a disciple, grants ranks up to their own (decision of 19/10/2026) and teaches the style's techniques.
+ * player as a disciple and leads them rank by rank up to their own: a trained body first, then each technique of the
+ * rank shown and mastered by repetition, then the rank itself (see {@link TeacherEntity#teach}).
  * Each style carries its own weapon, which also gives the master Epic Fight's matching combat behaviour:
  * a two-handed tachi for the Sword God Style, sword and shield for the Water God Style, two swords for the North God.
  */
@@ -105,47 +110,69 @@ public class SwordMasterEntity extends TeacherEntity {
         return Component.translatable("entity.mushocraft.sword_master.title", rank().displayName(), style().displayName());
     }
 
-    /**
-     * Takes the player as a disciple, then grants every rank they are ready for (up to the master's own),
-     * then teaches every technique of the style they can now learn (up to the master's rank).
-     */
+    /** Takes the player as a disciple of the style, and makes them fight in it. */
     @Override
-    protected void teach(ServerPlayer player) {
+    protected void welcome(ServerPlayer player) {
         SwordStyle style = style();
         if (!SwordService.mastery(player).practises(style)) {
             SwordService.adopt(player, style);
-            player.sendSystemMessage(Component.translatable("message.mushocraft.master.disciple", getDisplayName(), style.displayName()));
+            say(player, Component.translatable("message.mushocraft.master.disciple", style.displayName()));
         } else if (SwordService.activeStyle(player).filter(style::equals).isEmpty()) {
             SwordService.adopt(player, style);
         }
-        Rank before = SwordService.rank(player, style).orElse(Rank.BEGINNER);
-        Rank after = SwordService.promote(player, style, rank()).orElse(before);
-
-        int taught = 0;
-        for (Technique technique : MushoRegistries.TECHNIQUE) {
-            if (technique.style() == style && rank().isAtLeast(technique.rank())
-                    && SwordService.teach(player, technique) == SwordService.TeachResult.LEARNED) {
-                taught++;
-            }
-        }
-        if (after == before && taught == 0) {
-            player.sendSystemMessage(advice(player, style, after));
-        }
     }
 
-    /** What the disciple lacks to go further with this master. */
-    private Component advice(ServerPlayer player, SwordStyle style, Rank current) {
-        if (current == Rank.GOD || !rank().isAtLeast(Rank.values()[current.ordinal() + 1])) {
-            return Component.translatable("message.mushocraft.master.nothing_more", getDisplayName());
+    @Override
+    protected Rank pupilRank(ServerPlayer player) {
+        return SwordService.rank(player, style()).orElse(Rank.BEGINNER);
+    }
+
+    @Override
+    protected List<MoveRef> movesOf(Rank tier) {
+        return MushoRegistries.TECHNIQUE.stream()
+                .filter(technique -> technique.style() == style() && technique.rank() == tier)
+                .sorted(Comparator.comparing(technique -> technique.id().toString()))
+                .map(Technique::ref)
+                .toList();
+    }
+
+    /** A master first demands a trained body (gameplay choice from Xopi's brief: physical training first). */
+    @Override
+    protected Optional<Component> unreadyFor(ServerPlayer player, Rank tier) {
+        double level = BodyService.bodyLevel(player);
+        double required = BodyRules.requiredBodyLevel(tier);
+        if (level >= required) {
+            return Optional.empty();
         }
-        Rank next = Rank.values()[current.ordinal() + 1];
-        double missing = StyleRules.threshold(next) - SwordService.mastery(player).progress(style).map(SwordMastery.StyleProgress::experience).orElse(0.0);
-        if (missing > 0.0) {
-            return Component.translatable("message.mushocraft.master.practise", getDisplayName(),
-                    String.format(Locale.ROOT, "%.0f", missing), next.displayName());
-        }
-        return Component.translatable("message.mushocraft.master.aura", getDisplayName(),
-                StyleRules.requiredAura(next).displayName(), next.displayName());
+        return Optional.of(Component.translatable("message.mushocraft.master.body", tier.displayName(),
+                percent(level), percent(required)));
+    }
+
+    @Override
+    protected boolean knows(ServerPlayer player, MoveRef move) {
+        return technique(move).map(technique -> SwordService.knows(player, technique)).orElse(true);
+    }
+
+    @Override
+    protected void show(ServerPlayer player, MoveRef move) {
+        technique(move).ifPresent(technique -> SwordService.learn(player, technique));
+    }
+
+    @Override
+    protected Optional<Component> grant(ServerPlayer player, Rank tier) {
+        return switch (SwordService.promoteTo(player, style(), tier)) {
+            case NEEDS_AURA -> Optional.of(Component.translatable("message.mushocraft.master.aura",
+                    StyleRules.requiredAura(tier).displayName(), tier.displayName()));
+            case PROMOTED, NOT_PRACTISED, NOT_NEXT -> Optional.empty();
+        };
+    }
+
+    private static Optional<Technique> technique(MoveRef move) {
+        return Optional.ofNullable(MushoRegistries.TECHNIQUE.get(move.id()));
+    }
+
+    private static String percent(double share) {
+        return String.format(Locale.ROOT, "%.0f", share * 100.0);
     }
 
     @Override

@@ -54,6 +54,16 @@ public final class BodyService {
         player.setData(MushoAttachments.BODY_TRAINING, training(player).with(stat, xp));
     }
 
+    /** How trained the body is overall: the average share of the four stats, without the aura. */
+    public static double bodyLevel(ServerPlayer player) {
+        double maturity = BodyRules.bodyMaturity(LifeService.ageInYears(player).orElse(0.0));
+        double total = 0.0;
+        for (BodyStat stat : BodyStat.values()) {
+            total += progress(player, stat) * maturity;
+        }
+        return total / BodyStat.values().length;
+    }
+
     /**
      * Fraction of a stat's maximal bonus the body really gives now: training and talent, limited by the body's
      * maturity, raised by the Battle Aura (except vitality: the aura strengthens the body, it gives no hearts).

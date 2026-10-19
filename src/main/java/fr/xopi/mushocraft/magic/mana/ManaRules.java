@@ -1,6 +1,7 @@
 package fr.xopi.mushocraft.magic.mana;
 
 import fr.xopi.mushocraft.core.MushoConfig;
+import fr.xopi.mushocraft.core.Rank;
 import fr.xopi.mushocraft.life.LifeStage;
 
 /**
@@ -26,6 +27,13 @@ public record ManaRules(
     private static final double EARLY_CHILDHOOD_END = 5.0;
     /** Spending that leaves less than this fraction of the capacity counts as training to exhaustion. */
     private static final double EXHAUSTION_THRESHOLD = 0.1;
+
+    /** Mana capacity a tutor demands before teaching a rank's spells (gameplay choice, docs/ECARTS.md). */
+    private static final double[] CAPACITY_BY_RANK = {0.0, 40.0, 120.0, 300.0, 800.0, 1_500.0, 3_000.0};
+
+    public static double capacityToStudy(Rank rank) {
+        return CAPACITY_BY_RANK[rank.ordinal()];
+    }
 
     public static ManaRules fromConfig() {
         return new ManaRules(

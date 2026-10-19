@@ -1,5 +1,8 @@
 package fr.xopi.mushocraft.npc;
 
+import fr.xopi.mushocraft.combat.mastery.MasteryService;
+import fr.xopi.mushocraft.combat.move.MoveRef;
+import fr.xopi.mushocraft.combat.move.MoveService;
 import fr.xopi.mushocraft.core.Rank;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -8,9 +11,9 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
@@ -24,6 +27,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.phys.AABB;
+
+import java.util.List;
+import java.util.Optional;
 
 /**
  * A person who teaches: a sword master or a magic tutor. Peaceful unless attacked, they fight back with
@@ -64,8 +70,79 @@ public abstract class TeacherEntity extends PathfinderMob {
         refreshName();
     }
 
-    /** Teaches the player what this teacher can teach them now, and tells them how it went. */
-    protected abstract void teach(ServerPlayer player);
+    /**
+     * One lesson, the same for every teacher (Template Method). The teacher goes through the ranks from Beginner to
+     * their own and stops at the first thing the pupil lacks:
+     * <ol>
+     *     <li>for a rank above the pupil's, a requirement (a trained body, enough mana);</li>
+     *     <li>a move of that rank the pupil has never seen: the teacher shows it, one move per lesson;</li>
+     *     <li>a move shown but not yet mastered: the pupil must keep repeating it;</li>
+     *     <li>every move mastered: the teacher grants the rank, if nothing else stands in the way.</li>
+     * </ol>
+     */
+    protected final void teach(ServerPlayer player) {
+        welcome(player);
+        for (Rank tier : Rank.values()) {
+            if (!rank().isAtLeast(tier)) {
+                break;
+            }
+            boolean promotion = tier.ordinal() > pupilRank(player).ordinal();
+            if (promotion) {
+                Optional<Component> unready = unreadyFor(player, tier);
+                if (unready.isPresent()) {
+                    say(player, unready.get());
+                    return;
+                }
+            }
+            for (MoveRef move : movesOf(tier)) {
+                if (!knows(player, move)) {
+                    show(player, move);
+                    say(player, Component.translatable("message.mushocraft.lesson.show", MoveService.describe(move)));
+                    return;
+                }
+                if (!MasteryService.isMastered(player, move)) {
+                    say(player, Component.translatable("message.mushocraft.lesson.practise", MoveService.describe(move),
+                            MasteryService.progressText(player, move)));
+                    return;
+                }
+            }
+            if (promotion) {
+                grant(player, tier).ifPresent(refusal -> say(player, refusal));
+                return;
+            }
+        }
+        say(player, Component.translatable("message.mushocraft.lesson.nothing_more"));
+    }
+
+    /** The teacher speaks: « Name: "words" ». */
+    protected void say(ServerPlayer player, Component words) {
+        player.sendSystemMessage(Component.translatable("message.mushocraft.lesson.says", getDisplayName(), words));
+    }
+
+    /** First words of a lesson (a sword master takes the pupil as a disciple). */
+    protected void welcome(ServerPlayer player) {
+    }
+
+    /** The pupil's rank in what this teacher teaches. */
+    protected abstract Rank pupilRank(ServerPlayer player);
+
+    /** The moves of one rank, in the order they are taught. */
+    protected abstract List<MoveRef> movesOf(Rank tier);
+
+    /** What the pupil still lacks before being taught a rank above theirs, if anything. */
+    protected abstract Optional<Component> unreadyFor(ServerPlayer player, Rank tier);
+
+    protected abstract boolean knows(ServerPlayer player, MoveRef move);
+
+    /** The teacher demonstrates a move: the pupil now knows it, and must master it by repetition. */
+    protected abstract void show(ServerPlayer player, MoveRef move);
+
+    /**
+     * Grants the next rank once its moves are mastered.
+     *
+     * @return why the rank could not be granted, if it was not
+     */
+    protected abstract Optional<Component> grant(ServerPlayer player, Rank tier);
 
     /** The title shown above the head, e.g. « Saint of the Water God Style ». */
     protected abstract Component title();

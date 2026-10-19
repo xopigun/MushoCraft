@@ -8,6 +8,7 @@ import fr.xopi.mushocraft.core.MushoAttachments;
 import fr.xopi.mushocraft.life.event.PlayerBornEvent;
 import fr.xopi.mushocraft.sword.technique.CounterStances;
 import fr.xopi.mushocraft.sword.technique.TechniqueStrikes;
+import fr.xopi.mushocraft.sword.technique.TechniqueTempo;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -21,6 +22,7 @@ import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import yesman.epicfight.api.event.EpicFightEventHooks;
 import yesman.epicfight.api.event.types.entity.DealDamageEvent;
 import yesman.epicfight.gameasset.Animations;
@@ -107,8 +109,16 @@ public final class SwordEvents {
         }
     }
 
+    @SubscribeEvent
+    public static void onTick(PlayerTickEvent.Post event) {
+        if (event.getEntity() instanceof ServerPlayer player) {
+            TechniqueTempo.tick(player);
+        }
+    }
+
     private static void clear(ServerPlayer player) {
         TechniqueStrikes.clear(player);
         CounterStances.clear(player);
+        TechniqueTempo.clear(player);
     }
 }

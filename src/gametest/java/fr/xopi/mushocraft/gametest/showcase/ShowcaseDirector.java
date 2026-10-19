@@ -1,23 +1,26 @@
 package fr.xopi.mushocraft.gametest.showcase;
 
 import fr.xopi.mushocraft.MushoCraft;
+import fr.xopi.mushocraft.combat.mastery.MasteryRules;
+import fr.xopi.mushocraft.combat.mastery.MasteryService;
 import fr.xopi.mushocraft.combat.move.CooldownService;
+import fr.xopi.mushocraft.combat.move.MoveRef;
 import fr.xopi.mushocraft.combat.move.MoveService;
 import fr.xopi.mushocraft.core.MushoEntities;
 import fr.xopi.mushocraft.core.Rank;
 import fr.xopi.mushocraft.life.LifeService;
 import fr.xopi.mushocraft.magic.entity.SpellProjectile;
-import fr.xopi.mushocraft.magic.spell.SpellElement;
-import fr.xopi.mushocraft.magic.spell.effect.ProjectileProfile;
-import fr.xopi.mushocraft.sword.SwordService;
-import fr.xopi.mushocraft.sword.SwordStyle;
-import fr.xopi.mushocraft.sword.technique.MushoTechniques;
 import fr.xopi.mushocraft.magic.mana.ManaService;
 import fr.xopi.mushocraft.magic.spell.MagicService;
 import fr.xopi.mushocraft.magic.spell.MushoSpells;
+import fr.xopi.mushocraft.magic.spell.SpellElement;
 import fr.xopi.mushocraft.magic.spell.SpellSchool;
+import fr.xopi.mushocraft.magic.spell.effect.ProjectileProfile;
 import fr.xopi.mushocraft.npc.MagicTutorEntity;
 import fr.xopi.mushocraft.npc.SwordMasterEntity;
+import fr.xopi.mushocraft.sword.SwordService;
+import fr.xopi.mushocraft.sword.SwordStyle;
+import fr.xopi.mushocraft.sword.technique.MushoTechniques;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
@@ -70,6 +73,7 @@ public final class ShowcaseDirector {
                 List.of(MushoSpells.WATER_BALL, MushoSpells.FIREBALL, MushoSpells.ROCK_BULLET, MushoSpells.WATER_SHIELD,
                         MushoSpells.ICE_SMASH, MushoSpells.HEALING, MushoSpells.MAGIC_SHIELD, MushoSpells.EXORCIST_LIGHT,
                         MushoSpells.WATER_ARROW).forEach(spell -> MagicService.learn(player, spell.get()));
+                    masterAll(player);
                 setBattleMode(player, true);
             })),
             new Step(60, () -> onServer(player -> {
@@ -103,6 +107,7 @@ public final class ShowcaseDirector {
                 onServer(player -> {
                     List.of(MushoSpells.ICE_PILLAR, MushoSpells.EX_FLAME, MushoSpells.EARTH_LANCE, MushoSpells.EXPLOSION)
                             .forEach(spell -> MagicService.learn(player, spell.get()));
+                    masterAll(player);
                     MoveService.setSlot(player, 0, Optional.of(MushoSpells.ICE_PILLAR.get().ref()));
                     MoveService.setSlot(player, 1, Optional.of(MushoSpells.EX_FLAME.get().ref()));
                     MoveService.setSlot(player, 2, Optional.of(MushoSpells.EARTH_LANCE.get().ref()));
@@ -132,6 +137,7 @@ public final class ShowcaseDirector {
                     player.setXRot(0.0F);
                     List.of(MushoTechniques.ARM_CHOP, MushoTechniques.SWORD_THROWING, MushoTechniques.MOONLIGHT_CLEAVE,
                             MushoTechniques.LONGSWORD_OF_LIGHT).forEach(technique -> SwordService.learn(player, technique.get()));
+                    masterAll(player);
                     SwordService.adopt(player, SwordStyle.SWORD_GOD);
                     MoveService.setSlot(player, 0, Optional.of(MushoTechniques.ARM_CHOP.get().ref()));
                     MoveService.setSlot(player, 1, Optional.of(MushoTechniques.MOONLIGHT_CLEAVE.get().ref()));
@@ -188,6 +194,7 @@ public final class ShowcaseDirector {
                     player.setXRot(0.0F);
                     List.of(MushoSpells.BLIZZARD_STORM, MushoSpells.EARTH_HEDGEHOG, MushoSpells.EARTH_FORTRESS)
                             .forEach(spell -> MagicService.learn(player, spell.get()));
+                    masterAll(player);
                     MoveService.setSlot(player, 0, Optional.of(MushoSpells.BLIZZARD_STORM.get().ref()));
                     MoveService.setSlot(player, 1, Optional.of(MushoSpells.EARTH_HEDGEHOG.get().ref()));
                     MoveService.setSlot(player, 2, Optional.of(MushoSpells.EARTH_FORTRESS.get().ref()));
@@ -282,6 +289,14 @@ public final class ShowcaseDirector {
             MushoCraft.LOGGER.info("Showcase client style {} combo {}", weapon.getStyle(patch),
                     weapon.getAutoAttackMotion(patch).stream().map(Object::toString).toList());
         }
+    }
+
+    /** The showcase films moves at their best: everything known is mastered (no random botch). */
+    private static void masterAll(ServerPlayer player) {
+        MagicService.knownSpells(player).forEach(id ->
+                MasteryService.setRepetitions(player, MoveRef.spell(id), MasteryRules.REPETITIONS_TO_MASTER));
+        SwordService.knownTechniques(player).forEach(id ->
+                MasteryService.setRepetitions(player, MoveRef.technique(id), MasteryRules.REPETITIONS_TO_MASTER));
     }
 
     private static void onServer(Consumer<ServerPlayer> action) {

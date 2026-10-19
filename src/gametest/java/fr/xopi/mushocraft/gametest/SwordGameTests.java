@@ -50,12 +50,12 @@ public final class SwordGameTests {
     }
 
     @GameTest(template = EMPTY)
-    public static void practiceAloneStopsAtIntermediate(GameTestHelper helper) {
+    public static void practiceAloneNeverPromotes(GameTestHelper helper) {
         ServerPlayer player = swordsman(helper);
         SwordService.adopt(player, SwordStyle.SWORD_GOD);
-        SwordService.gainExperience(player, SwordStyle.SWORD_GOD, StyleRules.threshold(Rank.SAINT));
-        helper.assertValueEqual(SwordService.rank(player, SwordStyle.SWORD_GOD), Optional.of(Rank.INTERMEDIATE),
-                "no master: stuck at Intermediate");
+        SwordService.gainExperience(player, SwordStyle.SWORD_GOD, 1.0E6);
+        helper.assertValueEqual(SwordService.rank(player, SwordStyle.SWORD_GOD), Optional.of(Rank.BEGINNER),
+                "no master, no rank: practice alone never promotes");
         TestPlayers.leave(player);
         helper.succeed();
     }
@@ -64,8 +64,6 @@ public final class SwordGameTests {
     public static void advancedNeedsConsciousAuraAndAMaster(GameTestHelper helper) {
         ServerPlayer player = swordsman(helper);
         SwordService.adopt(player, SwordStyle.WATER_GOD);
-        SwordService.gainExperience(player, SwordStyle.WATER_GOD, StyleRules.threshold(Rank.SAINT));
-
         SwordService.promote(player, SwordStyle.WATER_GOD, Rank.GOD);
         helper.assertValueEqual(SwordService.rank(player, SwordStyle.WATER_GOD), Optional.of(Rank.INTERMEDIATE),
                 "without conscious aura, even a Water God cannot make you Advanced");
@@ -81,8 +79,8 @@ public final class SwordGameTests {
 
         BattleAuraService.setMastery(player, AuraLevel.COMPLETE.mastery());
         SwordService.promote(player, SwordStyle.WATER_GOD, Rank.GOD);
-        helper.assertValueEqual(SwordService.rank(player, SwordStyle.WATER_GOD), Optional.of(Rank.SAINT),
-                "complete aura and enough experience: Saint");
+        helper.assertValueEqual(SwordService.rank(player, SwordStyle.WATER_GOD), Optional.of(Rank.GOD),
+                "complete aura: nothing else stands in the way of the ranks a master grants");
         TestPlayers.leave(player);
         helper.succeed();
     }

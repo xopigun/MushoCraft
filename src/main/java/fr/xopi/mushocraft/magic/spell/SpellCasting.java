@@ -1,9 +1,11 @@
 package fr.xopi.mushocraft.magic.spell;
 
 import fr.xopi.mushocraft.MushoCraft;
+import fr.xopi.mushocraft.combat.mastery.MasteryService;
 import fr.xopi.mushocraft.combat.move.CooldownService;
 import fr.xopi.mushocraft.combat.move.MoveUseResult;
 import fr.xopi.mushocraft.magic.mana.ManaService;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -45,8 +47,10 @@ public final class SpellCasting {
         if (spell.incantationTicks() <= 0) {
             return complete(caster, spell);
         }
+        // A spell not yet mastered takes longer to chant.
+        int chantTicks = (int) Math.round(spell.incantationTicks() / MasteryService.speedFactor(caster, spell.ref()));
         long now = CooldownService.now(caster);
-        ACTIVE.put(caster.getUUID(), new ActiveCast(spell, now, now + spell.incantationTicks()));
+        ACTIVE.put(caster.getUUID(), new ActiveCast(spell, now, now + chantTicks));
         setSlowed(caster, true);
         caster.serverLevel().playSound(null, caster.blockPosition(), SoundEvents.ENCHANTMENT_TABLE_USE,
                 SoundSource.PLAYERS, 0.6F, 1.4F);
@@ -95,12 +99,21 @@ public final class SpellCasting {
         if (!ManaService.trySpend(caster, spell.manaCost())) {
             return MoveUseResult.fail("message.mushocraft.magic.not_enough_mana", spell.displayName());
         }
-        double power = MagicService.proficiency(caster).power(spell);
+        if (MasteryService.botches(caster, spell.ref())) {
+            // Not mastered yet: the mana is spent but the spell falls apart; half the cooldown is lost.
+            caster.serverLevel().sendParticles(ParticleTypes.SMOKE, caster.getX(), caster.getEyeY(), caster.getZ(),
+                    12, 0.3, 0.3, 0.3, 0.02);
+            CooldownService.start(caster, spell.cooldownKey(), spell.cooldownTicks() / 2);
+            return MoveUseResult.fail("message.mushocraft.move.botched", spell.displayName(),
+                    MasteryService.progressText(caster, spell.ref()));
+        }
+        double power = MagicService.proficiency(caster).power(spell) * MasteryService.powerFactor(caster, spell.ref());
         if (!spell.effect().cast(new SpellContext(caster, spell, power))) {
             ManaService.restore(caster, spell.manaCost());
             return MoveUseResult.fail("message.mushocraft.magic.fizzled", spell.displayName());
         }
         MagicService.gainExperience(caster, spell.school(), spell.manaCost());
+        MasteryService.succeeded(caster, spell.ref());
         CooldownService.start(caster, spell.cooldownKey(), spell.cooldownTicks());
         return MoveUseResult.SUCCESS;
     }

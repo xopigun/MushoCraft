@@ -54,46 +54,62 @@ public final class SwordService {
         player.displayClientMessage(Component.translatable("message.mushocraft.style.adopted", style.displayName()), true);
     }
 
-    /** Practice in a style: experience, and promotion up to Intermediate without a master. */
+    /** Practice in a style (hits and techniques). Experience alone never gives a rank: a master does. */
     public static void gainExperience(ServerPlayer player, SwordStyle style, double amount) {
         Optional<StyleProgress> progress = mastery(player).progress(style);
         if (progress.isEmpty() || amount <= 0.0) {
             return;
         }
         setProgress(player, style, progress.get().withExperience(progress.get().experience() + amount));
-        promote(player, style, StyleRules.HIGHEST_SELF_TAUGHT);
     }
 
     public static void setProgress(ServerPlayer player, SwordStyle style, StyleProgress progress) {
         player.setData(MushoAttachments.SWORD_MASTERY, mastery(player).with(style, progress));
     }
 
+    /** Outcome of a master granting the next rank. */
+    public enum PromotionResult {
+        PROMOTED,
+        NOT_PRACTISED,
+        /** Ranks are climbed one at a time. */
+        NOT_NEXT,
+        /** The rank demands a Battle Aura the pupil does not have (wiki). */
+        NEEDS_AURA
+    }
+
     /**
-     * Raises the rank in a style as far as experience, Battle Aura and the teacher allow.
-     *
-     * @param highestGrantable the highest rank this promotion can give: the master's own rank, or Intermediate alone
-     * @return the rank after promotion, if the style is practised
+     * A master grants the next rank of a style. The master checks the lessons (body, mastered techniques);
+     * the Battle Aura the rank demands is checked here, since no master can give it.
      */
-    public static Optional<Rank> promote(ServerPlayer player, SwordStyle style, Rank highestGrantable) {
+    public static PromotionResult promoteTo(ServerPlayer player, SwordStyle style, Rank rank) {
         Optional<StyleProgress> progress = mastery(player).progress(style);
         if (progress.isEmpty()) {
-            return Optional.empty();
+            return PromotionResult.NOT_PRACTISED;
         }
-        StyleProgress current = progress.get();
-        while (current.rank() != Rank.GOD) {
-            Rank next = Rank.values()[current.rank().ordinal() + 1];
-            boolean grantable = highestGrantable.isAtLeast(next);
-            boolean experienced = current.experience() >= StyleRules.threshold(next);
-            boolean auraReady = BattleAuraService.level(player).ordinal() >= StyleRules.requiredAura(next).ordinal();
-            if (!grantable || !experienced || !auraReady) {
+        if (rank.ordinal() != progress.get().rank().ordinal() + 1) {
+            return PromotionResult.NOT_NEXT;
+        }
+        if (!StyleRules.auraReady(BattleAuraService.level(player), rank)) {
+            return PromotionResult.NEEDS_AURA;
+        }
+        setProgress(player, style, progress.get().withRank(rank));
+        player.sendSystemMessage(Component.translatable("message.mushocraft.style.promoted", style.displayName(), rank.displayName()));
+        return PromotionResult.PROMOTED;
+    }
+
+    /**
+     * Grants every rank up to the given one, as far as the Battle Aura allows, skipping the lessons (commands, tests).
+     *
+     * @return the rank reached, if the style is practised
+     */
+    public static Optional<Rank> promote(ServerPlayer player, SwordStyle style, Rank highestGrantable) {
+        while (rank(player, style).filter(current -> current.ordinal() < highestGrantable.ordinal()).isPresent()) {
+            Rank next = Rank.values()[rank(player, style).get().ordinal() + 1];
+            if (promoteTo(player, style, next) != PromotionResult.PROMOTED) {
                 break;
             }
-            current = current.withRank(next);
-            player.sendSystemMessage(Component.translatable("message.mushocraft.style.promoted",
-                    style.displayName(), next.displayName()));
         }
-        setProgress(player, style, current);
-        return Optional.of(current.rank());
+        return rank(player, style);
     }
 
     public static boolean knows(ServerPlayer player, Technique technique) {

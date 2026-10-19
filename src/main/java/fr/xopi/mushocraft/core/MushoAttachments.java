@@ -3,6 +3,7 @@ package fr.xopi.mushocraft.core;
 import fr.xopi.mushocraft.MushoCraft;
 import fr.xopi.mushocraft.body.BodyTraining;
 import fr.xopi.mushocraft.body.aura.BattleAuraData;
+import fr.xopi.mushocraft.combat.mastery.MoveMastery;
 import fr.xopi.mushocraft.combat.move.Cooldowns;
 import fr.xopi.mushocraft.combat.move.MoveLoadout;
 import fr.xopi.mushocraft.life.LifeData;
@@ -55,6 +56,9 @@ public final class MushoAttachments {
 
     public static final Supplier<AttachmentType<SwordMastery>> SWORD_MASTERY = ATTACHMENT_TYPES.register("sword_mastery",
             () -> AttachmentType.builder(SwordMastery::none).serialize(SwordMastery.CODEC).copyOnDeath().build());
+
+    public static final Supplier<AttachmentType<MoveMastery>> MOVE_MASTERY = ATTACHMENT_TYPES.register("move_mastery",
+            () -> AttachmentType.builder(MoveMastery::none).serialize(MoveMastery.CODEC).copyOnDeath().build());
 
     private MushoAttachments() {
     }

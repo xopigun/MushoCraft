@@ -1,6 +1,8 @@
 package fr.xopi.mushocraft.gametest;
 
 import fr.xopi.mushocraft.MushoCraft;
+import fr.xopi.mushocraft.combat.mastery.MasteryRules;
+import fr.xopi.mushocraft.combat.mastery.MasteryService;
 import fr.xopi.mushocraft.combat.move.CooldownService;
 import fr.xopi.mushocraft.combat.move.MoveLoadout;
 import fr.xopi.mushocraft.combat.move.MoveRef;
@@ -28,6 +30,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
@@ -81,6 +84,7 @@ public final class SpellGameTests {
         ServerPlayer player = caster(helper);
         Spell waterBall = MushoSpells.WATER_BALL.get();
         MagicService.learn(player, waterBall);
+        MasteryService.setRepetitions(player, waterBall.ref(), MasteryRules.REPETITIONS_TO_MASTER);
         double manaBefore = ManaService.snapshot(player).current();
 
         helper.assertTrue(MoveService.use(player, 0).success(), "chant starts");
@@ -170,6 +174,10 @@ public final class SpellGameTests {
     public static void exorcistLightBurnsTheUndead(GameTestHelper helper) {
         Zombie zombie = helper.spawn(EntityType.ZOMBIE, new BlockPos(1, 1, 3));
         zombie.setNoAi(true);
+        // A zombie may spawn wearing armor, which would soften the blow.
+        for (EquipmentSlot slot : EquipmentSlot.values()) {
+            zombie.setItemSlot(slot, ItemStack.EMPTY);
+        }
         float before = zombie.getHealth();
         SpellProjectile light = SpellProjectile.create(helper.getLevel(), zombie,
                 ProjectileProfile.of(SpellElement.LIGHT, 3.0F).speed(0.8F).undeadMultiplier(3.0F).build());
