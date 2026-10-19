@@ -30,6 +30,9 @@ public final class MushoParticles {
     /** A ring of air thrown out flat along the ground; its final radius is given by the x speed. */
     public static final DeferredHolder<ParticleType<?>, SimpleParticleType> SHOCK_RING = simple("shock_ring");
 
+    /** An electric arc crackling at a point; its reach is given by the x speed. */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> ARC = simple("arc");
+
     /** A mote of mana drawn into the caster's hand as a spell takes shape; tinted by its school. */
     public static final DeferredHolder<ParticleType<?>, ParticleType<ColorParticleOption>> MANA_MOTE =
             PARTICLE_TYPES.register("mana_mote", () -> new ParticleType<ColorParticleOption>(false) {
@@ -44,7 +47,26 @@ public final class MushoParticles {
                 }
             });
 
+    /** A shock wave of air, a ring across the way it faces (a projectile's path, a blast). */
+    public static final DeferredHolder<ParticleType<?>, ParticleType<OrientedParticleOptions>> SHOCK_WAVE = oriented("shock_wave");
+    /** A slash: a crescent in the plane of a swing. */
+    public static final DeferredHolder<ParticleType<?>, ParticleType<OrientedParticleOptions>> SLASH = oriented("slash");
+
     private MushoParticles() {
+    }
+
+    private static DeferredHolder<ParticleType<?>, ParticleType<OrientedParticleOptions>> oriented(String name) {
+        return PARTICLE_TYPES.register(name, () -> new ParticleType<OrientedParticleOptions>(false) {
+            @Override
+            public MapCodec<OrientedParticleOptions> codec() {
+                return OrientedParticleOptions.codec(this);
+            }
+
+            @Override
+            public StreamCodec<? super RegistryFriendlyByteBuf, OrientedParticleOptions> streamCodec() {
+                return OrientedParticleOptions.streamCodec(this);
+            }
+        });
     }
 
     private static DeferredHolder<ParticleType<?>, SimpleParticleType> simple(String name) {

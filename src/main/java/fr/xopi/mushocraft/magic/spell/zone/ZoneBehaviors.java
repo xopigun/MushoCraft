@@ -7,6 +7,7 @@ import fr.xopi.mushocraft.magic.entity.SpellZone;
 import fr.xopi.mushocraft.magic.fx.CameraShake;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.BlockParticleOption;
+import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -66,6 +67,9 @@ public final class ZoneBehaviors {
             bolt.setVisualOnly(true);
             level.addFreshEntity(bolt);
             CameraShake.around(level, strike, 0.7F, 10, 24.0);
+            for (int i = 0; i < 4; i++) {
+                level.sendParticles(MushoParticles.ARC.get(), strike.x, strike.y + 0.3, strike.z, 0, 1.6, 0.0, 0.0, 1.0);
+            }
             for (LivingEntity target : level.getEntitiesOfClass(LivingEntity.class, bolt.getBoundingBox().inflate(2.5, 4.0, 2.5),
                     entity -> entity != zone.caster())) {
                 target.hurt(MushoDamageTypes.spell(level, zone, zone.caster()), (float) (strikeDamage * zone.power()));
@@ -347,6 +351,12 @@ public final class ZoneBehaviors {
             if (age < gatherTicks) {
                 double spread = 4.0 * (1.0 - (double) age / gatherTicks) + 0.8;
                 level.sendParticles(ParticleTypes.CLOUD, zone.getX(), zone.getY() + 9.0, zone.getZ(), 12, spread, 0.4, spread, 0.0);
+                if (age % 3 == 0) {
+                    // the gathered energy crackles inside the cloud
+                    RandomSource random = level.getRandom();
+                    level.sendParticles(MushoParticles.ARC.get(), zone.getX() + (random.nextDouble() - 0.5) * spread * 2.0,
+                            zone.getY() + 8.5, zone.getZ() + (random.nextDouble() - 0.5) * spread * 2.0, 0, 1.6, 0.0, 0.0, 1.0);
+                }
                 if (age % 5 == 0) {
                     level.playSound(null, zone.blockPosition().above(8), SoundEvents.LIGHTNING_BOLT_THUNDER, SoundSource.WEATHER,
                             0.6F, 1.6F);
@@ -363,6 +373,13 @@ public final class ZoneBehaviors {
                 for (LivingEntity struck : zone.creaturesInside(4.0)) {
                     struck.hurt(MushoDamageTypes.spell(level, zone, zone.caster()), (float) (damage * zone.power()));
                     struck.igniteForSeconds(4);
+                    level.sendParticles(MushoParticles.ARC.get(), struck.getX(), struck.getY() + struck.getBbHeight() * 0.5,
+                            struck.getZ(), 0, 1.2, 0.0, 0.0, 1.0);
+                }
+                for (int i = 0; i < 8; i++) {
+                    double angle = i * Math.PI / 4.0;
+                    level.sendParticles(MushoParticles.ARC.get(), zone.getX() + Math.cos(angle) * 1.2, zone.getY() + 0.3,
+                            zone.getZ() + Math.sin(angle) * 1.2, 0, 2.2, 0.0, 0.0, 1.0);
                 }
                 level.playSound(null, zone.blockPosition(), SoundEvents.LIGHTNING_BOLT_IMPACT, SoundSource.PLAYERS, 3.0F, 0.8F);
                 CameraShake.around(level, zone.position(), 2.2F, 20, 40.0);
@@ -401,6 +418,33 @@ public final class ZoneBehaviors {
                     level.sendParticles(ParticleTypes.END_ROD, centre.x + Math.cos(angle) * zone.radius(), centre.y + height,
                             centre.z + Math.sin(angle) * zone.radius(), 1, 0.0, 0.0, 0.0, 0.0);
                 }
+            }
+        };
+    }
+
+    // ---- Effects only ----
+
+    /**
+     * A ring racing out over the ground from the zone's centre, hugging the lie of the land (technique of the visual
+     * reference, docs/VISUELS_REFERENCE.md): fire spreading, frost creeping, dust thrown up. Does nothing else.
+     */
+    public static SpellZone.Behavior groundRing(ParticleOptions particle, int spreadTicks) {
+        return (zone, level, age) -> {
+            if (age > spreadTicks) {
+                zone.discard();
+                return;
+            }
+            double radius = zone.radius() * age / spreadTicks;
+            int points = Math.max(8, (int) (radius * 7.0));
+            for (int i = 0; i < points; i++) {
+                double angle = i * Math.PI * 2.0 / points + age * 0.1;
+                double x = zone.getX() + Math.cos(angle) * radius;
+                double z = zone.getZ() + Math.sin(angle) * radius;
+                double ground = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, BlockPos.containing(x, 0, z).getX(),
+                        BlockPos.containing(x, 0, z).getZ());
+                // only follow the ground near the centre's height: no ring on a cliff top far above
+                double y = Math.abs(ground - zone.getY()) <= 3.0 ? ground : zone.getY();
+                level.sendParticles(particle, x, y + 0.15, z, 1, 0.05, 0.05, 0.05, 0.01);
             }
         };
     }

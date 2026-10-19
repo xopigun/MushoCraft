@@ -1,14 +1,19 @@
 package fr.xopi.mushocraft.client.render.spell;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import fr.xopi.mushocraft.MushoCraft;
+import fr.xopi.mushocraft.client.render.mesh.BillowCluster;
 import fr.xopi.mushocraft.client.render.mesh.LatheMesh;
+import fr.xopi.mushocraft.client.render.mesh.Premultiplied;
 import fr.xopi.mushocraft.magic.entity.SpellFire;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
+
+import java.util.List;
 
 /**
  * Conjured fire, after the anime: a white-hot heart wrapped in layers of cel-shaded yellow, orange and red flame
@@ -51,11 +56,10 @@ public final class FireVisuals {
         LatheMesh.render(poseStack.last(), buffers.getBuffer(RenderType.entityTranslucentEmissive(FIRE)), LatheMesh.SPHERE,
                 licking(time, 0.08F, 0.0F), HEART, 10, 14, time, GLOW);
         poseStack.popPose();
-        LatheMesh.render(poseStack.last(), buffers.getBuffer(RenderType.entityTranslucentEmissive(FIRE)), LatheMesh.SPHERE,
-                licking(time, 0.22F, tail), FLAME, 16, 22, time, GLOW);
+        LatheMesh.render(poseStack.last(), glow(buffers), LatheMesh.SPHERE, licking(time, 0.22F, tail), FLAME, 16, 22, time, GLOW);
         poseStack.scale(1.25F, 1.25F, 1.25F);
-        LatheMesh.render(poseStack.last(), buffers.getBuffer(RenderType.entityTranslucentEmissive(FIRE)), LatheMesh.SPHERE,
-                licking(time + 7.0F, 0.3F, tail * 1.3F), HALO, 14, 20, time, GLOW);
+        LatheMesh.render(poseStack.last(), glow(buffers), LatheMesh.SPHERE, licking(time + 7.0F, 0.3F, tail * 1.3F), HALO,
+                14, 20, time, GLOW);
         poseStack.popPose();
     };
 
@@ -111,34 +115,46 @@ public final class FireVisuals {
         poseStack.scale(size, size, size);
         if (heat > 0.02F) {
             // the flame shrinks inwards as it burns out, layer by layer
-            renderLayer(poseStack, buffers, BLAST_OUTER, heat, 1.0F * (0.6F + 0.4F * heat), lumps, age, 16, 24);
-            renderLayer(poseStack, buffers, BLAST_MIDDLE, heat, 0.78F * heat, lumps, age + 3.0F, 14, 20);
-            renderLayer(poseStack, buffers, HEART, heat, 0.5F * heat * heat, lumps, age + 6.0F, 10, 16);
+            // a crisp orange outside (opaque enough to read in daylight), the glow inside it, the white heart
+            renderLayer(poseStack, buffers.getBuffer(RenderType.entityTranslucentEmissive(FIRE)), BLAST_OUTER, heat,
+                    1.0F * (0.6F + 0.4F * heat), lumps, age, 16, 24);
+            renderLayer(poseStack, glow(buffers), BLAST_MIDDLE, heat, 0.78F * heat, lumps, age + 3.0F, 14, 20);
+            renderLayer(poseStack, buffers.getBuffer(RenderType.entityTranslucentEmissive(FIRE)), HEART, heat, 0.5F * heat * heat,
+                    lumps, age + 6.0F, 10, 16);
         }
         poseStack.popPose();
         float smoke = Mth.clamp((life - 0.35F) / 0.25F, 0.0F, 1.0F) * (life < 0.75F ? 1.0F : 1.0F - (life - 0.75F) / 0.25F);
         if (smoke > 0.02F) {
-            float rise = radius * 0.6F * Math.max(0.0F, life - 0.35F);
-            float puff = size * (0.85F + 0.35F * life);
+            // what is left rises as a heap of billowing smoke
+            float rise = radius * 0.7F * Math.max(0.0F, life - 0.35F);
+            float puff = size * 1.6F * (0.8F + 0.4F * life);
+            List<BillowCluster.Billow> billows = BillowCluster.dome(fire.getId() * 17L + 3L);
             poseStack.pushPose();
-            poseStack.translate(0.0, rise, 0.0);
-            poseStack.scale(puff, puff * 0.8F, puff);
-            LatheMesh.render(poseStack.last(), buffers.getBuffer(RenderType.entityTranslucent(SMOKE_SURFACE)), LatheMesh.SPHERE,
-                    lumps, withAlpha(SMOKE, smoke), 14, 20, age, light);
+            poseStack.translate(0.0, rise - size * 0.6F, 0.0);
+            poseStack.scale(puff, puff, puff);
+            BillowCluster.render(poseStack, buffers.getBuffer(RenderType.entityTranslucent(SMOKE_SURFACE)), billows,
+                    Mth.clamp((life - 0.3F) / 0.3F, 0.0F, 1.0F), 0.04F, withAlpha(SMOKE, smoke), age, light);
             poseStack.popPose();
         }
     }
 
-    private static void renderLayer(PoseStack poseStack, MultiBufferSource buffers, LatheMesh.Material material, float alpha,
+    private static void renderLayer(PoseStack poseStack, VertexConsumer consumer, LatheMesh.Material material, float alpha,
                                     float scale, LatheMesh.Deform deform, float time, int rings, int segments) {
         if (scale < 0.02F) {
             return;
         }
         poseStack.pushPose();
         poseStack.scale(scale, scale, scale);
-        LatheMesh.render(poseStack.last(), buffers.getBuffer(RenderType.entityTranslucentEmissive(FIRE)), LatheMesh.SPHERE,
-                deform, withAlpha(material, alpha), rings, segments, time, GLOW);
+        LatheMesh.render(poseStack.last(), consumer, LatheMesh.SPHERE, deform, withAlpha(material, alpha), rings, segments, time, GLOW);
         poseStack.popPose();
+    }
+
+    /**
+     * Flame drawn additively (after the reference techniques, docs/VISUELS_REFERENCE.md): it adds its light to what is
+     * behind it, so layered flames glow brighter where they overlap.
+     */
+    private static VertexConsumer glow(MultiBufferSource buffers) {
+        return new Premultiplied(buffers.getBuffer(RenderType.eyes(FIRE)));
     }
 
     /** A pillar of flame standing at the pose's origin. */
@@ -169,8 +185,7 @@ public final class FireVisuals {
         LatheMesh.render(poseStack.last(), buffers.getBuffer(RenderType.entityTranslucentEmissive(FIRE)), tower, tongues,
                 FLAME, 14, 20, age, GLOW);
         poseStack.scale(1.2F, 1.05F, 1.2F);
-        LatheMesh.render(poseStack.last(), buffers.getBuffer(RenderType.entityTranslucentEmissive(FIRE)), tower, tongues,
-                HALO, 12, 18, age + 5.0F, GLOW);
+        LatheMesh.render(poseStack.last(), glow(buffers), tower, tongues, HALO, 12, 18, age + 5.0F, GLOW);
         poseStack.popPose();
     }
 

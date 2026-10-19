@@ -7,11 +7,13 @@ import fr.xopi.mushocraft.combat.move.MoveRef;
 import fr.xopi.mushocraft.combat.move.MoveUseResult;
 import fr.xopi.mushocraft.core.MushoRegistries;
 import fr.xopi.mushocraft.core.Rank;
+import fr.xopi.mushocraft.magic.fx.SpellFx;
 import fr.xopi.mushocraft.sword.StyleRules;
 import fr.xopi.mushocraft.sword.SwordService;
 import fr.xopi.mushocraft.sword.SwordStyle;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
@@ -24,6 +26,10 @@ import java.util.Optional;
  * {@link MushoTechniques}. Every technique of a style shares the style's cooldown, which shrinks with mastery.
  */
 public final class Technique implements Move {
+    /** The slash drawn in front of the fighter when a technique lands (docs/VISUELS_REFERENCE.md). */
+    private static final float SLASH_SIZE = 1.6F;
+    private static final int SLASH_COLOUR = 0xDDEEFF;
+
     /** Extra strength per rank of the style above the technique's own. */
     private static final double POWER_PER_RANK = 0.1;
     /** Style experience earned each time a technique is performed. */
@@ -123,6 +129,7 @@ public final class Technique implements Move {
             return MoveUseResult.fail("message.mushocraft.technique.failed", displayName());
         }
         CooldownService.start(user, cooldownKey(), cooldown);
+        SpellFx.slash(user.serverLevel(), user, user.getLookAngle(), SLASH_SIZE, SLASH_COLOUR);
         SwordService.gainExperience(user, style, PRACTICE_EXPERIENCE);
         MasteryService.succeeded(user, ref());
         return MoveUseResult.SUCCESS;
@@ -139,8 +146,12 @@ public final class Technique implements Move {
         }
         double power = 1.0 + POWER_PER_RANK * Math.max(0, styleRank.ordinal() - rank.ordinal());
         Vec3 look = aimedAt.subtract(fighter.getEyePosition());
-        return action.perform(new TechniqueContext(fighter, this, styleRank, power,
-                look.lengthSqr() < 1.0E-6 ? fighter.getLookAngle() : look.normalize()));
+        Vec3 aim = look.lengthSqr() < 1.0E-6 ? fighter.getLookAngle() : look.normalize();
+        boolean performed = action.perform(new TechniqueContext(fighter, this, styleRank, power, aim));
+        if (performed && fighter.level() instanceof ServerLevel level) {
+            SpellFx.slash(level, fighter, aim, SLASH_SIZE, SLASH_COLOUR);
+        }
+        return performed;
     }
 
     public static final class Builder {

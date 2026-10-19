@@ -3,7 +3,9 @@ package fr.xopi.mushocraft.client.render;
 import com.mojang.blaze3d.vertex.PoseStack;
 import fr.xopi.mushocraft.client.render.spell.CrystalClusterVisual;
 import fr.xopi.mushocraft.client.render.spell.FireVisuals;
+import fr.xopi.mushocraft.client.render.spell.GlowShellVisuals;
 import fr.xopi.mushocraft.client.render.spell.ProjectileVisual;
+import fr.xopi.mushocraft.client.render.spell.RibbonTrail;
 import fr.xopi.mushocraft.client.render.spell.WaterVisuals;
 import fr.xopi.mushocraft.magic.entity.SpellProjectile;
 import fr.xopi.mushocraft.magic.spell.SpellElement;
@@ -34,6 +36,8 @@ public class SpellProjectileRenderer extends EntityRenderer<SpellProjectile> {
     @Override
     public void render(SpellProjectile projectile, float yaw, float partialTicks, PoseStack poseStack,
                        MultiBufferSource buffers, int packedLight) {
+        trailColour(projectile).ifPresent(rgb -> RibbonTrail.render(projectile, partialTicks, poseStack, buffers,
+                projectile.visualSize() * 0.35F, rgb));
         Optional<ProjectileVisual> visual = visualFor(projectile);
         if (visual.isPresent()) {
             visual.get().render(projectile, partialTicks, poseStack, buffers, packedLight);
@@ -54,6 +58,23 @@ public class SpellProjectileRenderer extends EntityRenderer<SpellProjectile> {
         super.render(projectile, yaw, partialTicks, poseStack, buffers, packedLight);
     }
 
+    /**
+     * The colour of the ribbon of light a projectile leaves behind, if it leaves one. Water and earth leave none: water
+     * sheds drops, rock is heavy.
+     */
+    private static Optional<Integer> trailColour(SpellProjectile projectile) {
+        if (projectile.shape() == ProjectileShape.CRYSTAL_CLUSTER) {
+            return Optional.empty();
+        }
+        return switch (projectile.element()) {
+            case FIRE -> Optional.of(0xFF8A30);
+            case WIND -> Optional.of(0xB8FFE4);
+            case LIGHT -> Optional.of(0xFFE490);
+            case ICE -> Optional.of(0xB8DCFF);
+            case WATER, EARTH -> Optional.empty();
+        };
+    }
+
     /** The animated model of this projectile, if it has one yet; otherwise the plain orb of its element. */
     private Optional<ProjectileVisual> visualFor(SpellProjectile projectile) {
         if (projectile.shape() == ProjectileShape.CRYSTAL_CLUSTER) {
@@ -61,6 +82,15 @@ public class SpellProjectileRenderer extends EntityRenderer<SpellProjectile> {
         }
         if (projectile.element() == SpellElement.FIRE) {
             return Optional.of(FireVisuals.FIREBALL);
+        }
+        if (projectile.element() == SpellElement.LIGHT) {
+            return Optional.of(GlowShellVisuals.LIGHT);
+        }
+        if (projectile.element() == SpellElement.WIND) {
+            return Optional.of(GlowShellVisuals.WIND);
+        }
+        if (projectile.element() == SpellElement.ICE) {
+            return Optional.of(GlowShellVisuals.ICE);
         }
         if (projectile.element() == SpellElement.WATER) {
             return Optional.of(projectile.shape() == ProjectileShape.BOLT ? WaterVisuals.WATER_ARROW : WaterVisuals.WATER_BALL);

@@ -2,6 +2,7 @@ package fr.xopi.mushocraft.magic.entity;
 
 import fr.xopi.mushocraft.core.MushoEntities;
 import fr.xopi.mushocraft.core.MushoParticles;
+import fr.xopi.mushocraft.magic.fx.SpellFx;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -94,8 +95,13 @@ public class SpellFire extends Entity {
         float radius = radius();
         if (tickCount == 1) {
             // count 0: the "speed" is the size of the flash and the reach of the ring
-            server.sendParticles(MushoParticles.FLASH.get(), getX(), getY(), getZ(), 0, radius * 1.5, 0.0, 0.0, 1.0);
+            server.sendParticles(MushoParticles.FLASH.get(), getX(), getY(), getZ(), 0, radius * 1.0, 0.0, 0.0, 1.0);
             server.sendParticles(MushoParticles.SHOCK_RING.get(), getX(), getY() - radius * 0.5 + 0.1, getZ(), 0, radius * 2.2, 0.0, 0.0, 1.0);
+            // shock waves thrown every way by the blast
+            for (int i = 0; i < 3; i++) {
+                Vec3 facing = new Vec3(random.nextDouble() - 0.5, random.nextDouble() - 0.5, random.nextDouble() - 0.5);
+                SpellFx.shockWave(server, position(), facing, radius * 1.4F, 0xFFF0DC);
+            }
             server.sendParticles(MushoParticles.EMBER.get(), getX(), getY(), getZ(), Math.round(30 * radius),
                     radius * 0.4, radius * 0.4, radius * 0.4, 0.35);
             server.sendParticles(MushoParticles.FLAME.get(), getX(), getY(), getZ(), Math.round(20 * radius),

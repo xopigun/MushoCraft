@@ -1,6 +1,7 @@
 package fr.xopi.mushocraft.core;
 
 import fr.xopi.mushocraft.MushoCraft;
+import fr.xopi.mushocraft.magic.entity.SpellBeam;
 import fr.xopi.mushocraft.magic.entity.SpellFire;
 import fr.xopi.mushocraft.magic.entity.SpellPillar;
 import fr.xopi.mushocraft.magic.entity.SpellProjectile;
@@ -106,6 +107,16 @@ public final class MushoEntities {
                     .noSummon()
                     .clientTrackingRange(8)
                     .build(MushoCraft.id("summoned_spirit").toString()));
+
+    /** The visible body of a ray. */
+    public static final DeferredHolder<EntityType<?>, EntityType<SpellBeam>> SPELL_BEAM =
+            ENTITY_TYPES.register("spell_beam", () -> EntityType.Builder
+                    .<SpellBeam>of(SpellBeam::new, MobCategory.MISC)
+                    .sized(0.5F, 0.5F)
+                    .noSummon()
+                    .clientTrackingRange(8)
+                    .updateInterval(40)
+                    .build(MushoCraft.id("spell_beam").toString()));
 
     public static final DeferredHolder<EntityType<?>, EntityType<SwordMasterEntity>> SWORD_MASTER =
             ENTITY_TYPES.register("sword_master", () -> EntityType.Builder

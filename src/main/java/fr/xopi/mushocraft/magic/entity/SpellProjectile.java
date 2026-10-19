@@ -3,6 +3,7 @@ package fr.xopi.mushocraft.magic.entity;
 import fr.xopi.mushocraft.core.MushoDamageTypes;
 import fr.xopi.mushocraft.core.MushoEntities;
 import fr.xopi.mushocraft.core.MushoParticles;
+import fr.xopi.mushocraft.core.OrientedParticleOptions;
 import fr.xopi.mushocraft.magic.spell.SpellElement;
 import fr.xopi.mushocraft.magic.spell.effect.ProjectileProfile;
 import fr.xopi.mushocraft.magic.spell.effect.ProjectileShape;
@@ -115,16 +116,18 @@ public class SpellProjectile extends ThrowableProjectile implements GeoEntity {
             Vec3 motion = getDeltaMovement();
             level().addParticle(element().trail(), getX() - motion.x * 0.5, getY() - motion.y * 0.5,
                     getZ() - motion.z * 0.5, 0.0, 0.0, 0.0);
+            if (element() == SpellElement.WIND && tickCount % 2 == 0 && motion.lengthSqr() > 0.01) {
+                // wind drives rings of torn air before it
+                level().addParticle(OrientedParticleOptions.facing(MushoParticles.SHOCK_WAVE.get(), motion,
+                                random.nextFloat() * 360.0F, visualSize() * 1.8F, 0xE8FFF4),
+                        getX(), getY() + getBbHeight() / 2.0, getZ(), 0.0, 0.0, 0.0);
+            }
             if (element() == SpellElement.FIRE) {
-                // a fireball sheds sparks and a thin smoke
+                // a fireball sheds sparks (its smoke would wall the view: the ribbon of light is its trail)
                 float spread = visualSize() * 0.35F;
                 level().addParticle(MushoParticles.EMBER.get(), getX() + (random.nextFloat() - 0.5F) * spread,
                         getY() + getBbHeight() / 2.0 + (random.nextFloat() - 0.5F) * spread,
                         getZ() + (random.nextFloat() - 0.5F) * spread, -motion.x * 0.2, -motion.y * 0.2, -motion.z * 0.2);
-                if (tickCount % 3 == 0) {
-                    level().addParticle(MushoParticles.SMOKE.get(), getX() - motion.x, getY() + getBbHeight() / 2.0 - motion.y,
-                            getZ() - motion.z, 0.0, 0.0, 0.0);
-                }
             }
             if (element() == SpellElement.WATER) {
                 // conjured water sheds drops along its flight

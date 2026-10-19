@@ -21,6 +21,8 @@ import fr.xopi.mushocraft.magic.entity.WaterSheet;
 import fr.xopi.mushocraft.magic.mana.ManaService;
 import fr.xopi.mushocraft.magic.spell.MagicService;
 import fr.xopi.mushocraft.magic.spell.MushoSpells;
+import fr.xopi.mushocraft.magic.spell.Spell;
+import fr.xopi.mushocraft.magic.spell.SpellContext;
 import fr.xopi.mushocraft.magic.spell.SpellElement;
 import fr.xopi.mushocraft.magic.spell.SpellSchool;
 import fr.xopi.mushocraft.magic.spell.effect.ProjectileProfile;
@@ -325,7 +327,18 @@ public final class ShowcaseDirector {
                 shoot("00b_pillars_and_fire");
             }),
             new Step(1436, () -> shoot("00c_blast_smoke")),
-            new Step(1442, () -> Minecraft.getInstance().stop())
+            new Step(1440, () -> onServer(player -> {
+                clearStage(player);
+                castLab(player, MushoSpells.LIGHTNING.get());
+            })),
+            new Step(1458, () -> shoot("00d_lightning_gathers")),
+            new Step(1472, () -> shoot("00e_lightning_strikes")),
+            new Step(1480, () -> onServer(player -> castLab(player, MushoSpells.TORNADO_IMPACT.get()))),
+            new Step(1482, () -> shoot("00f_tornado_impact_beam")),
+            new Step(1488, () -> onServer(player -> spawnLabProjectile(player,
+                    ProjectileProfile.of(SpellElement.WIND, 0.0F).size(0.6F).gravity(0.0F).build(), 0.6, 0.3))),
+            new Step(1496, () -> shoot("00g_wind_trail")),
+            new Step(1502, () -> Minecraft.getInstance().stop())
     );
 
     private static final int FLIGHT_TICKS_BEFORE_SHOT = 3;
@@ -392,6 +405,11 @@ public final class ShowcaseDirector {
         projectile.setPos(player.getX() + 1.6, player.getEyeY() + height - 0.4, player.getZ() + 3.0);
         projectile.setDeltaMovement(-speed, 0.0, 0.0);
         player.serverLevel().addFreshEntity(projectile);
+    }
+
+    /** Casts a spell's effect straight away, as its caster looks, for a lab shot. */
+    private static void castLab(ServerPlayer player, Spell spell) {
+        spell.effect().cast(new SpellContext(player, spell, 1.0));
     }
 
     /** Debug: where the pillar models are and which animation they play. */

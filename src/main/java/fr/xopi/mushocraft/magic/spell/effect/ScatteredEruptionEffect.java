@@ -1,9 +1,13 @@
 package fr.xopi.mushocraft.magic.spell.effect;
 
 import fr.xopi.mushocraft.magic.fx.CameraShake;
+import fr.xopi.mushocraft.magic.fx.SpellFx;
 import fr.xopi.mushocraft.magic.spell.SpellContext;
 import fr.xopi.mushocraft.magic.spell.SpellEffect;
+import net.minecraft.core.particles.BlockParticleOption;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 
 /**
@@ -31,6 +35,8 @@ public final class ScatteredEruptionEffect implements SpellEffect {
             eruption.eruptAt(context, SpellTargeting.groundBelow(context, spot));
         }
         CameraShake.around(context.level(), aimed, 1.0F, 14, 20.0);
+        SpellFx.groundRing(context.level(), context.caster(), aimed, 4.5, 8,
+                new BlockParticleOption(ParticleTypes.BLOCK, Blocks.COARSE_DIRT.defaultBlockState()));
         return true;
     }
 }

@@ -4,12 +4,15 @@ import fr.xopi.mushocraft.MushoCraft;
 import fr.xopi.mushocraft.client.hud.ManaBarLayer;
 import fr.xopi.mushocraft.client.hud.MoveBarLayer;
 import fr.xopi.mushocraft.client.input.MushoKeyMappings;
+import fr.xopi.mushocraft.client.particle.ArcParticle;
 import fr.xopi.mushocraft.client.particle.FireParticles;
 import fr.xopi.mushocraft.client.particle.ManaMote;
+import fr.xopi.mushocraft.client.particle.OrientedParticle;
 import fr.xopi.mushocraft.client.render.SpellOrbModel;
 import fr.xopi.mushocraft.client.render.SpellProjectileRenderer;
 import fr.xopi.mushocraft.client.render.TeacherRenderer;
 import fr.xopi.mushocraft.client.render.ThrownWeaponRenderer;
+import fr.xopi.mushocraft.client.render.spell.SpellBeamRenderer;
 import fr.xopi.mushocraft.client.render.spell.SpellFireRenderer;
 import fr.xopi.mushocraft.client.render.spell.SpellPillarRenderer;
 import fr.xopi.mushocraft.client.render.spell.SpellZoneRenderer;
@@ -49,6 +52,7 @@ public final class MushoClientSetup {
         event.registerEntityRenderer(MushoEntities.WATER_SHEET.get(), WaterSheetRenderer::new);
         event.registerEntityRenderer(MushoEntities.SPELL_PILLAR.get(), SpellPillarRenderer::new);
         event.registerEntityRenderer(MushoEntities.SPELL_FIRE.get(), SpellFireRenderer::new);
+        event.registerEntityRenderer(MushoEntities.SPELL_BEAM.get(), SpellBeamRenderer::new);
         event.registerEntityRenderer(MushoEntities.LAMPLIGHT_SPIRIT.get(), SpiritRenderers.Lamplight::new);
         event.registerEntityRenderer(MushoEntities.SUMMONED_SPIRIT.get(), SpiritRenderers.Fighting::new);
         event.registerEntityRenderer(MushoEntities.SWORD_MASTER.get(), TeacherRenderer::new);
@@ -63,6 +67,9 @@ public final class MushoClientSetup {
         event.registerSpriteSet(MushoParticles.FLASH.get(), FireParticles.FlashProvider::new);
         event.registerSpriteSet(MushoParticles.SHOCK_RING.get(), FireParticles.ShockRingProvider::new);
         event.registerSpriteSet(MushoParticles.MANA_MOTE.get(), ManaMote.Provider::new);
+        event.registerSpriteSet(MushoParticles.SHOCK_WAVE.get(), OrientedParticle.ShockWaveProvider::new);
+        event.registerSpriteSet(MushoParticles.SLASH.get(), OrientedParticle.SlashProvider::new);
+        event.registerSpriteSet(MushoParticles.ARC.get(), ArcParticle.Provider::new);
     }
 
     @SubscribeEvent

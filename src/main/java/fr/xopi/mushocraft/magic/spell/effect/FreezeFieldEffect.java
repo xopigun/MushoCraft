@@ -3,6 +3,7 @@ package fr.xopi.mushocraft.magic.spell.effect;
 import fr.xopi.mushocraft.core.MushoDamageTypes;
 import fr.xopi.mushocraft.core.MushoMobEffects;
 import fr.xopi.mushocraft.magic.entity.PillarKind;
+import fr.xopi.mushocraft.magic.fx.SpellFx;
 import fr.xopi.mushocraft.magic.entity.SpellPillar;
 import fr.xopi.mushocraft.magic.spell.SpellContext;
 import fr.xopi.mushocraft.magic.spell.SpellEffect;
@@ -66,6 +67,7 @@ public final class FreezeFieldEffect implements SpellEffect {
         }
         level.sendParticles(ParticleTypes.SNOWFLAKE, center.x, center.y + 0.3, center.z, (int) (reach * reach * 10),
                 reach * 0.5, 0.2, reach * 0.5, 0.01);
+        SpellFx.groundRing(level, context.caster(), center, reach, 8, ParticleTypes.SNOWFLAKE);
         level.playSound(null, BlockPos.containing(center), SoundEvents.POWDER_SNOW_PLACE, SoundSource.PLAYERS, 1.5F, 0.7F);
         return true;
     }

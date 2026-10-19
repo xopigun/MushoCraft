@@ -1,6 +1,13 @@
 package fr.xopi.mushocraft.client.particle;
 
+import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.blaze3d.vertex.VertexFormat;
+import fr.xopi.mushocraft.core.MushoParticles;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.Particle;
@@ -8,6 +15,9 @@ import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.client.particle.TextureSheetParticle;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
@@ -15,18 +25,47 @@ import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 /**
- * MushoCraft's fire particles. Fire glows in the dark (full bright); smoke is lit by the world.
+ * MushoCraft's fire particles. Fire is drawn additively: it glows, brightens what lies behind it, and a dying flame
+ * darkens rather than fades. Each flame takes one of two tints at random (a pale heart, a deeper orange), which bands the
+ * fire with colour for free; a dark enough flame hands over to a puff of smoke. Smoke is plain translucent and lit by
+ * the world. Techniques noted in docs/VISUELS_REFERENCE.md.
  */
 public final class FireParticles {
     private static final int FULL_BRIGHT = 0xF000F0;
 
+    /** Particles added to the light behind them, without hiding what is behind: glow and fire. */
+    public static final ParticleRenderType ADDITIVE = new ParticleRenderType() {
+        @Override
+        public BufferBuilder begin(Tesselator tesselator, TextureManager textures) {
+            RenderSystem.setShader(GameRenderer::getParticleShader);
+            RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_PARTICLES);
+            RenderSystem.enableBlend();
+            RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE);
+            RenderSystem.depthMask(false);
+            return tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.PARTICLE);
+        }
+
+        @Override
+        public String toString() {
+            return "MUSHOCRAFT_ADDITIVE";
+        }
+    };
+
+    /** The two tints of ordinary fire: the pale heart and the deep orange. */
+    private static final float[][] FIRE_TINTS = {{1.0F, 0.68F, 0.22F}, {0.95F, 0.3F, 0.07F}};
+
     private FireParticles() {
     }
 
-    /** A tongue of flame: plays its flicker frames over its life, rises, and shrinks away at the end. */
+    /**
+     * A tongue of flame: plays its flicker frames over its life, rises, and darkens away; when dark enough, some leave a
+     * puff of smoke in their place.
+     */
     public static final class Flame extends TextureSheetParticle {
         private final SpriteSet sprites;
         private final float startSize;
+        private final float[] tint;
+        private final boolean smokes;
 
         Flame(ClientLevel level, double x, double y, double z, double dx, double dy, double dz, SpriteSet sprites) {
             super(level, x, y, z, dx, dy, dz);
@@ -36,22 +75,32 @@ public final class FireParticles {
             this.zd = dz + (random.nextDouble() - 0.5) * 0.02;
             this.friction = 0.9F;
             this.gravity = -0.015F;
-            this.lifetime = 10 + random.nextInt(8);
-            this.startSize = 0.22F + random.nextFloat() * 0.18F;
+            this.lifetime = 11 + random.nextInt(10);
+            this.startSize = 0.22F + random.nextFloat() * 0.2F;
             this.quadSize = startSize;
             this.roll = (random.nextFloat() - 0.5F) * 0.3F;
             this.oRoll = roll;
+            this.tint = FIRE_TINTS[random.nextInt(FIRE_TINTS.length)];
+            this.smokes = random.nextFloat() < 0.15F;
+            setColor(tint[0], tint[1], tint[2]);
             setSpriteFromAge(sprites);
         }
 
         @Override
         public void tick() {
             super.tick();
-            if (!removed) {
-                setSpriteFromAge(sprites);
-                float life = (float) age / lifetime;
-                quadSize = startSize * (life < 0.2F ? 0.6F + life * 2.0F : 1.0F - (life - 0.2F) * 0.9F);
-                alpha = life > 0.75F ? 1.0F - (life - 0.75F) * 4.0F : 1.0F;
+            if (removed) {
+                return;
+            }
+            setSpriteFromAge(sprites);
+            float life = (float) age / lifetime;
+            quadSize = startSize * (life < 0.2F ? 0.6F + life * 2.0F : 1.0F - (life - 0.2F) * 0.7F);
+            // additive: darker is fainter; a flash of brightness first, then it dies down
+            float glow = Math.max(0.08F, 1.0F - life) * (1.0F + 0.5F * life);
+            setColor(tint[0] * glow, tint[1] * glow, tint[2] * glow);
+            if (smokes && glow < 0.3F) {
+                level.addParticle(MushoParticles.SMOKE.get(), x, y, z, xd * 0.5, 0.01, zd * 0.5);
+                remove();
             }
         }
 
@@ -62,13 +111,14 @@ public final class FireParticles {
 
         @Override
         public ParticleRenderType getRenderType() {
-            return ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
+            return ADDITIVE;
         }
     }
 
-    /** A spark: tiny, bright, thrown out, then it falls and fades. */
+    /** A spark: tiny, bright, thrown out, then it falls and dies out. */
     public static final class Ember extends TextureSheetParticle {
         private final SpriteSet sprites;
+        private final float[] tint;
 
         Ember(ClientLevel level, double x, double y, double z, double dx, double dy, double dz, SpriteSet sprites) {
             super(level, x, y, z, dx, dy, dz);
@@ -80,6 +130,8 @@ public final class FireParticles {
             this.gravity = 0.25F;
             this.lifetime = 16 + random.nextInt(20);
             this.quadSize = 0.05F + random.nextFloat() * 0.04F;
+            this.tint = FIRE_TINTS[random.nextInt(FIRE_TINTS.length)];
+            setColor(tint[0], tint[1], tint[2]);
             setSprite(sprites.get(0, 1));
         }
 
@@ -87,10 +139,11 @@ public final class FireParticles {
         public void tick() {
             super.tick();
             if (!removed) {
-                // embers twinkle
+                // embers twinkle as they cool
                 setSprite(sprites.get(random.nextInt(3) == 0 ? 1 : 0, 1));
                 float life = (float) age / lifetime;
-                alpha = life > 0.6F ? 1.0F - (life - 0.6F) * 2.5F : 1.0F;
+                float glow = life > 0.5F ? 1.0F - (life - 0.5F) * 2.0F : 1.0F;
+                setColor(tint[0] * glow, tint[1] * glow, tint[2] * glow);
             }
         }
 
@@ -101,7 +154,7 @@ public final class FireParticles {
 
         @Override
         public ParticleRenderType getRenderType() {
-            return ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
+            return ADDITIVE;
         }
     }
 
@@ -165,7 +218,9 @@ public final class FireParticles {
             super.tick();
             float life = (float) age / lifetime;
             quadSize = startSize * (1.0F + life * 0.6F);
-            alpha = 1.0F - life * life;
+            // a short, warm flash: additive light piles up fast, so it stays well below white
+            float glow = 0.55F * (1.0F - life * life);
+            setColor(glow, glow * 0.9F, glow * 0.7F);
         }
 
         @Override
@@ -175,7 +230,7 @@ public final class FireParticles {
 
         @Override
         public ParticleRenderType getRenderType() {
-            return ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
+            return ADDITIVE;
         }
     }
 

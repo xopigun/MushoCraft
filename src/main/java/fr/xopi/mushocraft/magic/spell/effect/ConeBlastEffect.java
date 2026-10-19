@@ -1,6 +1,7 @@
 package fr.xopi.mushocraft.magic.spell.effect;
 
 import fr.xopi.mushocraft.core.MushoDamageTypes;
+import fr.xopi.mushocraft.magic.fx.SpellFx;
 import fr.xopi.mushocraft.magic.spell.SpellContext;
 import fr.xopi.mushocraft.magic.spell.SpellEffect;
 import net.minecraft.core.particles.ParticleOptions;
@@ -19,6 +20,8 @@ import java.util.List;
  * numbs). The wave does not break blocks (docs/ECARTS.md).
  */
 public final class ConeBlastEffect implements SpellEffect {
+    private static final int WAVE_COLOUR = 0xEEF6FF;
+
     private final double range;
     private final double minCosine;
     private final float damage;
@@ -92,6 +95,8 @@ public final class ConeBlastEffect implements SpellEffect {
             double spread = step * Math.sqrt(1.0 - minCosine * minCosine) * 0.5;
             level.sendParticles(particle, point.x, point.y, point.z, 6, spread, spread * 0.5, spread, 0.05);
         }
+        // the wave drives a tunnel of torn air before it
+        SpellFx.shockTunnel(level, eyes, look, range, 1.5, (float) (Math.sqrt(1.0 - minCosine * minCosine) * 2.0), WAVE_COLOUR);
         level.playSound(null, context.caster().blockPosition(), sound, SoundSource.PLAYERS, 1.2F, 0.8F);
         return true;
     }
