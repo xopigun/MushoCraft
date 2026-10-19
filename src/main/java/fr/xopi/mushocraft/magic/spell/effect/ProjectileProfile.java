@@ -15,6 +15,8 @@ import fr.xopi.mushocraft.magic.spell.SpellElement;
  * @param slowTicks      ticks of slowness on hit (ice)
  * @param undeadMultiplier damage multiplier against undead (divine strike)
  * @param explosionRadius  radius of the blast on impact, 0 for none; never breaks blocks
+ * @param bindTicks        ticks the creature hit is held fast (Wind Bind), 0 for none
+ * @param blindRadius      radius of the blinding dust burst on impact (Sand Cloud), 0 for none
  */
 public record ProjectileProfile(
         SpellElement element,
@@ -26,7 +28,9 @@ public record ProjectileProfile(
         int igniteSeconds,
         int slowTicks,
         float undeadMultiplier,
-        float explosionRadius
+        float explosionRadius,
+        int bindTicks,
+        float blindRadius
 ) {
     public static final Codec<ProjectileProfile> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             SpellElement.CODEC.fieldOf("element").forGetter(ProjectileProfile::element),
@@ -38,7 +42,9 @@ public record ProjectileProfile(
             Codec.INT.fieldOf("ignite_seconds").forGetter(ProjectileProfile::igniteSeconds),
             Codec.INT.fieldOf("slow_ticks").forGetter(ProjectileProfile::slowTicks),
             Codec.FLOAT.fieldOf("undead_multiplier").forGetter(ProjectileProfile::undeadMultiplier),
-            Codec.FLOAT.optionalFieldOf("explosion_radius", 0.0F).forGetter(ProjectileProfile::explosionRadius)
+            Codec.FLOAT.optionalFieldOf("explosion_radius", 0.0F).forGetter(ProjectileProfile::explosionRadius),
+            Codec.INT.optionalFieldOf("bind_ticks", 0).forGetter(ProjectileProfile::bindTicks),
+            Codec.FLOAT.optionalFieldOf("blind_radius", 0.0F).forGetter(ProjectileProfile::blindRadius)
     ).apply(instance, ProjectileProfile::new));
 
     public static Builder of(SpellElement element, float damage) {
@@ -47,13 +53,14 @@ public record ProjectileProfile(
 
     public ProjectileProfile scaled(double power) {
         return new ProjectileProfile(element, (float) (damage * power), speed, gravity, size, knockback,
-                igniteSeconds, slowTicks, undeadMultiplier, explosionRadius);
+                igniteSeconds, slowTicks, undeadMultiplier, explosionRadius, bindTicks, blindRadius);
     }
 
     /** The same projectile, larger (and with a wider blast) by this factor. */
     public ProjectileProfile enlarged(double factor) {
         return new ProjectileProfile(element, damage, speed, gravity, (float) (size * factor), knockback,
-                igniteSeconds, slowTicks, undeadMultiplier, (float) (explosionRadius * factor));
+                igniteSeconds, slowTicks, undeadMultiplier, (float) (explosionRadius * factor), bindTicks,
+                (float) (blindRadius * factor));
     }
 
     public static final class Builder {
@@ -67,6 +74,8 @@ public record ProjectileProfile(
         private int slowTicks;
         private float undeadMultiplier = 1.0F;
         private float explosionRadius;
+        private int bindTicks;
+        private float blindRadius;
 
         private Builder(SpellElement element, float damage) {
             this.element = element;
@@ -113,9 +122,19 @@ public record ProjectileProfile(
             return this;
         }
 
+        public Builder bind(int ticks) {
+            this.bindTicks = ticks;
+            return this;
+        }
+
+        public Builder blindingDust(float radius) {
+            this.blindRadius = radius;
+            return this;
+        }
+
         public ProjectileProfile build() {
             return new ProjectileProfile(element, damage, speed, gravity, size, knockback, igniteSeconds, slowTicks,
-                    undeadMultiplier, explosionRadius);
+                    undeadMultiplier, explosionRadius, bindTicks, blindRadius);
         }
     }
 }

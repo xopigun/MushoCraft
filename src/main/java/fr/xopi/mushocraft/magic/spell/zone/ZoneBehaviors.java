@@ -1,6 +1,7 @@
 package fr.xopi.mushocraft.magic.spell.zone;
 
 import fr.xopi.mushocraft.core.MushoDamageTypes;
+import fr.xopi.mushocraft.core.MushoMobEffects;
 import fr.xopi.mushocraft.magic.entity.SpellZone;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -87,6 +88,92 @@ public final class ZoneBehaviors {
                 level.playSound(null, zone.blockPosition(), SoundEvents.ELYTRA_FLYING, SoundSource.PLAYERS, 0.6F, 0.6F);
             }
         };
+    }
+
+    /** Waterfall: water pours down without end, pressing creatures down and away, soaking them. */
+    public static SpellZone.Behavior waterfall(double push) {
+        return (zone, level, age) -> {
+            level.sendParticles(ParticleTypes.FALLING_WATER, zone.getX(), zone.getY() + 6.0, zone.getZ(), 30,
+                    zone.radius() * 0.5, 1.5, zone.radius() * 0.5, 0.0);
+            if (age % 4 == 0) {
+                level.sendParticles(ParticleTypes.SPLASH, zone.getX(), zone.getY() + 0.2, zone.getZ(), 20,
+                        zone.radius() * 0.5, 0.0, zone.radius() * 0.5, 0.1);
+            }
+            for (LivingEntity target : zone.creaturesInside(6.0)) {
+                Vec3 away = new Vec3(target.getX() - zone.getX(), 0.0, target.getZ() - zone.getZ());
+                Vec3 out = away.lengthSqr() < 1.0E-4 ? Vec3.ZERO : away.normalize().scale(push);
+                target.push(out.x, -push, out.z);
+                target.hurtMarked = true;
+                soak(target, zone);
+            }
+            if (age % 20 == 0) {
+                level.playSound(null, zone.blockPosition(), SoundEvents.WATER_AMBIENT, SoundSource.PLAYERS, 1.0F, 1.0F);
+            }
+        };
+    }
+
+    /** Flood Flush: the ground floods; creatures wade, slowed and soaked. */
+    public static SpellZone.Behavior flood() {
+        return (zone, level, age) -> {
+            if (age % 3 == 0) {
+                level.sendParticles(ParticleTypes.SPLASH, zone.getX(), zone.getY() + 0.1, zone.getZ(), 40,
+                        zone.radius() * 0.6, 0.0, zone.radius() * 0.6, 0.2);
+                level.sendParticles(ParticleTypes.BUBBLE_POP, zone.getX(), zone.getY() + 0.3, zone.getZ(), 15,
+                        zone.radius() * 0.6, 0.1, zone.radius() * 0.6, 0.0);
+            }
+            for (LivingEntity target : zone.creaturesInside(2.0)) {
+                target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20, 2, false, false));
+                soak(target, zone);
+            }
+        };
+    }
+
+    /** Heat Island: the surroundings grow hot; the frozen thaw and the soaked dry, foes slowly scorch. */
+    public static SpellZone.Behavior heatIsland(float damagePerSecond) {
+        return (zone, level, age) -> {
+            if (age % 5 == 0) {
+                level.sendParticles(ParticleTypes.SMALL_FLAME, zone.getX(), zone.getY() + 0.2, zone.getZ(), 12,
+                        zone.radius() * 0.6, 0.1, zone.radius() * 0.6, 0.01);
+            }
+            LivingEntity caster = zone.caster();
+            if (caster != null) {
+                caster.setTicksFrozen(0);
+                caster.removeEffect(MushoMobEffects.SOAKED);
+            }
+            for (LivingEntity target : zone.creaturesInside(3.0)) {
+                target.removeEffect(MushoMobEffects.SOAKED);
+                if (age % 20 == 0) {
+                    target.hurt(level.damageSources().hotFloor(), (float) (damagePerSecond * zone.power()));
+                }
+            }
+        };
+    }
+
+    /** Burning Place: a wreath of fire around the caster engulfs whoever comes close. */
+    public static SpellZone.Behavior burningRing(float damagePerSecond, int igniteSeconds) {
+        return (zone, level, age) -> {
+            LivingEntity caster = zone.caster();
+            if (caster != null) {
+                zone.setPos(caster.position());
+            }
+            if (age % 3 == 0) {
+                for (int i = 0; i < 16; i++) {
+                    double angle = i * Math.PI / 8.0 + age * 0.05;
+                    level.sendParticles(ParticleTypes.FLAME, zone.getX() + Math.cos(angle) * zone.radius(), zone.getY() + 0.3,
+                            zone.getZ() + Math.sin(angle) * zone.radius(), 1, 0.0, 0.2, 0.0, 0.01);
+                }
+            }
+            for (LivingEntity target : zone.creaturesInside(2.5)) {
+                target.igniteForSeconds(igniteSeconds);
+                if (age % 20 == 0) {
+                    target.hurt(MushoDamageTypes.spell(level, zone, caster), (float) (damagePerSecond * zone.power()));
+                }
+            }
+        };
+    }
+
+    private static void soak(LivingEntity target, SpellZone zone) {
+        target.addEffect(new MobEffectInstance(MushoMobEffects.SOAKED, 200, 0), zone.caster());
     }
 
     /** Spirit-Sealing Barrier: spirits and the undead inside are held in place and slowly worn away. */

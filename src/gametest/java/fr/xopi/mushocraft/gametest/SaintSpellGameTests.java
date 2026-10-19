@@ -54,7 +54,9 @@ public final class SaintSpellGameTests {
     }
 
     private static void clearZones(GameTestHelper helper, ServerPlayer player) {
-        helper.getLevel().getEntitiesOfClass(SpellZone.class, player.getBoundingBox().inflate(40.0)).forEach(SpellZone::discard);
+        // Only this test's zones: neighbouring tests run at the same time.
+        helper.getLevel().getEntitiesOfClass(SpellZone.class, player.getBoundingBox().inflate(40.0), zone -> zone.caster() == player)
+                .forEach(SpellZone::discard);
     }
 
     @GameTest(template = EMPTY, timeoutTicks = 160)

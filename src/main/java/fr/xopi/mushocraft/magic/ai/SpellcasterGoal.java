@@ -83,6 +83,10 @@ public class SpellcasterGoal extends Goal {
 
     @Override
     public void tick() {
+        // Minecraft only re-checks canContinueToUse every other tick: the tick after a release may still come here.
+        if (chanting == null) {
+            return;
+        }
         LivingEntity target = caster.getTarget();
         if (target != null) {
             caster.getLookControl().setLookAt(target);

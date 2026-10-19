@@ -4,6 +4,7 @@ import fr.xopi.mushocraft.core.MushoDamageTypes;
 import fr.xopi.mushocraft.core.MushoEntities;
 import fr.xopi.mushocraft.magic.spell.SpellElement;
 import fr.xopi.mushocraft.magic.spell.effect.ProjectileProfile;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -108,6 +109,11 @@ public class SpellProjectile extends ThrowableProjectile {
             if (profile.slowTicks() > 0) {
                 living.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, profile.slowTicks(), 1), getOwner());
             }
+            if (profile.bindTicks() > 0) {
+                // Bound by the wind: no more walking, no more swinging.
+                living.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, profile.bindTicks(), 9), getOwner());
+                living.addEffect(new MobEffectInstance(MobEffects.DIG_SLOWDOWN, profile.bindTicks(), 3), getOwner());
+            }
         }
         if (profile.igniteSeconds() > 0) {
             target.igniteForSeconds(profile.igniteSeconds());
@@ -122,6 +128,13 @@ public class SpellProjectile extends ThrowableProjectile {
                 server.explode(this, MushoDamageTypes.spell(server, this, getOwner()), null,
                         getX(), getY(), getZ(), profile.explosionRadius(), false,
                         Level.ExplosionInteraction.NONE);
+            }
+            if (profile.blindRadius() > 0.0F) {
+                double radius = profile.blindRadius();
+                server.getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(radius), entity -> entity != getOwner())
+                        .forEach(entity -> entity.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 80, 0), getOwner()));
+                server.sendParticles(ParticleTypes.WHITE_ASH, getX(), getY(), getZ(), (int) (radius * radius * 20), radius * 0.6,
+                        radius * 0.4, radius * 0.6, 0.02);
             }
             server.sendParticles(element().trail(), getX(), getY(), getZ(), 12, 0.2, 0.2, 0.2, 0.05);
             server.playSound(null, getX(), getY(), getZ(), impactSound(), SoundSource.PLAYERS, 0.7F, 1.2F);

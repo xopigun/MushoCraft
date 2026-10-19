@@ -17,6 +17,7 @@ import fr.xopi.mushocraft.magic.spell.effect.EruptionEffect;
 import fr.xopi.mushocraft.magic.spell.effect.ExplosionEffect;
 import fr.xopi.mushocraft.magic.spell.effect.FallingProjectileEffect;
 import fr.xopi.mushocraft.magic.spell.effect.FortressEffect;
+import fr.xopi.mushocraft.magic.spell.effect.FreezeFieldEffect;
 import fr.xopi.mushocraft.magic.spell.effect.HealEffect;
 import fr.xopi.mushocraft.magic.spell.effect.PiercingRayEffect;
 import fr.xopi.mushocraft.magic.spell.effect.ProjectileEffect;
@@ -328,6 +329,78 @@ public final class MushoSpells {
     public static final DeferredHolder<Spell, Spell> SPIRIT_SEALING_BARRIER = SPELLS.register("spirit_sealing_barrier",
             () -> Spell.builder(SpellSchool.BARRIER, Rank.SAINT).manaCost(100).cooldownTicks(900)
                     .effect(new ZoneEffect(() -> ZoneBehaviors.spiritSeal(5.0F), 6.0, 300, 20.0, SoundEvents.BEACON_ACTIVATE))
+                    .build());
+
+    // ---- Spells the wiki gives no rank (ranks chosen for the game: docs/ECARTS.md, E19) ----
+
+    /** Bombards the area with countless water droplets, soaking everyone in it (wiki, Water). */
+    public static final DeferredHolder<Spell, Spell> WATER_SPLASH = SPELLS.register("water_splash",
+            () -> Spell.builder(SpellSchool.WATER, Rank.BEGINNER).manaCost(8).cooldownTicks(80)
+                    .effect(new AreaBurstEffect(4.0, 1.0F, 0, 16.0, ParticleTypes.SPLASH, SoundEvents.GENERIC_SPLASH,
+                            List.of(new CloudEffect.Affliction(MushoMobEffects.SOAKED, 300, 0))))
+                    .build());
+
+    /** Heats the caster's hands, hot enough to melt stone: blows set the foe alight (wiki, Fire). */
+    public static final DeferredHolder<Spell, Spell> HEAT_HAND = SPELLS.register("heat_hand",
+            () -> Spell.builder(SpellSchool.FIRE, Rank.BEGINNER).intent(SpellIntent.DEFEND).manaCost(8).cooldownTicks(400)
+                    .effect(new SelfStatusEffect(MushoMobEffects.HEATED_HANDS, 400, 0, SoundEvents.FIRECHARGE_USE))
+                    .build());
+
+    /** Raises a wall of earth ahead (wiki, Earth Wall). */
+    public static final DeferredHolder<Spell, Spell> EARTH_WALL = SPELLS.register("earth_wall",
+            () -> Spell.builder(SpellSchool.EARTH, Rank.BEGINNER).intent(SpellIntent.DEFEND).manaCost(10).cooldownTicks(160)
+                    .effect(new WallEffect(MushoBlocks.CONJURED_EARTH, 2, 3, 3, 300, SoundEvents.ROOTED_DIRT_PLACE))
+                    .build());
+
+    /** Water pours down without end like a real waterfall, pressing down and soaking (wiki, Water). */
+    public static final DeferredHolder<Spell, Spell> WATERFALL = SPELLS.register("waterfall",
+            () -> Spell.builder(SpellSchool.WATER, Rank.INTERMEDIATE).manaCost(18).cooldownTicks(300)
+                    .effect(new ZoneEffect(() -> ZoneBehaviors.waterfall(0.08), 2.5, 160, 16.0, SoundEvents.WATER_AMBIENT))
+                    .build());
+
+    /** Floods the ground with water: creatures wade, slowed and soaked (wiki, Water). */
+    public static final DeferredHolder<Spell, Spell> FLOOD_FLUSH = SPELLS.register("flood_flush",
+            () -> Spell.builder(SpellSchool.WATER, Rank.INTERMEDIATE).manaCost(20).cooldownTicks(300)
+                    .effect(new ZoneEffect(ZoneBehaviors::flood, 6.0, 200, 16.0, SoundEvents.GENERIC_SPLASH))
+                    .build());
+
+    /** Freezes everything in the area, all the more the wet (wiki, Water). */
+    public static final DeferredHolder<Spell, Spell> ICICLE_FIELD = SPELLS.register("icicle_field",
+            () -> Spell.builder(SpellSchool.WATER, Rank.INTERMEDIATE).manaCost(18).cooldownTicks(200)
+                    .effect(new FreezeFieldEffect(4.0, 5.0F, 80, 16.0))
+                    .build());
+
+    /** Heats the surroundings: the frozen thaw, the soaked dry, foes scorch (wiki, Fire). */
+    public static final DeferredHolder<Spell, Spell> HEAT_ISLAND = SPELLS.register("heat_island",
+            () -> Spell.builder(SpellSchool.FIRE, Rank.INTERMEDIATE).intent(SpellIntent.UTILITY).manaCost(15).cooldownTicks(400)
+                    .effect(new ZoneEffect(() -> ZoneBehaviors.heatIsland(1.0F), 5.0, 200, 0.0, SoundEvents.FIRE_AMBIENT))
+                    .build());
+
+    /** A wreath of fire around the caster engulfs whoever comes close (wiki, Fire). */
+    public static final DeferredHolder<Spell, Spell> BURNING_PLACE = SPELLS.register("burning_place",
+            () -> Spell.builder(SpellSchool.FIRE, Rank.INTERMEDIATE).intent(SpellIntent.DEFEND).manaCost(18).cooldownTicks(400)
+                    .effect(new ZoneEffect(() -> ZoneBehaviors.burningRing(3.0F, 4), 3.0, 120, 0.0, SoundEvents.BLAZE_SHOOT))
+                    .build());
+
+    /** Shoots a blade of flame that sears and slices (wiki, Fire). */
+    public static final DeferredHolder<Spell, Spell> FLAME_SLICE = SPELLS.register("flame_slice",
+            () -> Spell.builder(SpellSchool.FIRE, Rank.INTERMEDIATE).manaCost(12).cooldownTicks(40)
+                    .effect(new ProjectileEffect(ProjectileProfile.of(SpellElement.FIRE, 7.0F)
+                            .speed(2.4F).size(0.4F).ignite(3).build(), SoundEvents.BLAZE_SHOOT))
+                    .build());
+
+    /** A whip of wind that ties the foe down (wiki, Wind). */
+    public static final DeferredHolder<Spell, Spell> WIND_BIND = SPELLS.register("wind_bind",
+            () -> Spell.builder(SpellSchool.WIND, Rank.INTERMEDIATE).manaCost(14).cooldownTicks(200)
+                    .effect(new ProjectileEffect(ProjectileProfile.of(SpellElement.WIND, 1.0F)
+                            .speed(2.0F).size(0.4F).bind(60).build(), SoundEvents.BREEZE_SHOOT))
+                    .build());
+
+    /** An earth bullet that bursts into a blinding cloud of sand where it lands (wiki, Sand Cloud). */
+    public static final DeferredHolder<Spell, Spell> SAND_CLOUD = SPELLS.register("sand_cloud",
+            () -> Spell.builder(SpellSchool.EARTH, Rank.INTERMEDIATE).manaCost(14).cooldownTicks(160)
+                    .effect(new ProjectileEffect(ProjectileProfile.of(SpellElement.EARTH, 3.0F)
+                            .speed(1.6F).gravity(0.02F).size(0.4F).blindingDust(3.0F).build(), SoundEvents.SAND_BREAK))
                     .build());
 
     private MushoSpells() {

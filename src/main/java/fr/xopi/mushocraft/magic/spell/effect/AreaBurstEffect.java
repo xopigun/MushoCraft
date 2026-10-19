@@ -8,9 +8,12 @@ import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+
+import java.util.List;
 
 /**
  * Something that spreads over a whole area in an instant, centred where the caster aims (Flash Over: flames over a
@@ -23,14 +26,24 @@ public final class AreaBurstEffect implements SpellEffect {
     private final double range;
     private final ParticleOptions particle;
     private final SoundEvent sound;
+    private final List<CloudEffect.Affliction> afflictions;
 
     public AreaBurstEffect(double radius, float damage, int igniteSeconds, double range, ParticleOptions particle, SoundEvent sound) {
+        this(radius, damage, igniteSeconds, range, particle, sound, List.of());
+    }
+
+    /**
+     * @param afflictions conditions left on everyone caught (Water Splash: soaked)
+     */
+    public AreaBurstEffect(double radius, float damage, int igniteSeconds, double range, ParticleOptions particle, SoundEvent sound,
+                           List<CloudEffect.Affliction> afflictions) {
         this.radius = radius;
         this.damage = damage;
         this.igniteSeconds = igniteSeconds;
         this.range = range;
         this.particle = particle;
         this.sound = sound;
+        this.afflictions = List.copyOf(afflictions);
     }
 
     @Override
@@ -41,7 +54,11 @@ public final class AreaBurstEffect implements SpellEffect {
         AABB area = new AABB(center, center).inflate(reach, 3.0, reach);
         for (LivingEntity target : level.getEntitiesOfClass(LivingEntity.class, area,
                 entity -> entity != context.caster() && entity.distanceToSqr(center) <= reach * reach + 9.0)) {
-            target.hurt(MushoDamageTypes.spell(level, context.caster(), context.caster()), (float) (damage * context.power()));
+            if (damage > 0.0F) {
+                target.hurt(MushoDamageTypes.spell(level, context.caster(), context.caster()), (float) (damage * context.power()));
+            }
+            afflictions.forEach(affliction -> target.addEffect(
+                    new MobEffectInstance(affliction.effect(), affliction.durationTicks(), affliction.amplifier()), context.caster()));
             if (igniteSeconds > 0) {
                 target.igniteForSeconds(igniteSeconds);
             }
