@@ -1,5 +1,6 @@
 package fr.xopi.mushocraft.client.hud;
 
+import fr.xopi.mushocraft.client.ClientAuraState;
 import fr.xopi.mushocraft.client.ClientManaState;
 import fr.xopi.mushocraft.magic.mana.ManaSnapshot;
 import net.minecraft.client.DeltaTracker;
@@ -20,6 +21,8 @@ public final class ManaBarLayer implements LayeredDraw.Layer {
     private static final int EMPTY_COLOR = 0xFF1C2A40;
     private static final int FILL_COLOR = 0xFF3D8BFF;
     private static final int SHINE_COLOR = 0xFF9CC8FF;
+    /** The gauge is framed in gold while the Battle Aura burns mana. */
+    private static final int AURA_BORDER_COLOR = 0xFFF2D36B;
 
     @Override
     public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
@@ -36,7 +39,8 @@ public final class ManaBarLayer implements LayeredDraw.Layer {
         int top = graphics.guiHeight() - minecraft.gui.rightHeight - HEIGHT + 9 - SPACING;
         minecraft.gui.rightHeight += HEIGHT + SPACING;
 
-        graphics.fill(left - 1, top - 1, right + 1, top + HEIGHT + 1, BORDER_COLOR);
+        int border = ClientAuraState.isUp() ? AURA_BORDER_COLOR : BORDER_COLOR;
+        graphics.fill(left - 1, top - 1, right + 1, top + HEIGHT + 1, border);
         graphics.fill(left, top, right, top + HEIGHT, EMPTY_COLOR);
         int filled = (int) Math.round(WIDTH * mana.fill());
         if (filled > 0) {

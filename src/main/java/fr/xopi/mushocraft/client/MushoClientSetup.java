@@ -43,5 +43,6 @@ public final class MushoClientSetup {
     public static void onRegisterKeyMappings(RegisterKeyMappingsEvent event) {
         event.register(MushoKeyMappings.CIRCULATE_MANA);
         event.register(MushoKeyMappings.OPEN_MOVES);
+        event.register(MushoKeyMappings.TOGGLE_AURA);
     }
 }

@@ -46,8 +46,8 @@ Dernière mise à jour : 19/10/2026.
 |---|---|---|---|---|---|
 | S1 | Trois grands styles | Dieu de l'Épée, Dieu de l'Eau, Dieu du Nord. | wiki, catégorie *Swordstyle* | à relever | conforme |
 | S2 | Rangs d'escrime | Débutant à Dieu, avec les titres Saint, Roi, Empereur, Dieu par style. | pages des trois styles | à relever | conforme |
-| S3 | Aura de combat = mana | L'aura enveloppe et comprime le corps dans le mana pour décupler les capacités physiques. | WN ch. 80 | à relever | conforme (elle puise dans le réservoir) |
-| S4 | Aura par l'entraînement | Elle s'acquiert par l'entraînement physique, sans incantation. | WN ch. 80 | à relever | conforme |
+| S3 | Aura de combat = mana | L'aura enveloppe et comprime le corps dans le mana pour décupler les capacités physiques. | WN ch. 80 | à relever | conforme (`BattleAuraService` : elle puise dans le réservoir et renforce les stats) |
+| S4 | Aura par l'entraînement | Elle s'acquiert par l'entraînement physique, sans incantation ; elle peut apparaître avant d'être comprise (Eris). | WN ch. 80 | à relever | conforme (maîtrise gagnée en s'entraînant, niveau « inconsciente » automatique) |
 | S5 | Certains n'obtiennent jamais l'aura | Rudeus et Laplace n'en ont pas. | WN ch. 80 ; Q&A de l'auteur, réponse 187 | à relever | écart E2 |
 | S6 | Contrôle de l'aura et rang | Contrôle conscient = Avancé, contrôle complet = Saint (propos de Ghislaine, style du Dieu de l'Épée). | wiki *Battle Aura* (pas de tome cité) | à relever | à vérifier |
 | S7 | Maîtres de différents niveaux | Chaque style a des pratiquants de tous rangs. | pages des trois styles | à relever | conforme |

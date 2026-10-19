@@ -23,7 +23,8 @@ public final class MushoCommands {
             new LifeCommand(),
             new TalentCommand(),
             new ManaCommand(),
-            new MagicCommand()
+            new MagicCommand(),
+            new BodyCommand()
     );
 
     private MushoCommands() {

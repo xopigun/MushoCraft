@@ -27,6 +27,14 @@ public final class MushoKeyMappings {
             GLFW.GLFW_KEY_J,
             CATEGORY);
 
+    /** Raises or lowers the Battle Aura, once it is consciously controlled. */
+    public static final KeyMapping TOGGLE_AURA = new KeyMapping(
+            "key.mushocraft.toggle_aura",
+            KeyConflictContext.IN_GAME,
+            InputConstants.Type.KEYSYM,
+            GLFW.GLFW_KEY_B,
+            CATEGORY);
+
     private MushoKeyMappings() {
     }
 }

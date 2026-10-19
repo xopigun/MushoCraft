@@ -1,6 +1,8 @@
 package fr.xopi.mushocraft.core;
 
 import fr.xopi.mushocraft.MushoCraft;
+import fr.xopi.mushocraft.body.BodyTraining;
+import fr.xopi.mushocraft.body.aura.BattleAuraData;
 import fr.xopi.mushocraft.combat.move.Cooldowns;
 import fr.xopi.mushocraft.combat.move.MoveLoadout;
 import fr.xopi.mushocraft.life.LifeData;
@@ -43,6 +45,12 @@ public final class MushoAttachments {
 
     public static final Supplier<AttachmentType<Cooldowns>> COOLDOWNS = ATTACHMENT_TYPES.register("cooldowns",
             () -> AttachmentType.builder(Cooldowns::none).serialize(Cooldowns.CODEC).copyOnDeath().build());
+
+    public static final Supplier<AttachmentType<BodyTraining>> BODY_TRAINING = ATTACHMENT_TYPES.register("body_training",
+            () -> AttachmentType.builder(BodyTraining::none).serialize(BodyTraining.CODEC).copyOnDeath().build());
+
+    public static final Supplier<AttachmentType<BattleAuraData>> BATTLE_AURA = ATTACHMENT_TYPES.register("battle_aura",
+            () -> AttachmentType.builder(BattleAuraData::none).serialize(BattleAuraData.CODEC).copyOnDeath().build());
 
     private MushoAttachments() {
     }

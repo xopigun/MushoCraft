@@ -3,6 +3,7 @@ package fr.xopi.mushocraft.client.input;
 import fr.xopi.mushocraft.MushoCraft;
 import fr.xopi.mushocraft.client.screen.MovesScreen;
 import fr.xopi.mushocraft.compat.epicfight.EpicFightModes;
+import fr.xopi.mushocraft.network.ToggleAuraPayload;
 import fr.xopi.mushocraft.network.UseMovePayload;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -29,6 +30,9 @@ public final class MoveKeyInput {
         }
         while (MushoKeyMappings.OPEN_MOVES.consumeClick()) {
             minecraft.setScreen(new MovesScreen());
+        }
+        while (MushoKeyMappings.TOGGLE_AURA.consumeClick()) {
+            PacketDistributor.sendToServer(new ToggleAuraPayload());
         }
         if (!EpicFightModes.isBattleMode(minecraft.player)) {
             return;

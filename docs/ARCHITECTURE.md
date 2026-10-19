@@ -221,6 +221,6 @@ Limite à connaître : je n'ai accès qu'au wiki et à ses références. Je ne p
 3. ✅ `ManaData` + jauge de mana + circulation pour s'entraîner (nuit du 19/10, voir `docs/nuits/2026-10-19.md`).
 4. ✅ Abstraction `Move`, `Cooldowns`, barre de move branchée sur le mode Epic Fight, écran des moves (nuit du 19/10).
 5. 🟡 Moteur de sorts + 11 sorts Débutants + 12 Intermédiaires + maîtrise par école (nuit du 19/10) ; restent les rangs Avancé et plus, la magie mixte, l'incantation abrégée et silencieuse.
-6. `BodyStats` + entraînement.
+6. ✅ Stats physiques + entraînement + aura de combat (nuit du 19/10).
 7. Styles Epic Fight + techniques + recharge partagée.
 8. Maîtres PNJ.
