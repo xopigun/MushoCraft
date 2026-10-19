@@ -83,4 +83,44 @@ public final class SpellFx {
                 level.random.nextFloat() * 360.0F, (float) (width * 1.4), rgb), target.getX(), target.getY() + 0.05, target.getZ(),
                 1, 0.0, 0.0, 0.0, 0.0);
     }
+
+    /** Where a creature's hand is, held a little before it: its right hand, or its left one. */
+    public static Vec3 hand(LivingEntity creature, boolean right) {
+        double yaw = Math.toRadians(creature.yBodyRot);
+        Vec3 forward = new Vec3(-Math.sin(yaw), 0.0, Math.cos(yaw));
+        Vec3 side = new Vec3(-Math.cos(yaw), 0.0, -Math.sin(yaw)).scale(right ? 1.0 : -1.0);
+        return creature.position().add(0.0, creature.getBbHeight() * 0.55, 0.0)
+                .add(forward.scale(0.35 * creature.getScale())).add(side.scale(0.38 * creature.getScale()));
+    }
+
+    /**
+     * An object shaped out of an element in the hand (Ice Blade): motes of the element rush into the hand, which flashes
+     * as the object takes form.
+     */
+    public static void conjureInHand(ServerLevel level, LivingEntity caster, int rgb) {
+        Vec3 hand = hand(caster, true);
+        ColorParticleOption mote = ColorParticleOption.create(MushoParticles.MANA_MOTE.get(), 0xFF000000 | rgb);
+        RandomSource random = level.random;
+        for (int i = 0; i < 16; i++) {
+            Vec3 from = new Vec3(random.nextDouble() - 0.5, random.nextDouble() - 0.5, random.nextDouble() - 0.5)
+                    .normalize().scale(0.9);
+            // a mote's speed is aimed so that it reaches the hand at the end of its life (ten ticks)
+            level.sendParticles(mote, hand.x + from.x, hand.y + from.y, hand.z + from.z, 0, -from.x / 10.0, -from.y / 10.0,
+                    -from.z / 10.0, 1.0);
+        }
+        level.sendParticles(ColorParticleOption.create(MushoParticles.IMPACT.get(), 0xFF000000 | rgb), hand.x, hand.y, hand.z,
+                0, 0.9, 0.0, 0.0, 1.0);
+    }
+
+    /** Hands so hot they glow: motes of heat and sparks curling up from both. */
+    public static void heatedHands(ServerLevel level, LivingEntity creature) {
+        ColorParticleOption heat = ColorParticleOption.create(MushoParticles.RISING_LIGHT.get(), 0xFFFF8A30);
+        for (boolean right : new boolean[]{true, false}) {
+            Vec3 hand = hand(creature, right);
+            level.sendParticles(heat, hand.x, hand.y, hand.z, 2, 0.06, 0.04, 0.06, 0.0);
+            if (level.random.nextInt(2) == 0) {
+                level.sendParticles(MushoParticles.EMBER.get(), hand.x, hand.y, hand.z, 1, 0.05, 0.05, 0.05, 0.02);
+            }
+        }
+    }
 }

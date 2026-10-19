@@ -97,7 +97,7 @@ public class SpellPillarRenderer extends EntityRenderer<SpellPillar> {
         return switch (pillar.kind()) {
             case ICE_PILLAR -> List.of("tip");
             case EARTH_LANCE, EARTH_SPIKE -> List.of("shard_0", "shard_1", "shard_2");
-            case FROST_MOUND -> List.of();
+            case EARTH_WALL, EARTH_FORTRESS, FROST_MOUND -> List.of();
         };
     }
 

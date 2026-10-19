@@ -8,6 +8,7 @@ import fr.xopi.mushocraft.magic.spell.SpellElement;
 import fr.xopi.mushocraft.magic.spell.effect.ProjectileProfile;
 import fr.xopi.mushocraft.magic.spell.effect.ProjectileShape;
 import net.minecraft.core.particles.BlockParticleOption;
+import net.minecraft.core.particles.ColorParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
@@ -202,6 +203,9 @@ public class SpellProjectile extends ThrowableProjectile implements GeoEntity {
                         radius * 0.4, radius * 0.6, 0.02);
             }
             server.sendParticles(element().trail(), getX(), getY(), getZ(), 12, 0.2, 0.2, 0.2, 0.05);
+            // a drawn hit spark, tinted by the element
+            server.sendParticles(ColorParticleOption.create(MushoParticles.IMPACT.get(), 0xFF000000 | impactTint()),
+                    getX(), getY() + getBbHeight() / 2.0, getZ(), 0, Math.max(0.6, visualSize() * 1.8), 0.0, 0.0, 1.0);
             if (element() == SpellElement.WATER) {
                 // the mass bursts into a spray, as in the anime
                 double spread = visualSize();
@@ -213,6 +217,18 @@ public class SpellProjectile extends ThrowableProjectile implements GeoEntity {
             server.playSound(null, getX(), getY(), getZ(), impactSound(), SoundSource.PLAYERS, 0.7F, 1.2F);
             discard();
         }
+    }
+
+    /** The colour of the hit spark: a pale shade of the element. */
+    private int impactTint() {
+        return switch (element()) {
+            case WATER -> 0xB8E4FF;
+            case ICE -> 0xDDF2FF;
+            case FIRE -> 0xFFC070;
+            case EARTH -> 0xE8D2B0;
+            case WIND -> 0xD8FFEE;
+            case LIGHT -> 0xFFF2B0;
+        };
     }
 
     private SoundEvent impactSound() {

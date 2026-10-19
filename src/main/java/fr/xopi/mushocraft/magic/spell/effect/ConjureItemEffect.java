@@ -1,6 +1,7 @@
 package fr.xopi.mushocraft.magic.spell.effect;
 
 import fr.xopi.mushocraft.core.MushoDataComponents;
+import fr.xopi.mushocraft.magic.fx.SpellFx;
 import fr.xopi.mushocraft.magic.spell.SpellContext;
 import fr.xopi.mushocraft.magic.spell.SpellEffect;
 import net.minecraft.sounds.SoundEvent;
@@ -17,6 +18,9 @@ import java.util.function.Supplier;
  * The object melts away after its duration: see {@code ConjuredItem}.
  */
 public final class ConjureItemEffect implements SpellEffect {
+    /** The pale blue light of the ice taking form in the hand. */
+    private static final int ICE_LIGHT = 0xBFE8FF;
+
     private final Supplier<? extends Item> item;
     private final int durationTicks;
     private final SoundEvent sound;
@@ -42,6 +46,7 @@ public final class ConjureItemEffect implements SpellEffect {
             return false;
         }
         context.level().playSound(null, context.caster().blockPosition(), sound, SoundSource.PLAYERS, 1.0F, 1.2F);
+        SpellFx.conjureInHand(context.level(), context.caster(), ICE_LIGHT);
         return true;
     }
 }

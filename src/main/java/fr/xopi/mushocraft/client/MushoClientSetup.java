@@ -6,6 +6,7 @@ import fr.xopi.mushocraft.client.hud.MoveBarLayer;
 import fr.xopi.mushocraft.client.input.MushoKeyMappings;
 import fr.xopi.mushocraft.client.particle.ArcParticle;
 import fr.xopi.mushocraft.client.particle.FireParticles;
+import fr.xopi.mushocraft.client.particle.FlipbookParticle;
 import fr.xopi.mushocraft.client.particle.ManaMote;
 import fr.xopi.mushocraft.client.particle.OrientedParticle;
 import fr.xopi.mushocraft.client.particle.RisingLight;
@@ -72,6 +73,8 @@ public final class MushoClientSetup {
         event.registerSpriteSet(MushoParticles.SLASH.get(), OrientedParticle.SlashProvider::new);
         event.registerSpriteSet(MushoParticles.ARC.get(), ArcParticle.Provider::new);
         event.registerSpriteSet(MushoParticles.RISING_LIGHT.get(), RisingLight.Provider::new);
+        event.registerSpriteSet(MushoParticles.IMPACT.get(), FlipbookParticle.ImpactProvider::new);
+        event.registerSpriteSet(MushoParticles.BLAST.get(), FlipbookParticle.BlastProvider::new);
     }
 
     @SubscribeEvent

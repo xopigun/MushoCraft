@@ -61,6 +61,22 @@ public final class MushoParticles {
                 }
             });
 
+    /** A drawn hit spark where a spell strikes, tinted by its element; its size is given by the x speed. */
+    public static final DeferredHolder<ParticleType<?>, ParticleType<ColorParticleOption>> IMPACT =
+            PARTICLE_TYPES.register("impact", () -> new ParticleType<ColorParticleOption>(false) {
+                @Override
+                public MapCodec<ColorParticleOption> codec() {
+                    return ColorParticleOption.codec(this);
+                }
+
+                @Override
+                public StreamCodec<? super RegistryFriendlyByteBuf, ColorParticleOption> streamCodec() {
+                    return ColorParticleOption.streamCodec(this);
+                }
+            });
+    /** A drawn explosion: white-hot ball, orange ball tearing open, smoke; its size is given by the x speed. */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> BLAST = simple("blast");
+
     /** A shock wave of air, a ring across the way it faces (a projectile's path, a blast). */
     public static final DeferredHolder<ParticleType<?>, ParticleType<OrientedParticleOptions>> SHOCK_WAVE = oriented("shock_wave");
     /** A slash: a crescent in the plane of a swing. */

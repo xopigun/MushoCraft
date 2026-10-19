@@ -1,6 +1,7 @@
 package fr.xopi.mushocraft.core;
 
 import fr.xopi.mushocraft.MushoCraft;
+import fr.xopi.mushocraft.magic.status.HeatedHandsEffect;
 import fr.xopi.mushocraft.magic.status.SoakedEffect;
 import fr.xopi.mushocraft.magic.status.WardEffect;
 import net.minecraft.core.registries.Registries;
@@ -27,9 +28,8 @@ public final class MushoMobEffects {
             () -> new SoakedEffect(0x3F76E4));
 
     /** Heat Hand: hands so hot that blows set the target alight. */
-    public static final DeferredHolder<MobEffect, MobEffect> HEATED_HANDS = MOB_EFFECTS.register("heated_hands",
-            () -> new MobEffect(MobEffectCategory.BENEFICIAL, 0xFF7A2A) {
-            });
+    public static final DeferredHolder<MobEffect, HeatedHandsEffect> HEATED_HANDS = MOB_EFFECTS.register("heated_hands",
+            () -> new HeatedHandsEffect(0xFF7A2A));
 
     /** Confinement Barrier: shut in a barrier where magic cannot be used (wiki, Magic Spells). */
     public static final DeferredHolder<MobEffect, MobEffect> CONFINED = MOB_EFFECTS.register("confined",

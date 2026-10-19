@@ -82,13 +82,19 @@ public final class RibbonTrail {
             float fadeB = 1.0F - (float) (i + 1) / (count - 1);
             Vec3 sideA = side(a, b, eye).scale(width * fadeA);
             Vec3 sideB = side(a, b, eye).scale(width * fadeB);
-            int alphaA = Mth.clamp((int) (255 * strength * fadeA), 0, 255);
-            int alphaB = Mth.clamp((int) (255 * strength * fadeB), 0, 255);
+            // a strip passing close by the eye would cover the view: it fades out there
+            int alphaA = Mth.clamp((int) (255 * strength * fadeA * nearFade(a, eye)), 0, 255);
+            int alphaB = Mth.clamp((int) (255 * strength * fadeB * nearFade(b, eye)), 0, 255);
             vertex(consumer, matrix, a.add(sideA).subtract(origin), 0.0F, 0.0F, red, green, blue, alphaA);
             vertex(consumer, matrix, b.add(sideB).subtract(origin), 0.0F, 1.0F, red, green, blue, alphaB);
             vertex(consumer, matrix, b.subtract(sideB).subtract(origin), 1.0F, 1.0F, red, green, blue, alphaB);
             vertex(consumer, matrix, a.subtract(sideA).subtract(origin), 1.0F, 0.0F, red, green, blue, alphaA);
         }
+    }
+
+    /** Nothing within a block of the eye, full strength from four blocks away. */
+    private static float nearFade(Vec3 point, Vec3 eye) {
+        return (float) Mth.clamp((point.distanceTo(eye) - 1.0) / 3.0, 0.0, 1.0);
     }
 
     /** The direction across the strip at a segment: square to the segment and to the eye. */

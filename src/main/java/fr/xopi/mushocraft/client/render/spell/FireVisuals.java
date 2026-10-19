@@ -7,6 +7,7 @@ import fr.xopi.mushocraft.client.render.mesh.BillowCluster;
 import fr.xopi.mushocraft.client.render.mesh.LatheMesh;
 import fr.xopi.mushocraft.client.render.mesh.Premultiplied;
 import fr.xopi.mushocraft.magic.entity.SpellFire;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
@@ -44,7 +45,12 @@ public final class FireVisuals {
         float time = projectile.tickCount + partialTicks;
         float radius = projectile.visualSize() / 2.0F;
         Vec3 motion = projectile.getDeltaMovement();
-        float tail = 0.8F + Math.min(2.2F, (float) motion.length() * 1.4F);
+        // the tail streams back at most two blocks, whatever the fireball's size
+        float tail = Math.min(0.8F + Math.min(2.2F, (float) motion.length() * 1.4F), 2.0F / Math.max(radius, 0.1F));
+        // glowing flames seen from inside would flood the view: they fade as the eye comes into them
+        Vec3 eye = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
+        float distance = (float) eye.distanceTo(projectile.getPosition(partialTicks).add(0.0, projectile.getBbHeight() / 2.0, 0.0));
+        float nearFade = Mth.clamp((distance - radius * 0.8F) / (radius * 2.0F + 1.0F), 0.15F, 1.0F);
 
         poseStack.pushPose();
         poseStack.translate(0.0, projectile.getBbHeight() / 2.0, 0.0);
@@ -56,10 +62,11 @@ public final class FireVisuals {
         LatheMesh.render(poseStack.last(), buffers.getBuffer(RenderType.entityTranslucentEmissive(FIRE)), LatheMesh.SPHERE,
                 licking(time, 0.08F, 0.0F), HEART, 10, 14, time, GLOW);
         poseStack.popPose();
-        LatheMesh.render(poseStack.last(), glow(buffers), LatheMesh.SPHERE, licking(time, 0.22F, tail), FLAME, 16, 22, time, GLOW);
+        LatheMesh.render(poseStack.last(), glow(buffers), LatheMesh.SPHERE, licking(time, 0.22F, tail), withAlpha(FLAME, nearFade),
+                16, 22, time, GLOW);
         poseStack.scale(1.25F, 1.25F, 1.25F);
-        LatheMesh.render(poseStack.last(), glow(buffers), LatheMesh.SPHERE, licking(time + 7.0F, 0.3F, tail * 1.3F), HALO,
-                14, 20, time, GLOW);
+        LatheMesh.render(poseStack.last(), glow(buffers), LatheMesh.SPHERE, licking(time + 7.0F, 0.3F, tail * 1.3F),
+                withAlpha(HALO, nearFade), 14, 20, time, GLOW);
         poseStack.popPose();
     };
 

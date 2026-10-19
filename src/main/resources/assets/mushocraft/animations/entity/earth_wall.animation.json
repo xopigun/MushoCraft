@@ -1,0 +1,185 @@
+{
+  "format_version": "1.8.0",
+  "animations": {
+    "animation.earth_wall.rise": {
+      "animation_length": 0.34,
+      "bones": {
+        "slabs": {
+          "position": {
+            "0.0": {
+              "vector": [
+                0,
+                -50,
+                0
+              ]
+            },
+            "0.05": {
+              "vector": [
+                0,
+                -50,
+                0
+              ]
+            },
+            "0.22": {
+              "vector": [
+                0,
+                1.5,
+                0
+              ]
+            },
+            "0.30": {
+              "vector": [
+                0,
+                0,
+                0
+              ]
+            }
+          }
+        },
+        "rubble": {
+          "position": {
+            "0.0": {
+              "vector": [
+                0,
+                -50,
+                0
+              ]
+            },
+            "0.09": {
+              "vector": [
+                0,
+                -50,
+                0
+              ]
+            },
+            "0.26": {
+              "vector": [
+                0,
+                1.5,
+                0
+              ]
+            },
+            "0.34": {
+              "vector": [
+                0,
+                0,
+                0
+              ]
+            }
+          }
+        }
+      }
+    },
+    "animation.earth_wall.idle": {
+      "loop": true,
+      "animation_length": 2.0,
+      "bones": {
+        "slabs": {
+          "position": {
+            "0.0": {
+              "vector": [
+                0,
+                0,
+                0
+              ]
+            },
+            "0.1": {
+              "vector": [
+                0.15,
+                0,
+                0
+              ]
+            },
+            "0.2": {
+              "vector": [
+                0,
+                0,
+                0
+              ]
+            },
+            "2.0": {
+              "vector": [
+                0,
+                0,
+                0
+              ]
+            }
+          }
+        }
+      }
+    },
+    "animation.earth_wall.crumble": {
+      "animation_length": 0.4,
+      "bones": {
+        "slabs": {
+          "position": {
+            "0.0": {
+              "vector": [
+                0,
+                0,
+                0
+              ]
+            },
+            "0.4": {
+              "vector": [
+                0,
+                -54,
+                0
+              ]
+            }
+          },
+          "rotation": {
+            "0.0": {
+              "vector": [
+                0,
+                0,
+                0
+              ]
+            },
+            "0.4": {
+              "vector": [
+                1.9664271182352309,
+                0,
+                3.8685918281716702
+              ]
+            }
+          }
+        },
+        "rubble": {
+          "position": {
+            "0.0": {
+              "vector": [
+                0,
+                0,
+                0
+              ]
+            },
+            "0.4": {
+              "vector": [
+                0,
+                -54,
+                0
+              ]
+            }
+          },
+          "rotation": {
+            "0.0": {
+              "vector": [
+                0,
+                0,
+                0
+              ]
+            },
+            "0.4": {
+              "vector": [
+                4.723097049051146,
+                0,
+                7.079204540432805
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

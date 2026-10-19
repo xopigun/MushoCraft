@@ -273,7 +273,8 @@ public final class MushoSpells {
     /** Raises a fortress of earth around the caster (LN vol. 1 ch. 6). */
     public static final DeferredHolder<Spell, Spell> EARTH_FORTRESS = SPELLS.register("earth_fortress",
             () -> Spell.builder(SpellSchool.EARTH, Rank.ADVANCED).intent(SpellIntent.DEFEND).manaCost(40).cooldownTicks(600)
-                    .effect(new FortressEffect(MushoBlocks.CONJURED_EARTH, 2, 3, 400, SoundEvents.ROOTED_DIRT_PLACE))
+                    .effect(new FortressEffect(MushoBlocks.CONJURED_EARTH, 2, 3, 400, SoundEvents.ROOTED_DIRT_PLACE)
+                            .lookingLike(PillarKind.EARTH_FORTRESS))
                     .build());
 
     /** Earthen spikes burst from the ground all around the aimed spot (LN vol. 7 ch. 4). */
@@ -387,7 +388,8 @@ public final class MushoSpells {
     /** Raises a wall of earth ahead (wiki, Earth Wall). */
     public static final DeferredHolder<Spell, Spell> EARTH_WALL = SPELLS.register("earth_wall",
             () -> Spell.builder(SpellSchool.EARTH, Rank.BEGINNER).intent(SpellIntent.DEFEND).manaCost(10).cooldownTicks(160)
-                    .effect(new WallEffect(MushoBlocks.CONJURED_EARTH, 2, 3, 3, 300, SoundEvents.ROOTED_DIRT_PLACE))
+                    .effect(new WallEffect(MushoBlocks.CONJURED_EARTH, 2, 3, 3, 300, SoundEvents.ROOTED_DIRT_PLACE)
+                            .lookingLike(PillarKind.EARTH_WALL))
                     .build());
 
     /** Water pours down without end like a real waterfall, pressing down and soaking (wiki, Water). */
