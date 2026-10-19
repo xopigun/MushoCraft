@@ -35,6 +35,7 @@ public final class MushoCreativeTabs {
                         output.accept(MushoItems.ASSAULT_DOG_SPAWN_EGG.get());
                         output.accept(MushoItems.PAX_COYOTE_SPAWN_EGG.get());
                         output.accept(MushoItems.TERMINATE_BOAR_SPAWN_EGG.get());
+                        output.accept(MushoItems.LUSTER_GRIZZLY_SPAWN_EGG.get());
                     })
                     .build());
 

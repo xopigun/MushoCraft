@@ -40,7 +40,7 @@ def main():
     tex_path = os.path.join(tempfile.gettempdir(), a.creature + '_compare_tex.png')
     texture = Image.fromarray(model.paint(painter, tex_path), 'RGBA')
     tiles = [labelled(fit(Image.open(r)), 'reference') for r in a.refs]
-    for yaw, pitch, name in ((35, 12, 'model 3/4'), (90, 0, 'model side'), (-20, 8, 'model front')):
+    for yaw, pitch, name in ((35, -25, 'model 3/4'), (90, 0, 'model side'), (-20, -10, 'model front')):
         tiles.append(labelled(model.render(texture, pose=pose, yaw=yaw, pitch=pitch, size=H, background=(232, 232, 236)), name))
     for g in a.game:
         path, _, box = g.partition('@')

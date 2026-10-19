@@ -102,6 +102,9 @@ public final class MushoItems {
     public static final DeferredItem<DeferredSpawnEggItem> TERMINATE_BOAR_SPAWN_EGG = ITEMS.register("terminate_boar_spawn_egg",
             () -> new DeferredSpawnEggItem(MushoEntities.TERMINATE_BOAR, 0x2E2420, 0xE6DCC4, new Item.Properties()));
 
+    public static final DeferredItem<DeferredSpawnEggItem> LUSTER_GRIZZLY_SPAWN_EGG = ITEMS.register("luster_grizzly_spawn_egg",
+            () -> new DeferredSpawnEggItem(MushoEntities.LUSTER_GRIZZLY, 0xE8EAF0, 0x1E1E24, new Item.Properties()));
+
     public static final DeferredItem<DeferredSpawnEggItem> MAGIC_TUTOR_SPAWN_EGG = ITEMS.register("magic_tutor_spawn_egg",
             () -> new DeferredSpawnEggItem(MushoEntities.MAGIC_TUTOR, 0x22407A, 0x8FC7FF, new Item.Properties()));
 

@@ -4,6 +4,7 @@ import fr.xopi.mushocraft.MushoCraft;
 import fr.xopi.mushocraft.core.MushoEntities;
 import fr.xopi.mushocraft.monster.AssaultDog;
 import fr.xopi.mushocraft.monster.EngagementTokens;
+import fr.xopi.mushocraft.monster.LusterGrizzly;
 import fr.xopi.mushocraft.monster.MonsterPack;
 import fr.xopi.mushocraft.monster.MushoMonster;
 import fr.xopi.mushocraft.monster.PaxCoyote;
@@ -12,6 +13,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.SpawnGroupData;
@@ -198,6 +200,22 @@ public final class MonsterGameTests {
         helper.succeedWhen(() -> {
             helper.assertTrue(husk.getHealth() < before || !husk.isAlive(), "struck");
             clear(List.of(boar), husk);
+        });
+    }
+
+    @GameTest(template = EMPTY, timeoutTicks = 120)
+    public static void aLusterGrizzlyIsSluggishAndShortSightedAtNight(GameTestHelper helper) {
+        LusterGrizzly grizzly = helper.spawn(MushoEntities.LUSTER_GRIZZLY.get(), new BlockPos(3, 1, 3));
+        double daySpeed = grizzly.getAttributeValue(Attributes.MOVEMENT_SPEED);
+        double daySight = grizzly.getAttributeValue(Attributes.FOLLOW_RANGE);
+        long time = helper.getLevel().getDayTime();
+        helper.getLevel().setDayTime(18000);
+        helper.runAtTickTime(50, () -> {
+            helper.assertTrue(grizzly.getAttributeValue(Attributes.MOVEMENT_SPEED) < daySpeed * 0.8, "slower at night");
+            helper.assertTrue(grizzly.getAttributeValue(Attributes.FOLLOW_RANGE) < daySight * 0.5, "short-sighted at night");
+            helper.getLevel().setDayTime(time);
+            grizzly.discard();
+            helper.succeed();
         });
     }
 }

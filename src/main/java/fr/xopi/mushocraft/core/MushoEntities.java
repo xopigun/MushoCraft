@@ -11,6 +11,7 @@ import fr.xopi.mushocraft.magic.summon.LamplightSpirit;
 import fr.xopi.mushocraft.magic.summon.SummonedSpirit;
 import fr.xopi.mushocraft.monster.AssaultDog;
 import fr.xopi.mushocraft.monster.MushoMonster;
+import fr.xopi.mushocraft.monster.LusterGrizzly;
 import fr.xopi.mushocraft.monster.PaxCoyote;
 import fr.xopi.mushocraft.monster.TerminateBoar;
 import fr.xopi.mushocraft.npc.MagicTutorEntity;
@@ -160,6 +161,14 @@ public final class MushoEntities {
                     .clientTrackingRange(10)
                     .build(MushoCraft.id("terminate_boar").toString()));
 
+    /** Luster Grizzly, a white bear with a black stripe hunting in packs, sluggish at night (rank B). */
+    public static final DeferredHolder<EntityType<?>, EntityType<LusterGrizzly>> LUSTER_GRIZZLY =
+            ENTITY_TYPES.register("luster_grizzly", () -> EntityType.Builder
+                    .<LusterGrizzly>of(LusterGrizzly::new, MobCategory.MONSTER)
+                    .sized(1.6F, 1.8F)
+                    .clientTrackingRange(10)
+                    .build(MushoCraft.id("luster_grizzly").toString()));
+
     private MushoEntities() {
     }
 
@@ -187,5 +196,6 @@ public final class MushoEntities {
         event.put(ASSAULT_DOG.get(), AssaultDog.createAttributes().build());
         event.put(PAX_COYOTE.get(), PaxCoyote.createAttributes().build());
         event.put(TERMINATE_BOAR.get(), TerminateBoar.createAttributes().build());
+        event.put(LUSTER_GRIZZLY.get(), LusterGrizzly.createAttributes().build());
     }
 }

@@ -1,0 +1,12 @@
+{
+  "type": "neoforge:add_spawns",
+  "biomes": "#mushocraft:has_luster_grizzly",
+  "spawners": [
+    {
+      "type": "mushocraft:luster_grizzly",
+      "weight": 5,
+      "minCount": 2,
+      "maxCount": 4
+    }
+  ]
+}

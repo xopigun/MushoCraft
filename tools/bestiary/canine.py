@@ -34,6 +34,9 @@ class CanineShape:
         self.claw = 0.8
         self.mane = 0.0          # a ragged ruff over the neck and shoulders, this much thicker than them
         self.spike_size = 1.0
+        self.rump_height = 7.5
+        self.neck_tilt = 38.0
+        self.head_lift = 0.62
         for k, v in kw.items():
             setattr(self, k, v)
 
@@ -46,7 +49,7 @@ def build(name, s, density=2):
     neck_y = s.withers - 2.0
     neck = m.bone('Neck', chest, (0, neck_y, s.body_front + 1.5))
     head_z = s.body_front - s.neck_length * 0.5 - 1.5
-    head_y = neck_y + s.neck_length * 0.62
+    head_y = neck_y + s.neck_length * s.head_lift
     head = m.bone('Head', neck, (0, head_y, head_z))
     hw_s, hh_s, hd_s = s.head
     skull_front = head_z - hd_s * 0.78
@@ -61,14 +64,14 @@ def build(name, s, density=2):
     tail_tip = m.bone('Tail_Tip', tail, (0, tip_y, tip_z))
 
     # body: rump on the root, deep chest on the chest bone
-    m.cube(root, (-hw + 0.5, s.hip_y - 3.5, -1.5), (2 * hw - 1, 7.5, s.body_back + 1.5), 'body')
+    m.cube(root, (-hw + 0.5, s.hip_y + 4 - s.rump_height, -1.5), (2 * hw - 1, s.rump_height, s.body_back + 1.5), 'body')
     m.cube(chest, (-hw, s.chest_drop, s.body_front), (2 * hw, s.withers - s.chest_drop, -s.body_front - 0.5), 'body')
     # neck slanting up and forwards
     m.cube(neck, (-hw * 0.6, neck_y - s.neck_height / 2, s.body_front - s.neck_length + 2), (hw * 1.2, s.neck_height, s.neck_length),
-           'neck', tilt=(38, 0, 0), tilt_pivot=(0, neck_y, s.body_front + 1.5))
+           'neck', tilt=(s.neck_tilt, 0, 0), tilt_pivot=(0, neck_y, s.body_front + 1.5))
     if s.mane > 0:
         m.cube(neck, (-hw * 0.6, neck_y - s.neck_height / 2, s.body_front - s.neck_length + 2), (hw * 1.2, s.neck_height, s.neck_length),
-               'mane', tilt=(38, 0, 0), tilt_pivot=(0, neck_y, s.body_front + 1.5), inflate=s.mane)
+               'mane', tilt=(s.neck_tilt, 0, 0), tilt_pivot=(0, neck_y, s.body_front + 1.5), inflate=s.mane)
         m.cube(chest, (-hw, s.withers - 4, s.body_front), (2 * hw, 4, 7), 'mane', inflate=s.mane)
     # head
     m.cube(head, (-hw_s / 2, head_y - hh_s * 0.42, skull_front), (hw_s, hh_s, hd_s), 'skull')
@@ -270,12 +273,13 @@ def hit(length=0.4):
     return Clip('hit', length, pose)
 
 
-def death(length=1.3, rest_height=4.5):
+def death(length=1.3, rest_height=4.5, hip_y=14.0):
+    """Falls on its side: the hips come down from `hip_y` to `rest_height` above the ground."""
     def pose(t):
         k = keys(t, [(0, 0), (0.15, 0.1), (0.7, 1), (length, 1)], ease_in)
         sag = keys(t, [(0, 0), (0.2, 1), (length, 1)])
         return {
-            'Root': ((0, 0, 88 * k), (0, -(14 - rest_height) * k - 1.5 * sag * (1 - k), 0)),
+            'Root': ((0, 0, 88 * k), (0, -(hip_y - rest_height) * k - 1.5 * sag * (1 - k), 0)),
             'Chest': ((-6 * sag, 0, 0), (0, 0, 0)),
             'Neck': ((-20 * k, 0, -15 * k), (0, 0, 0)),
             'Head': ((-15 * k, 0, 0), (0, 0, 0)),
@@ -316,5 +320,5 @@ def howl(length=2.2):
     return Clip('howl', length, pose)
 
 
-def all_clips():
-    return [idle(), walk(), run(), bite(), pounce(), hit(), death(), howl()]
+def all_clips(shape):
+    return [idle(), walk(), run(), bite(), pounce(), hit(), death(rest_height=shape.half_width, hip_y=shape.hip_y), howl()]

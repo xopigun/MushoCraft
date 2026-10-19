@@ -74,4 +74,4 @@ def painter(model):
 def build():
     model = canine.build(NAME, SHAPE)
     model.pack()
-    return model, painter(model), canine.all_clips()
+    return model, painter(model), canine.all_clips(SHAPE)
