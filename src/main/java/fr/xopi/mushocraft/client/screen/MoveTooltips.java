@@ -22,7 +22,8 @@ import java.util.Locale;
 import java.util.Optional;
 
 /**
- * The tooltip of a spell or technique: school or style and rank, cost, description, incantation and mastery.
+ * The tooltip of a spell or technique: school or style and rank, cost, description, what a mixed spell is melded
+ * from, incantation and mastery.
  */
 public final class MoveTooltips {
     private MoveTooltips() {
@@ -38,6 +39,8 @@ public final class MoveTooltips {
                     String.format(Locale.ROOT, "%.0f", spell.manaCost()),
                     String.format(Locale.ROOT, "%.1f", spell.cooldownTicks() / 20.0)).withStyle(style -> style.withColor(0xA0A0A0)));
             lines.add(spell.description().copy().withStyle(style -> style.withColor(0xC0C0C0).withItalic(true)));
+            spell.meld().ifPresent(recipe -> lines.add(Component.translatable("screen.mushocraft.moves.melded_from",
+                    recipe.describe()).withStyle(style -> style.withColor(0xD8B0FF))));
             lines.add(Component.translatable("screen.mushocraft.moves.incantation", IncantationRules.mode(
                     ClientMoveState.repetitions(move.ref()), ClientMoveState.manaControl()).displayName())
                     .withStyle(style -> style.withColor(0x9FD8FF)));

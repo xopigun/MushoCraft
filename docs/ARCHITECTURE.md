@@ -153,6 +153,21 @@ Estimation : une quinzaine de classes d'effets génériques, plus une classe pou
 | Incantation silencieuse | Aucune incantation. Elle demande un « contrôle du mana » (`ManaControl`) qui se construit en faisant circuler son mana : ×4 avant 6 ans, ×1 jusqu'à 15 ans, ×0,25 adulte (Rudeus l'apprend tout petit ; Roxy écrit qu'elle s'apprend plus facilement jeune). Une fois acquis, tous les sorts maîtrisés se lancent sans incantation. **Fait (19/10).** Le déroulé en 4 temps du wiki (forme, puissance, vitesse, relâchement), en maintenant la touche, reste à faire **[À VALIDER]**. |
 | Cercles magiques | Objets ou blocs gravés : puissance fixe, lancement instantané quand on y verse du mana. Méthode principale de l'invocation selon le wiki. |
 
+### 4.3 bis Magie mixte (wiki, *Magic Spells* § Melded Magic)
+
+- Sept sorts : *Deep Mist*, *Magma Gush*, *Quagmire*, *Mud Rain*, *Blast*, *Frost Nova*, *Bora Blast*. École `MIXED`.
+- Chaque sort porte sa **recette** (`MeldRecipe`) : un sort précis (*Deep Mist* = *Waterfall* + *Heat Island* + *Icicle Field*) ou n'importe quel sort d'une école (*Quagmire* = eau + terre).
+- **Découverte** (`MeldDiscovery`) : dès qu'un move est maîtrisé (`MoveMasteredEvent`, patron Observer) et à la connexion, tout sort mixte dont les composants sont maîtrisés est appris. Les précepteurs ne l'enseignent pas. Écart E22 **[À VALIDER]**.
+- L'infobulle du grimoire indique le mélange (« Mélange : Water Splash + Icicle Field »).
+- Effets :
+  - *Deep Mist* : brouillard autour du lanceur ; ceux qui s'y trouvent sont aveuglés ; qui traque quelqu'un caché dedans perd sa trace, sauf au contact.
+  - *Quagmire* : la boue retient (lenteur VI, pas de saut).
+  - *Mud Rain* : sol glissant, impossible de courir, glissades.
+  - *Magma Gush* : jaillissement de lave puis sol en fusion.
+  - *Blast* : souffle de vent brûlant en cône.
+  - *Frost Nova* : trempe puis gèle (deux fois plus longtemps sur les cibles trempées).
+  - *Bora Blast* : rafale glacée en cône qui gèle et engourdit.
+
 ### 4.4 Rangs et apprentissage
 
 - Le titre de mage = le rang du sort le plus avancé qu'on sait lancer (wiki). C'est un titre affiché, pas une contrainte sur la mana.
@@ -300,7 +315,7 @@ Limite à connaître : je n'ai accès qu'au wiki et à ses références. Je ne p
    - **Tests automatiques** : `src/gametest`, lancés par `gradlew runGameTestServer` (9 tests). Ils ne sont pas inclus dans le jar.
 3. ✅ `ManaData` + jauge de mana + circulation pour s'entraîner (nuit du 19/10, voir `docs/nuits/2026-10-19.md`).
 4. ✅ Abstraction `Move`, `Cooldowns`, barre de move branchée sur le mode Epic Fight, écran des moves (nuit du 19/10).
-5. 🟡 Moteur de sorts + 49 sorts (Débutant à Saint, et les 11 sans rang du wiki) + maîtrise par école + incantation abrégée et silencieuse (19/10) ; restent les rangs Roi et plus, la magie mixte (dont *Magma Gush*, *Deep Mist*, *Quagmire*, *Frost Nova*, *Blast*), l'invocation.
+5. 🟡 Moteur de sorts + 56 sorts (Débutant à Saint, les 11 sans rang du wiki, les 7 sorts de magie mixte) + maîtrise par école + incantation abrégée et silencieuse (19/10) ; restent les rangs Roi et plus, l'invocation.
 6. ✅ Stats physiques + entraînement + aura de combat (nuit du 19/10).
 7. 🟡 Styles + 7 techniques + recharge partagée + règles de rang + enchaînements de base propres à chaque style sur l'épée et le tachi (nuit du 19/10) ; restent les autres armes et les autres techniques.
 8. 🟡 Maîtres PNJ : maîtres d'épée et précepteurs de magie, avec patch Epic Fight, skins originaux, œufs d'apparition et apparition naturelle rare (nuit du 19/10). Restent des lieux dédiés (dojos, église de Milis).

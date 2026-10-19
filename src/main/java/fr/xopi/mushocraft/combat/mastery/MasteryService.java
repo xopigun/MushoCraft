@@ -5,6 +5,7 @@ import fr.xopi.mushocraft.combat.move.MovesSync;
 import fr.xopi.mushocraft.core.MushoAttachments;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.neoforged.neoforge.common.NeoForge;
 
 /**
  * Single entry point for move mastery: how well a character knows each move, practising it, and the risk of
@@ -53,17 +54,19 @@ public final class MasteryService {
     }
 
     public static void practise(ServerPlayer player, MoveRef move, double amount) {
-        boolean wasMastered = isMastered(player, move);
         setRepetitions(player, move, repetitions(player, move) + amount);
+    }
+
+    /** Sets how often a move was repeated; reaching mastery is announced and fires a {@link MoveMasteredEvent}. */
+    public static void setRepetitions(ServerPlayer player, MoveRef move, double count) {
+        boolean wasMastered = isMastered(player, move);
+        player.setData(MushoAttachments.MOVE_MASTERY, mastery(player).with(move, count));
+        MovesSync.push(player);
         if (!wasMastered && isMastered(player, move)) {
             player.sendSystemMessage(Component.translatable("message.mushocraft.move.mastered",
                     move.resolve().map(m -> m.displayName()).orElse(Component.literal(move.id().toString()))));
+            NeoForge.EVENT_BUS.post(new MoveMasteredEvent(player, move));
         }
-    }
-
-    public static void setRepetitions(ServerPlayer player, MoveRef move, double count) {
-        player.setData(MushoAttachments.MOVE_MASTERY, mastery(player).with(move, count));
-        MovesSync.push(player);
     }
 
     public static void forgetAll(ServerPlayer player) {

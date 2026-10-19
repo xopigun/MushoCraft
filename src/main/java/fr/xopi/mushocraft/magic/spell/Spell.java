@@ -5,11 +5,15 @@ import fr.xopi.mushocraft.combat.move.MoveRef;
 import fr.xopi.mushocraft.combat.move.MoveUseResult;
 import fr.xopi.mushocraft.core.MushoRegistries;
 import fr.xopi.mushocraft.core.Rank;
+import fr.xopi.mushocraft.magic.spell.meld.MeldIngredient;
+import fr.xopi.mushocraft.magic.spell.meld.MeldRecipe;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 
+import javax.annotation.Nullable;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * One spell of the novel (Type Object pattern): a single instance per spell, declared in {@link MushoSpells}.
@@ -24,6 +28,8 @@ public final class Spell implements Move {
     private final int cooldownTicks;
     private final SpellEffect effect;
     private final SpellIntent intent;
+    @Nullable
+    private final MeldRecipe meld;
 
     private Spell(Builder builder) {
         this.school = Objects.requireNonNull(builder.school, "school");
@@ -33,6 +39,10 @@ public final class Spell implements Move {
         this.cooldownTicks = builder.cooldownTicks;
         this.effect = Objects.requireNonNull(builder.effect, "effect");
         this.intent = builder.intent;
+        this.meld = builder.meld;
+        if ((school == SpellSchool.MIXED) != (meld != null)) {
+            throw new IllegalStateException("Mixed magic, and only it, is melded from other spells");
+        }
     }
 
     public static Builder builder(SpellSchool school, Rank rank) {
@@ -69,6 +79,11 @@ public final class Spell implements Move {
 
     public SpellIntent intent() {
         return intent;
+    }
+
+    /** For mixed magic: the spells it is melded from. */
+    public Optional<MeldRecipe> meld() {
+        return Optional.ofNullable(meld);
     }
 
     @Override
@@ -108,6 +123,7 @@ public final class Spell implements Move {
         private int cooldownTicks;
         private SpellEffect effect;
         private SpellIntent intent = SpellIntent.ATTACK;
+        private MeldRecipe meld;
 
         private Builder(SpellSchool school, Rank rank) {
             this.school = school;
@@ -138,6 +154,12 @@ public final class Spell implements Move {
         /** What the spell is for (default: attack); tells spellcasting creatures when to use it. */
         public Builder intent(SpellIntent value) {
             this.intent = value;
+            return this;
+        }
+
+        /** Mixed magic: the spells it is melded from; it is discovered by mastering them all. */
+        public Builder meldedFrom(MeldIngredient... ingredients) {
+            this.meld = MeldRecipe.of(ingredients);
             return this;
         }
 

@@ -5,6 +5,7 @@ import fr.xopi.mushocraft.core.MushoMobEffects;
 import fr.xopi.mushocraft.core.MushoParticles;
 import fr.xopi.mushocraft.magic.entity.SpellZone;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -16,7 +17,9 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -219,6 +222,108 @@ public final class ZoneBehaviors {
                 if (age % 20 == 0) {
                     target.hurt(MushoDamageTypes.spell(level, zone, zone.caster()), (float) (damagePerSecond * zone.power()));
                 }
+            }
+        };
+    }
+
+    // ---- Mixed magic ----
+
+    /**
+     * Deep Mist: a thick fog that hides those inside (wiki: conceals the user from enemies). Creatures in it cannot see;
+     * whatever hunts someone hidden in it, from inside or outside, loses track of its prey unless it is right next to
+     * it.
+     */
+    public static SpellZone.Behavior deepMist() {
+        return (zone, level, age) -> {
+            double radius = zone.radius();
+            if (age % 2 == 0) {
+                level.sendParticles(ParticleTypes.CLOUD, zone.getX(), zone.getY() + 1.2, zone.getZ(), (int) (radius * 2),
+                        radius * 0.6, 0.8, radius * 0.6, 0.0);
+            }
+            if (age % 10 != 0) {
+                return;
+            }
+            for (LivingEntity inside : zone.creaturesInside(4.0)) {
+                inside.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 40, 0, false, false));
+            }
+            AABB around = new AABB(zone.position(), zone.position()).inflate(radius + 16.0, 8.0, radius + 16.0);
+            for (Mob hunter : level.getEntitiesOfClass(Mob.class, around, mob -> mob.getTarget() != null)) {
+                LivingEntity prey = hunter.getTarget();
+                boolean hidden = prey.distanceToSqr(zone.getX(), prey.getY(), zone.getZ()) <= radius * radius;
+                if (hidden && hunter.distanceToSqr(prey) > 9.0) {
+                    hunter.setTarget(null);
+                }
+            }
+        };
+    }
+
+    /** Quagmire: the ground turns into deep mud that holds fast whoever stands in it (wiki: immobilizes the enemy). */
+    public static SpellZone.Behavior quagmire() {
+        BlockParticleOption mud = new BlockParticleOption(ParticleTypes.BLOCK, Blocks.MUD.defaultBlockState());
+        return (zone, level, age) -> {
+            if (age % 4 == 0) {
+                level.sendParticles(mud, zone.getX(), zone.getY() + 0.1, zone.getZ(), (int) (zone.radius() * 3),
+                        zone.radius() * 0.5, 0.05, zone.radius() * 0.5, 0.0);
+            }
+            for (LivingEntity stuck : zone.creaturesInside(1.5)) {
+                stuck.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 10, 5, false, false));
+                Vec3 motion = stuck.getDeltaMovement();
+                // the mud drags at every step and keeps the feet down
+                stuck.setDeltaMovement(motion.x * 0.3, Math.min(motion.y, 0.0), motion.z * 0.3);
+                stuck.hurtMarked = true;
+            }
+            if (age % 20 == 0) {
+                level.playSound(null, zone.blockPosition(), SoundEvents.MUD_STEP, SoundSource.PLAYERS, 1.0F, 0.6F);
+            }
+        };
+    }
+
+    /**
+     * Mud Rain: a rain of mud that leaves the ground slippery and loose (wiki). No one inside can run, all are slowed,
+     * and now and then someone slips.
+     */
+    public static SpellZone.Behavior mudRain() {
+        BlockParticleOption mud = new BlockParticleOption(ParticleTypes.FALLING_DUST, Blocks.MUD.defaultBlockState());
+        return (zone, level, age) -> {
+            level.sendParticles(mud, zone.getX(), zone.getY() + 7.0, zone.getZ(), (int) (zone.radius() * 2),
+                    zone.radius() * 0.6, 1.0, zone.radius() * 0.6, 0.0);
+            if (age % 10 != 0) {
+                return;
+            }
+            RandomSource random = level.getRandom();
+            for (LivingEntity target : zone.creaturesInside(7.0)) {
+                target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20, 1, false, false));
+                target.setSprinting(false);
+                if (target.onGround() && random.nextFloat() < 0.08F) {
+                    // a slip: the feet go from under them
+                    double angle = random.nextDouble() * Math.PI * 2.0;
+                    target.push(Math.cos(angle) * 0.4, 0.05, Math.sin(angle) * 0.4);
+                    target.hurtMarked = true;
+                }
+            }
+        };
+    }
+
+    /** Magma Gush: the ground stays molten for a while and burns whoever stands on it. */
+    public static SpellZone.Behavior moltenGround(float damagePerSecond, int igniteSeconds) {
+        return (zone, level, age) -> {
+            if (age % 3 == 0) {
+                level.sendParticles(ParticleTypes.LAVA, zone.getX(), zone.getY() + 0.2, zone.getZ(), 2,
+                        zone.radius() * 0.5, 0.0, zone.radius() * 0.5, 0.0);
+                level.sendParticles(ParticleTypes.SMOKE, zone.getX(), zone.getY() + 0.2, zone.getZ(), 3,
+                        zone.radius() * 0.5, 0.0, zone.radius() * 0.5, 0.01);
+            }
+            for (LivingEntity target : zone.creaturesInside(1.0)) {
+                if (!target.onGround() || target.fireImmune()) {
+                    continue;
+                }
+                target.igniteForSeconds(igniteSeconds);
+                if (age % 20 == 0) {
+                    target.hurt(level.damageSources().hotFloor(), (float) (damagePerSecond * zone.power()));
+                }
+            }
+            if (age % 30 == 0) {
+                level.playSound(null, zone.blockPosition(), SoundEvents.LAVA_AMBIENT, SoundSource.PLAYERS, 1.0F, 1.0F);
             }
         };
     }

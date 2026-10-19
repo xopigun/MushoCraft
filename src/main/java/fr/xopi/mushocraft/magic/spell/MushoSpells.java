@@ -2,9 +2,9 @@ package fr.xopi.mushocraft.magic.spell;
 
 import fr.xopi.mushocraft.MushoCraft;
 import fr.xopi.mushocraft.core.MushoBlocks;
-import fr.xopi.mushocraft.core.MushoParticles;
 import fr.xopi.mushocraft.core.MushoItems;
 import fr.xopi.mushocraft.core.MushoMobEffects;
+import fr.xopi.mushocraft.core.MushoParticles;
 import fr.xopi.mushocraft.core.MushoRegistries;
 import fr.xopi.mushocraft.core.Rank;
 import fr.xopi.mushocraft.magic.entity.PillarKind;
@@ -34,6 +34,7 @@ import fr.xopi.mushocraft.magic.spell.effect.SelfStatusEffect;
 import fr.xopi.mushocraft.magic.spell.effect.WallEffect;
 import fr.xopi.mushocraft.magic.spell.effect.WeatherEffect;
 import fr.xopi.mushocraft.magic.spell.effect.ZoneEffect;
+import fr.xopi.mushocraft.magic.spell.meld.MeldIngredient;
 import fr.xopi.mushocraft.magic.spell.zone.ZoneBehaviors;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
@@ -411,6 +412,67 @@ public final class MushoSpells {
             () -> Spell.builder(SpellSchool.EARTH, Rank.INTERMEDIATE).manaCost(14).cooldownTicks(160)
                     .effect(new ProjectileEffect(ProjectileProfile.of(SpellElement.EARTH, 3.0F)
                             .speed(1.6F).gravity(0.02F).size(0.4F).blindingDust(3.0F).build(), SoundEvents.SAND_BREAK))
+                    .build());
+
+    // ---- Mixed magic (wiki, Magic Spells § Melded Magic): not taught, discovered by mastering every part ----
+
+    /** A fog that hides the caster from its enemies (LN vol. 1 ch. 5): Waterfall + Heat Island + Icicle Field. */
+    public static final DeferredHolder<Spell, Spell> DEEP_MIST = SPELLS.register("deep_mist",
+            () -> Spell.builder(SpellSchool.MIXED, Rank.INTERMEDIATE).intent(SpellIntent.DEFEND).manaCost(25).cooldownTicks(400)
+                    .meldedFrom(MeldIngredient.spell(WATERFALL), MeldIngredient.spell(HEAT_ISLAND), MeldIngredient.spell(ICICLE_FIELD))
+                    .effect(new ZoneEffect(ZoneBehaviors::deepMist, 7.0, 300, 0.0, SoundEvents.FIRE_EXTINGUISH))
+                    .build());
+
+    /** A sudden burst of lava (LN vol. 1 ch. 10): a fire spell + an earth spell. Rank from the glossary. */
+    public static final DeferredHolder<Spell, Spell> MAGMA_GUSH = SPELLS.register("magma_gush",
+            () -> Spell.builder(SpellSchool.MIXED, Rank.ADVANCED).manaCost(35).cooldownTicks(240)
+                    .meldedFrom(MeldIngredient.anyOf(SpellSchool.FIRE), MeldIngredient.anyOf(SpellSchool.EARTH))
+                    .effect(new CompositeEffect(
+                            new EruptionEffect(null, 3, 12.0F, 0.7, 6, 18.0, ParticleTypes.LAVA, SoundEvents.LAVA_POP)
+                                    .lookingLike(EruptionVisual.fireColumn(1.3F, 24)),
+                            new ZoneEffect(() -> ZoneBehaviors.moltenGround(3.0F, 4), 2.5, 120, 18.0, SoundEvents.LAVA_AMBIENT)))
+                    .build());
+
+    /** The ground turns into a swamp of mud that holds the enemy fast (anime S2): a water spell + an earth spell. */
+    public static final DeferredHolder<Spell, Spell> QUAGMIRE = SPELLS.register("quagmire",
+            () -> Spell.builder(SpellSchool.MIXED, Rank.INTERMEDIATE).manaCost(20).cooldownTicks(300)
+                    .meldedFrom(MeldIngredient.anyOf(SpellSchool.WATER), MeldIngredient.anyOf(SpellSchool.EARTH))
+                    .effect(new ZoneEffect(ZoneBehaviors::quagmire, 3.5, 200, 18.0, SoundEvents.MUD_PLACE))
+                    .build());
+
+    /** A rain of mud that leaves the ground slippery and loose (LN vol. 17 ch. 2): a water spell + an earth spell. */
+    public static final DeferredHolder<Spell, Spell> MUD_RAIN = SPELLS.register("mud_rain",
+            () -> Spell.builder(SpellSchool.MIXED, Rank.INTERMEDIATE).manaCost(22).cooldownTicks(400)
+                    .meldedFrom(MeldIngredient.anyOf(SpellSchool.WATER), MeldIngredient.anyOf(SpellSchool.EARTH))
+                    .effect(new ZoneEffect(ZoneBehaviors::mudRain, 6.0, 300, 20.0, SoundEvents.WEATHER_RAIN))
+                    .build());
+
+    /** A blast of hot wind (LN vol. 1 ch. 11): a fire spell + a wind spell. */
+    public static final DeferredHolder<Spell, Spell> BLAST = SPELLS.register("blast",
+            () -> Spell.builder(SpellSchool.MIXED, Rank.INTERMEDIATE).manaCost(16).cooldownTicks(100)
+                    .meldedFrom(MeldIngredient.anyOf(SpellSchool.FIRE), MeldIngredient.anyOf(SpellSchool.WIND))
+                    .effect(new ConeBlastEffect(7.0, 30.0, 6.0F, 1.6, MushoParticles.FLAME.get(), SoundEvents.FIRECHARGE_USE)
+                            .igniting(3))
+                    .build());
+
+    /** Soaks the enemies with droplets, then freezes them through (LN vol. 12 ch. 4): Water Splash + Icicle Field. */
+    public static final DeferredHolder<Spell, Spell> FROST_NOVA = SPELLS.register("frost_nova",
+            () -> Spell.builder(SpellSchool.MIXED, Rank.ADVANCED).manaCost(35).cooldownTicks(300)
+                    .meldedFrom(MeldIngredient.spell(WATER_SPLASH), MeldIngredient.spell(ICICLE_FIELD))
+                    // soaked first, so the frost bites twice as hard
+                    .effect(new CompositeEffect(
+                            new AreaBurstEffect(5.0, 2.0F, 0, 16.0, ParticleTypes.SPLASH, SoundEvents.GENERIC_SPLASH,
+                                    List.of(new CloudEffect.Affliction(MushoMobEffects.SOAKED, 200, 0))),
+                            new FreezeFieldEffect(5.0, 7.0F, 140, 16.0)))
+                    .build());
+
+    /** A strong gust of freezing wind that disables the enemy (LN vol. 5 ch. 1): Icicle Field + Blast. */
+    public static final DeferredHolder<Spell, Spell> BORA_BLAST = SPELLS.register("bora_blast",
+            () -> Spell.builder(SpellSchool.MIXED, Rank.ADVANCED).manaCost(30).cooldownTicks(240)
+                    .meldedFrom(MeldIngredient.spell(ICICLE_FIELD), MeldIngredient.spell(BLAST))
+                    .effect(new ConeBlastEffect(9.0, 35.0, 7.0F, 2.0, ParticleTypes.SNOWFLAKE, SoundEvents.POWDER_SNOW_BREAK)
+                            .freezing(120, new CloudEffect.Affliction(MobEffects.MOVEMENT_SLOWDOWN, 120, 3),
+                                    new CloudEffect.Affliction(MobEffects.DIG_SLOWDOWN, 120, 2)))
                     .build());
 
     private MushoSpells() {

@@ -278,5 +278,22 @@
   "technique.mushocraft.four_legged_form": "Four Legged Form",
   "technique.mushocraft.four_legged_form.desc": "Charge low like a beast, a smaller target, and strike as you close in.",
   "technique.mushocraft.moonlight_cleave": "Moonlight Cleave",
-  "technique.mushocraft.moonlight_cleave.desc": "A secret technique: an upward swing whose shockwave sweeps away everyone in front."
+  "technique.mushocraft.moonlight_cleave.desc": "A secret technique: an upward swing whose shockwave sweeps away everyone in front.",
+  "spell.mushocraft.deep_mist": "Deep Mist",
+  "spell.mushocraft.deep_mist.desc": "A thick fog around you: those inside are blinded, and whatever hunts you loses your trail.",
+  "spell.mushocraft.magma_gush": "Magma Gush",
+  "spell.mushocraft.magma_gush.desc": "Lava bursts from the ground where you aim and leaves it molten for a while.",
+  "spell.mushocraft.quagmire": "Quagmire",
+  "spell.mushocraft.quagmire.desc": "Turns the ground into a swamp of mud that holds fast whoever stands in it.",
+  "spell.mushocraft.mud_rain": "Mud Rain",
+  "spell.mushocraft.mud_rain.desc": "A rain of mud: the ground turns slippery, no one can run, and some slip.",
+  "spell.mushocraft.blast": "Blast",
+  "spell.mushocraft.blast.desc": "A blast of hot wind in front of you that hurls and sets alight.",
+  "spell.mushocraft.frost_nova": "Frost Nova",
+  "spell.mushocraft.frost_nova.desc": "Soaks everything around the spot you aim at, then freezes it through.",
+  "spell.mushocraft.bora_blast": "Bora Blast",
+  "spell.mushocraft.bora_blast.desc": "A gust of freezing wind in front of you that freezes and numbs.",
+  "message.mushocraft.magic.meld.any_of": "a %s spell",
+  "message.mushocraft.magic.meld.discovered": "By melding %2$s, you have discovered %1$s!",
+  "screen.mushocraft.moves.melded_from": "Melded from: %s"
 }

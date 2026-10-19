@@ -278,5 +278,22 @@
   "technique.mushocraft.four_legged_form": "Posture à quatre pattes",
   "technique.mushocraft.four_legged_form.desc": "Chargez au ras du sol comme une bête, cible plus petite, et frappez en arrivant au contact.",
   "technique.mushocraft.moonlight_cleave": "Fendoir de lune",
-  "technique.mushocraft.moonlight_cleave.desc": "Technique secrète : un coup ascendant dont l'onde de choc balaie tout ce qui est devant vous."
+  "technique.mushocraft.moonlight_cleave.desc": "Technique secrète : un coup ascendant dont l'onde de choc balaie tout ce qui est devant vous.",
+  "spell.mushocraft.deep_mist": "Brume épaisse",
+  "spell.mushocraft.deep_mist.desc": "Un brouillard épais autour de vous : ceux qui s'y trouvent sont aveuglés, et qui vous traque perd votre trace.",
+  "spell.mushocraft.magma_gush": "Jaillissement de magma",
+  "spell.mushocraft.magma_gush.desc": "La lave jaillit du sol à l'endroit visé et le laisse en fusion un moment.",
+  "spell.mushocraft.quagmire": "Bourbier",
+  "spell.mushocraft.quagmire.desc": "Change le sol en marais de boue qui retient ceux qui s'y tiennent.",
+  "spell.mushocraft.mud_rain": "Pluie de boue",
+  "spell.mushocraft.mud_rain.desc": "Une pluie de boue : le sol devient glissant, personne ne peut courir, certains glissent.",
+  "spell.mushocraft.blast": "Souffle brûlant",
+  "spell.mushocraft.blast.desc": "Un souffle de vent brûlant devant vous, qui projette et enflamme.",
+  "spell.mushocraft.frost_nova": "Nova de givre",
+  "spell.mushocraft.frost_nova.desc": "Trempe tout autour de l'endroit visé, puis le gèle jusqu'au cœur.",
+  "spell.mushocraft.bora_blast": "Souffle de bora",
+  "spell.mushocraft.bora_blast.desc": "Une rafale de vent glacé devant vous, qui gèle et engourdit.",
+  "message.mushocraft.magic.meld.any_of": "un sort de %s",
+  "message.mushocraft.magic.meld.discovered": "En mêlant %2$s, vous avez découvert %1$s !",
+  "screen.mushocraft.moves.melded_from": "Mélange : %s"
 }
