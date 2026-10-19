@@ -302,28 +302,30 @@ public final class ShowcaseDirector {
             new Step(1294, () -> shoot("27_spellbook")),
             new Step(1297, () -> Minecraft.getInstance().setScreen(null)),
             new Step(1300, () -> onServer(player -> {
+                clearStage(player);
                 setBattleMode(player, false);
                 LifeService.rebirth(player);
             })),
             new Step(1330, () -> Minecraft.getInstance().options.setCameraType(CameraType.THIRD_PERSON_BACK)),
             new Step(1340, () -> shoot("17_baby_third_person")),
-            new Step(1342, () -> {
+            new Step(1412, () -> {
                 Minecraft.getInstance().options.setCameraType(CameraType.FIRST_PERSON);
                 Minecraft.getInstance().gui.getChat().clearMessages(false);
                 onServer(player -> {
+                    LifeService.setAge(player, 20.0);
                     player.setYRot(0.0F);
-                    player.setXRot(8.0F);
+                    player.setXRot(12.0F);
                     clearStage(player);
                     raiseLabPillars(player);
                 });
             }),
-            new Step(1352, () -> onServer(ShowcaseDirector::lightLabFires)),
-            new Step(1357, () -> {
+            new Step(1422, () -> onServer(ShowcaseDirector::lightLabFires)),
+            new Step(1427, () -> {
                 logPillars();
                 shoot("00b_pillars_and_fire");
             }),
-            new Step(1366, () -> shoot("00c_blast_smoke")),
-            new Step(1372, () -> Minecraft.getInstance().stop())
+            new Step(1436, () -> shoot("00c_blast_smoke")),
+            new Step(1442, () -> Minecraft.getInstance().stop())
     );
 
     private static final int FLIGHT_TICKS_BEFORE_SHOT = 3;
@@ -425,7 +427,7 @@ public final class ShowcaseDirector {
     /** The Blockbench pillars side by side, behind the lab projectiles: ice, earthen lance, dark spike. */
     private static void raiseLabPillars(ServerPlayer player) {
         ServerLevel level = player.serverLevel();
-        double z = player.getZ() + 6.5;
+        double z = player.getZ() + 5.0;
         level.addFreshEntity(SpellPillar.create(level, PillarKind.ICE_PILLAR, new Vec3(player.getX() + 2.4, player.getY(), z), 3.0F, 32, 20.0F, 0.0F));
         level.addFreshEntity(SpellPillar.create(level, PillarKind.EARTH_LANCE, new Vec3(player.getX(), player.getY(), z), 3.0F, 32, 70.0F, 4.0F));
         level.addFreshEntity(SpellPillar.create(level, PillarKind.EARTH_SPIKE, new Vec3(player.getX() - 2.4, player.getY(), z), 2.0F, 32, 140.0F, 18.0F));
