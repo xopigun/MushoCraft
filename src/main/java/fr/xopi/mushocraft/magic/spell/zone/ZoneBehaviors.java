@@ -6,6 +6,7 @@ import fr.xopi.mushocraft.core.MushoParticles;
 import fr.xopi.mushocraft.magic.entity.SpellZone;
 import fr.xopi.mushocraft.magic.fx.CameraShake;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
@@ -13,6 +14,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
@@ -423,6 +425,18 @@ public final class ZoneBehaviors {
     }
 
     // ---- Effects only ----
+
+    /** A ward around its caster: it keeps with the caster, and is gone as soon as the status it shows wears off. */
+    public static SpellZone.Behavior ward(Holder<MobEffect> status) {
+        return (zone, level, age) -> {
+            LivingEntity caster = zone.caster();
+            if (caster == null || !caster.isAlive() || !caster.hasEffect(status)) {
+                zone.discard();
+                return;
+            }
+            zone.setPos(caster.position());
+        };
+    }
 
     /**
      * A ring racing out over the ground from the zone's centre, hugging the lie of the land (technique of the visual

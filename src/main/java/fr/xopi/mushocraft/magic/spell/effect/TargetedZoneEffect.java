@@ -24,6 +24,8 @@ public final class TargetedZoneEffect implements SpellEffect {
     private final double range;
     private final boolean needsTarget;
     private final SoundEvent sound;
+    private final ZoneVisual visual;
+    private final boolean followsTarget;
 
     /**
      * @param behavior    builds the zone's behaviour for its target (null when the spell can fall on a bare spot)
@@ -31,12 +33,30 @@ public final class TargetedZoneEffect implements SpellEffect {
      */
     public TargetedZoneEffect(Function<LivingEntity, SpellZone.Behavior> behavior, double radius, int durationTicks, double range,
                               boolean needsTarget, SoundEvent sound) {
+        this(behavior, ZoneVisual.NONE, radius, durationTicks, range, needsTarget, sound, false);
+    }
+
+    /** @param visual the body the client draws for the zone (a cell round a prisoner) */
+    public TargetedZoneEffect(Function<LivingEntity, SpellZone.Behavior> behavior, ZoneVisual visual, double radius, int durationTicks,
+                              double range, boolean needsTarget, SoundEvent sound) {
+        this(behavior, visual, radius, durationTicks, range, needsTarget, sound, false);
+    }
+
+    private TargetedZoneEffect(Function<LivingEntity, SpellZone.Behavior> behavior, ZoneVisual visual, double radius,
+                               int durationTicks, double range, boolean needsTarget, SoundEvent sound, boolean followsTarget) {
+        this.followsTarget = followsTarget;
+        this.visual = visual;
         this.behavior = behavior;
         this.radius = radius;
         this.durationTicks = durationTicks;
         this.range = range;
         this.needsTarget = needsTarget;
         this.sound = sound;
+    }
+
+    /** The same, its body drawn over the target wherever it goes (a cloud over a fleeing creature). */
+    public TargetedZoneEffect followingTarget() {
+        return new TargetedZoneEffect(behavior, visual, radius, durationTicks, range, needsTarget, sound, true);
     }
 
     @Override
@@ -48,9 +68,12 @@ public final class TargetedZoneEffect implements SpellEffect {
         Vec3 spot = target.map(LivingEntity::position).orElseGet(() ->
                 Vec3.atBottomCenterOf(SpellTargeting.groundBelow(context, SpellTargeting.aimedPoint(context, range))));
         @Nullable LivingEntity aimed = target.orElse(null);
-        SpellZone zone = SpellZone.create(context.level(), context.caster(), behavior.apply(aimed), ZoneVisual.NONE,
+        SpellZone zone = SpellZone.create(context.level(), context.caster(), behavior.apply(aimed), visual,
                 radius * context.scale(), context.power(), durationTicks);
         zone.setPos(spot);
+        if (followsTarget && aimed != null) {
+            zone.following(aimed);
+        }
         context.level().addFreshEntity(zone);
         context.level().playSound(null, zone.blockPosition(), sound, SoundSource.PLAYERS, 1.5F, 1.0F);
         return true;

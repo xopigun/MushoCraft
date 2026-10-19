@@ -6,6 +6,7 @@ import fr.xopi.mushocraft.client.render.spell.FireVisuals;
 import fr.xopi.mushocraft.client.render.spell.GlowShellVisuals;
 import fr.xopi.mushocraft.client.render.spell.ProjectileVisual;
 import fr.xopi.mushocraft.client.render.spell.RibbonTrail;
+import fr.xopi.mushocraft.client.render.spell.RockVisuals;
 import fr.xopi.mushocraft.client.render.spell.WaterVisuals;
 import fr.xopi.mushocraft.magic.entity.SpellProjectile;
 import fr.xopi.mushocraft.magic.spell.SpellElement;
@@ -91,6 +92,9 @@ public class SpellProjectileRenderer extends EntityRenderer<SpellProjectile> {
         }
         if (projectile.element() == SpellElement.ICE) {
             return Optional.of(GlowShellVisuals.ICE);
+        }
+        if (projectile.element() == SpellElement.EARTH) {
+            return Optional.of(RockVisuals.ROCK_BULLET);
         }
         if (projectile.element() == SpellElement.WATER) {
             return Optional.of(projectile.shape() == ProjectileShape.BOLT ? WaterVisuals.WATER_ARROW : WaterVisuals.WATER_BALL);

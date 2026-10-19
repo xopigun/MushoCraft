@@ -1,8 +1,8 @@
 package fr.xopi.mushocraft.magic.spell.effect;
 
+import fr.xopi.mushocraft.magic.fx.SpellFx;
 import fr.xopi.mushocraft.magic.spell.SpellContext;
 import fr.xopi.mushocraft.magic.spell.SpellEffect;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
@@ -15,6 +15,9 @@ import net.minecraft.world.phys.Vec3;
  * Heals the creature the caster is looking at, or the caster when nobody is in reach.
  */
 public final class HealEffect implements SpellEffect {
+    /** Soft green-gold: the light of healing magic. */
+    private static final int HEALING_LIGHT = 0xB8FF9A;
+
     private final float amount;
     private final double reach;
 
@@ -27,8 +30,7 @@ public final class HealEffect implements SpellEffect {
     public boolean cast(SpellContext context) {
         LivingEntity target = lookedAt(context);
         target.heal((float) (amount * context.power()));
-        context.level().sendParticles(ParticleTypes.HAPPY_VILLAGER, target.getX(), target.getY() + target.getBbHeight() * 0.6,
-                target.getZ(), 10, 0.3, 0.4, 0.3, 0.0);
+        SpellFx.healingLight(context.level(), target, HEALING_LIGHT);
         context.level().playSound(null, target.blockPosition(), SoundEvents.AMETHYST_BLOCK_RESONATE,
                 SoundSource.PLAYERS, 1.0F, 1.5F);
         return true;

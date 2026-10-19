@@ -95,7 +95,7 @@ public class SpellFire extends Entity {
         float radius = radius();
         if (tickCount == 1) {
             // count 0: the "speed" is the size of the flash and the reach of the ring
-            server.sendParticles(MushoParticles.FLASH.get(), getX(), getY(), getZ(), 0, radius * 1.0, 0.0, 0.0, 1.0);
+            server.sendParticles(MushoParticles.FLASH.get(), getX(), getY(), getZ(), 0, radius * 0.7, 0.0, 0.0, 1.0);
             server.sendParticles(MushoParticles.SHOCK_RING.get(), getX(), getY() - radius * 0.5 + 0.1, getZ(), 0, radius * 2.2, 0.0, 0.0, 1.0);
             // shock waves thrown every way by the blast
             for (int i = 0; i < 3; i++) {

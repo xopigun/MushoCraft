@@ -1,6 +1,8 @@
 package fr.xopi.mushocraft.magic.spell.effect;
 
 import fr.xopi.mushocraft.core.MushoDamageTypes;
+import fr.xopi.mushocraft.magic.entity.SpellZone;
+import fr.xopi.mushocraft.magic.entity.ZoneVisual;
 import fr.xopi.mushocraft.magic.fx.CameraShake;
 import fr.xopi.mushocraft.magic.fx.SpellFx;
 import fr.xopi.mushocraft.magic.spell.SpellContext;
@@ -29,6 +31,8 @@ public final class AreaBurstEffect implements SpellEffect {
     private final ParticleOptions particle;
     private final SoundEvent sound;
     private final List<CloudEffect.Affliction> afflictions;
+    private final ZoneVisual body;
+    private final int bodyTicks;
 
     public AreaBurstEffect(double radius, float damage, int igniteSeconds, double range, ParticleOptions particle, SoundEvent sound) {
         this(radius, damage, igniteSeconds, range, particle, sound, List.of());
@@ -46,6 +50,25 @@ public final class AreaBurstEffect implements SpellEffect {
         this.particle = particle;
         this.sound = sound;
         this.afflictions = List.copyOf(afflictions);
+        this.body = ZoneVisual.NONE;
+        this.bodyTicks = 0;
+    }
+
+    private AreaBurstEffect(AreaBurstEffect burst, ZoneVisual body, int bodyTicks) {
+        this.radius = burst.radius;
+        this.damage = burst.damage;
+        this.igniteSeconds = burst.igniteSeconds;
+        this.range = burst.range;
+        this.particle = burst.particle;
+        this.sound = burst.sound;
+        this.afflictions = burst.afflictions;
+        this.body = body;
+        this.bodyTicks = bodyTicks;
+    }
+
+    /** Gives the burst a body the client draws for a moment (Water Splash: a crown of water). */
+    public AreaBurstEffect withBody(ZoneVisual visual, int ticks) {
+        return new AreaBurstEffect(this, visual, ticks);
     }
 
     @Override
@@ -68,6 +91,11 @@ public final class AreaBurstEffect implements SpellEffect {
         int count = (int) Math.round(reach * reach * 6);
         level.sendParticles(particle, center.x, center.y + 0.6, center.z, count, reach * 0.5, 0.4, reach * 0.5, 0.02);
         SpellFx.groundRing(level, context.caster(), center, reach, (int) Math.max(6, reach * 1.5), particle);
+        if (body != ZoneVisual.NONE) {
+            SpellZone shape = SpellZone.create(level, context.caster(), (zone, world, age) -> { }, body, reach, context.power(), bodyTicks);
+            shape.setPos(center);
+            level.addFreshEntity(shape);
+        }
         level.playSound(null, BlockPos.containing(center), sound, SoundSource.PLAYERS, 2.0F, 0.9F);
         if (damage >= 10.0F) {
             // only the violent ones (Flash Over) shake the ground

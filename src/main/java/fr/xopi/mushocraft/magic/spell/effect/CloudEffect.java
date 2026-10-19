@@ -1,5 +1,7 @@
 package fr.xopi.mushocraft.magic.spell.effect;
 
+import fr.xopi.mushocraft.magic.entity.SpellZone;
+import fr.xopi.mushocraft.magic.entity.ZoneVisual;
 import fr.xopi.mushocraft.magic.spell.SpellContext;
 import fr.xopi.mushocraft.magic.spell.SpellEffect;
 import net.minecraft.core.BlockPos;
@@ -53,6 +55,11 @@ public final class CloudEffect implements SpellEffect {
         afflictions.forEach(affliction -> cloud.addEffect(
                 new MobEffectInstance(affliction.effect(), affliction.durationTicks(), affliction.amplifier())));
         context.level().addFreshEntity(cloud);
+        // the cloud is seen as banks of whirling dust, as long as it lasts
+        SpellZone body = SpellZone.create(context.level(), context.caster(), (zone, level, age) -> { }, ZoneVisual.DUST_STORM,
+                cloud.getRadius(), context.power(), cloud.getDuration());
+        body.setPos(spot);
+        context.level().addFreshEntity(body);
         context.level().playSound(null, BlockPos.containing(spot), sound, SoundSource.PLAYERS, 1.0F, 0.7F);
         return true;
     }

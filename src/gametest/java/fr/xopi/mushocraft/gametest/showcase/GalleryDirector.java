@@ -20,6 +20,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.AreaEffectCloud;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.monster.Husk;
@@ -99,6 +100,7 @@ public final class GalleryDirector {
             onServer(player -> setUp(player));
         } else if (phase == 2) {
             onServer(player -> {
+                player.removeAllEffects();
                 ManaService.refill(player);
                 boolean cast = spell.effect().cast(new SpellContext(player, spell, 1.0));
                 MushoCraft.LOGGER.info("Gallery {}: cast {}", spell.id(), cast);
@@ -117,7 +119,7 @@ public final class GalleryDirector {
         level.getEntitiesOfClass(Entity.class, player.getBoundingBox().inflate(64.0),
                 entity -> entity instanceof WaterSheet || entity instanceof SpellZone || entity instanceof SpellPillar
                         || entity instanceof SpellFire || entity instanceof SpellProjectile || entity instanceof SpellBeam
-                        || entity instanceof Husk).forEach(Entity::discard);
+                        || entity instanceof Husk || entity instanceof AreaEffectCloud).forEach(Entity::discard);
         BlockPos.betweenClosed(player.blockPosition().offset(-14, -2, -14), player.blockPosition().offset(14, 10, 14)).forEach(pos -> {
             if (level.getBlockState(pos).getBlock() instanceof ConjuredBlock) {
                 level.removeBlock(pos, false);

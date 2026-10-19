@@ -5,6 +5,7 @@ import fr.xopi.mushocraft.core.OrientedParticleOptions;
 import fr.xopi.mushocraft.magic.entity.SpellZone;
 import fr.xopi.mushocraft.magic.entity.ZoneVisual;
 import fr.xopi.mushocraft.magic.spell.zone.ZoneBehaviors;
+import net.minecraft.core.particles.ColorParticleOption;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
@@ -67,5 +68,19 @@ public final class SpellFx {
                 1.0, spreadTicks + 2);
         zone.setPos(centre);
         level.addFreshEntity(zone);
+    }
+
+    /**
+     * Light gathering on a body as it is healed or blessed: motes drifting up all over it, and a ring of light opening at
+     * its feet.
+     */
+    public static void healingLight(ServerLevel level, LivingEntity target, int rgb) {
+        ColorParticleOption mote = ColorParticleOption.create(MushoParticles.RISING_LIGHT.get(), 0xFF000000 | rgb);
+        double width = target.getBbWidth();
+        level.sendParticles(mote, target.getX(), target.getY() + target.getBbHeight() * 0.5, target.getZ(), 28,
+                width * 0.45, target.getBbHeight() * 0.35, width * 0.45, 0.0);
+        level.sendParticles(OrientedParticleOptions.facing(MushoParticles.SHOCK_WAVE.get(), new Vec3(0.0, 1.0, 0.0),
+                level.random.nextFloat() * 360.0F, (float) (width * 1.4), rgb), target.getX(), target.getY() + 0.05, target.getZ(),
+                1, 0.0, 0.0, 0.0, 0.0);
     }
 }

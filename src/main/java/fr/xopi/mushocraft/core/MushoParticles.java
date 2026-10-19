@@ -47,6 +47,20 @@ public final class MushoParticles {
                 }
             });
 
+    /** A mote of soft light drifting up, as healing and holy magic gather on a body; tinted. */
+    public static final DeferredHolder<ParticleType<?>, ParticleType<ColorParticleOption>> RISING_LIGHT =
+            PARTICLE_TYPES.register("rising_light", () -> new ParticleType<ColorParticleOption>(false) {
+                @Override
+                public MapCodec<ColorParticleOption> codec() {
+                    return ColorParticleOption.codec(this);
+                }
+
+                @Override
+                public StreamCodec<? super RegistryFriendlyByteBuf, ColorParticleOption> streamCodec() {
+                    return ColorParticleOption.streamCodec(this);
+                }
+            });
+
     /** A shock wave of air, a ring across the way it faces (a projectile's path, a blast). */
     public static final DeferredHolder<ParticleType<?>, ParticleType<OrientedParticleOptions>> SHOCK_WAVE = oriented("shock_wave");
     /** A slash: a crescent in the plane of a swing. */

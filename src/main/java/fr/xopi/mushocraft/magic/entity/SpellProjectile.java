@@ -7,6 +7,7 @@ import fr.xopi.mushocraft.core.OrientedParticleOptions;
 import fr.xopi.mushocraft.magic.spell.SpellElement;
 import fr.xopi.mushocraft.magic.spell.effect.ProjectileProfile;
 import fr.xopi.mushocraft.magic.spell.effect.ProjectileShape;
+import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
@@ -25,6 +26,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.ThrowableProjectile;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
@@ -121,6 +123,11 @@ public class SpellProjectile extends ThrowableProjectile implements GeoEntity {
                 level().addParticle(OrientedParticleOptions.facing(MushoParticles.SHOCK_WAVE.get(), motion,
                                 random.nextFloat() * 360.0F, visualSize() * 1.8F, 0xE8FFF4),
                         getX(), getY() + getBbHeight() / 2.0, getZ(), 0.0, 0.0, 0.0);
+            }
+            if (element() == SpellElement.EARTH && tickCount % 2 == 0) {
+                // a hurled stone sheds grit
+                level().addParticle(new BlockParticleOption(ParticleTypes.FALLING_DUST, Blocks.COARSE_DIRT.defaultBlockState()),
+                        getX() - motion.x * 0.5, getY() + getBbHeight() / 2.0 - motion.y * 0.5, getZ() - motion.z * 0.5, 0.0, 0.0, 0.0);
             }
             if (element() == SpellElement.FIRE) {
                 // a fireball sheds sparks (its smoke would wall the view: the ribbon of light is its trail)

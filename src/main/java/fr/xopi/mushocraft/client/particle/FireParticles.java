@@ -219,7 +219,7 @@ public final class FireParticles {
             float life = (float) age / lifetime;
             quadSize = startSize * (1.0F + life * 0.6F);
             // a short, warm flash: additive light piles up fast, so it stays well below white
-            float glow = 0.55F * (1.0F - life * life);
+            float glow = 0.35F * (1.0F - life * life);
             setColor(glow, glow * 0.9F, glow * 0.7F);
         }
 

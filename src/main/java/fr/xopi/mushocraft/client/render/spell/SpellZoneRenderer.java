@@ -13,10 +13,12 @@ import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 
 /**
- * Draws lasting spells that have a body. Tornado: a towering funnel, narrow at the ground and wide in the sky, made of
+ * Draws lasting spells that have a body (the others are drawn by {@link ZoneBodies}). Tornado: a towering funnel, narrow at the ground and wide in the sky, made of
  * two layers of wind that wind round in opposite directions; the column sways, rises out of the ground when the spell
  * begins and thins out when it ends. The wind texture (textures/entity/spell/wind_streaks.png) is drawn for MushoCraft.
  */
@@ -37,6 +39,12 @@ public class SpellZoneRenderer extends EntityRenderer<SpellZone> {
 
     @Override
     public boolean shouldRender(SpellZone zone, Frustum frustum, double x, double y, double z) {
+        if (zone.visual() == ZoneVisual.NONE) {
+            return false;
+        }
+        if (zone.followed() != null || zone.visual() == ZoneVisual.STORM_CLOUD) {
+            return true;
+        }
         // the funnel reaches far beyond the zone's tiny hitbox
         float reach = zone.visualRadius() * 1.3F;
         return frustum.isVisible(new AABB(zone.getX() - reach, zone.getY(), zone.getZ() - reach,
@@ -45,9 +53,31 @@ public class SpellZoneRenderer extends EntityRenderer<SpellZone> {
 
     @Override
     public void render(SpellZone zone, float yaw, float partialTicks, PoseStack poseStack, MultiBufferSource buffers, int light) {
-        if (zone.visual() == ZoneVisual.TORNADO) {
-            renderTornado(zone, zone.tickCount + partialTicks, poseStack, buffers);
+        float age = zone.tickCount + partialTicks;
+        poseStack.pushPose();
+        Entity followed = zone.followed();
+        if (followed != null) {
+            // drawn on the entity it follows, which the client knows far better than the zone itself
+            Vec3 offset = followed.getPosition(partialTicks).subtract(zone.getPosition(partialTicks));
+            poseStack.translate(offset.x, offset.y, offset.z);
         }
+        switch (zone.visual()) {
+            case TORNADO -> renderTornado(zone, age, poseStack, buffers);
+            case WARD_MAGIC -> ZoneBodies.ward(zone, age, partialTicks, poseStack, buffers, 0x7FD4FF);
+            case WARD_PHYSICAL -> ZoneBodies.ward(zone, age, partialTicks, poseStack, buffers, 0xE0B070);
+            case SEALING_DOME -> ZoneBodies.sealingDome(zone, age, poseStack, buffers);
+            case CONFINEMENT_CELL -> ZoneBodies.confinementCell(zone, age, poseStack, buffers);
+            case WATERFALL -> ZoneBodies.waterfall(zone, age, poseStack, buffers, light);
+            case FLOOD -> ZoneBodies.flood(zone, age, poseStack, buffers, light);
+            case MIST -> ZoneBodies.mist(zone, age, poseStack, buffers, light);
+            case DUST_STORM -> ZoneBodies.dustStorm(zone, age, poseStack, buffers, light);
+            case STORM_CLOUD -> ZoneBodies.stormCloud(zone, age, poseStack, buffers);
+            case THUNDERHEAD -> ZoneBodies.thunderhead(zone, age, poseStack, buffers);
+            case SPLASH_CROWN -> ZoneBodies.splashCrown(zone, age, poseStack, buffers, light);
+            case NONE -> {
+            }
+        }
+        poseStack.popPose();
         super.render(zone, yaw, partialTicks, poseStack, buffers, light);
     }
 

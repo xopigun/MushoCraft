@@ -8,6 +8,7 @@ import fr.xopi.mushocraft.client.particle.ArcParticle;
 import fr.xopi.mushocraft.client.particle.FireParticles;
 import fr.xopi.mushocraft.client.particle.ManaMote;
 import fr.xopi.mushocraft.client.particle.OrientedParticle;
+import fr.xopi.mushocraft.client.particle.RisingLight;
 import fr.xopi.mushocraft.client.render.SpellOrbModel;
 import fr.xopi.mushocraft.client.render.SpellProjectileRenderer;
 import fr.xopi.mushocraft.client.render.TeacherRenderer;
@@ -70,6 +71,7 @@ public final class MushoClientSetup {
         event.registerSpriteSet(MushoParticles.SHOCK_WAVE.get(), OrientedParticle.ShockWaveProvider::new);
         event.registerSpriteSet(MushoParticles.SLASH.get(), OrientedParticle.SlashProvider::new);
         event.registerSpriteSet(MushoParticles.ARC.get(), ArcParticle.Provider::new);
+        event.registerSpriteSet(MushoParticles.RISING_LIGHT.get(), RisingLight.Provider::new);
     }
 
     @SubscribeEvent

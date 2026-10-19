@@ -132,7 +132,8 @@ public final class MushoSpells {
     /** Semi-transparent barrier that blocks magical attacks and isolates heat and cold (LN vol. 8 ch. 4). */
     public static final DeferredHolder<Spell, Spell> MAGIC_SHIELD = SPELLS.register("magic_shield",
             () -> Spell.builder(SpellSchool.BARRIER, Rank.BEGINNER).intent(SpellIntent.DEFEND).manaCost(10).cooldownTicks(300)
-                    .effect(new SelfStatusEffect(MushoMobEffects.MAGIC_SHIELD, 300, 0, SoundEvents.BEACON_ACTIVATE))
+                    .effect(new SelfStatusEffect(MushoMobEffects.MAGIC_SHIELD, 300, 0, SoundEvents.BEACON_ACTIVATE)
+                            .shownAs(ZoneVisual.WARD_MAGIC))
                     .build());
 
     /** A bolt of white light that can harm a spirit (WN vol. 10 ch. 93). Strong against the undead. */
@@ -226,7 +227,8 @@ public final class MushoSpells {
      */
     public static final DeferredHolder<Spell, Spell> PHYSICAL_SHIELD = SPELLS.register("physical_shield",
             () -> Spell.builder(SpellSchool.BARRIER, Rank.INTERMEDIATE).intent(SpellIntent.DEFEND).manaCost(20).cooldownTicks(400)
-                    .effect(new SelfStatusEffect(MushoMobEffects.PHYSICAL_SHIELD, 300, 0, SoundEvents.ANVIL_PLACE))
+                    .effect(new SelfStatusEffect(MushoMobEffects.PHYSICAL_SHIELD, 300, 0, SoundEvents.ANVIL_PLACE)
+                            .shownAs(ZoneVisual.WARD_PHYSICAL))
                     .build());
 
     // ---- Advanced (school must have reached Advanced; wiki, page Magic Spells) ----
@@ -304,7 +306,8 @@ public final class MushoSpells {
      */
     public static final DeferredHolder<Spell, Spell> CUMULONIMBUS = SPELLS.register("cumulonimbus",
             () -> Spell.builder(SpellSchool.WATER, Rank.SAINT).manaCost(120).cooldownTicks(1200)
-                    .effect(new ZoneEffect(() -> ZoneBehaviors.thunderstorm(12, 14.0F), 10.0, 300, 32.0, SoundEvents.LIGHTNING_BOLT_THUNDER))
+                    .effect(new ZoneEffect(() -> ZoneBehaviors.thunderstorm(12, 14.0F), ZoneVisual.STORM_CLOUD, 10.0, 300, 32.0,
+                            SoundEvents.LIGHTNING_BOLT_THUNDER))
                     .build());
 
     /** Spreads flames over a very wide area instantly (no source cited by the wiki). */
@@ -340,7 +343,8 @@ public final class MushoSpells {
     /** A barrier that seals spirits: the undead inside are held fast and worn away (LN vol. 20 ch. 3). */
     public static final DeferredHolder<Spell, Spell> SPIRIT_SEALING_BARRIER = SPELLS.register("spirit_sealing_barrier",
             () -> Spell.builder(SpellSchool.BARRIER, Rank.SAINT).manaCost(100).cooldownTicks(900)
-                    .effect(new ZoneEffect(() -> ZoneBehaviors.spiritSeal(5.0F), 6.0, 300, 20.0, SoundEvents.BEACON_ACTIVATE))
+                    .effect(new ZoneEffect(() -> ZoneBehaviors.spiritSeal(5.0F), ZoneVisual.SEALING_DOME, 6.0, 300, 20.0,
+                            SoundEvents.BEACON_ACTIVATE))
                     .build());
 
     // ---- King rank: the only spells the wiki names at this rank (Emperor and God: none, see docs/ECARTS.md, E23) ----
@@ -351,8 +355,8 @@ public final class MushoSpells {
      */
     public static final DeferredHolder<Spell, Spell> LIGHTNING = SPELLS.register("lightning",
             () -> Spell.builder(SpellSchool.WATER, Rank.KING).manaCost(250).cooldownTicks(1200)
-                    .effect(new TargetedZoneEffect(target -> ZoneBehaviors.lightning(target, 30, 60.0F), 2.0, 40, 48.0, false,
-                            SoundEvents.LIGHTNING_BOLT_THUNDER))
+                    .effect(new TargetedZoneEffect(target -> ZoneBehaviors.lightning(target, 30, 60.0F), ZoneVisual.THUNDERHEAD, 2.0, 40,
+                            48.0, false, SoundEvents.LIGHTNING_BOLT_THUNDER).followingTarget())
                     .build());
 
     /**
@@ -361,7 +365,8 @@ public final class MushoSpells {
      */
     public static final DeferredHolder<Spell, Spell> CONFINEMENT_BARRIER = SPELLS.register("confinement_barrier",
             () -> Spell.builder(SpellSchool.BARRIER, Rank.KING).manaCost(220).cooldownTicks(1200)
-                    .effect(new TargetedZoneEffect(ZoneBehaviors::confinement, 1.6, 300, 24.0, true, SoundEvents.BEACON_POWER_SELECT))
+                    .effect(new TargetedZoneEffect(ZoneBehaviors::confinement, ZoneVisual.CONFINEMENT_CELL, 1.6, 300, 24.0, true,
+                            SoundEvents.BEACON_POWER_SELECT))
                     .build());
 
     // ---- Spells the wiki gives no rank (ranks chosen for the game: docs/ECARTS.md, E19) ----
@@ -370,7 +375,7 @@ public final class MushoSpells {
     public static final DeferredHolder<Spell, Spell> WATER_SPLASH = SPELLS.register("water_splash",
             () -> Spell.builder(SpellSchool.WATER, Rank.BEGINNER).manaCost(8).cooldownTicks(80)
                     .effect(new AreaBurstEffect(4.0, 1.0F, 0, 16.0, ParticleTypes.SPLASH, SoundEvents.GENERIC_SPLASH,
-                            List.of(new CloudEffect.Affliction(MushoMobEffects.SOAKED, 300, 0))))
+                            List.of(new CloudEffect.Affliction(MushoMobEffects.SOAKED, 300, 0))).withBody(ZoneVisual.SPLASH_CROWN, 16))
                     .build());
 
     /** Heats the caster's hands, hot enough to melt stone: blows set the foe alight (wiki, Fire). */
@@ -388,13 +393,14 @@ public final class MushoSpells {
     /** Water pours down without end like a real waterfall, pressing down and soaking (wiki, Water). */
     public static final DeferredHolder<Spell, Spell> WATERFALL = SPELLS.register("waterfall",
             () -> Spell.builder(SpellSchool.WATER, Rank.INTERMEDIATE).manaCost(18).cooldownTicks(300)
-                    .effect(new ZoneEffect(() -> ZoneBehaviors.waterfall(0.08), 2.5, 160, 16.0, SoundEvents.WATER_AMBIENT))
+                    .effect(new ZoneEffect(() -> ZoneBehaviors.waterfall(0.08), ZoneVisual.WATERFALL, 2.5, 160, 16.0,
+                            SoundEvents.WATER_AMBIENT))
                     .build());
 
     /** Floods the ground with water: creatures wade, slowed and soaked (wiki, Water). */
     public static final DeferredHolder<Spell, Spell> FLOOD_FLUSH = SPELLS.register("flood_flush",
             () -> Spell.builder(SpellSchool.WATER, Rank.INTERMEDIATE).manaCost(20).cooldownTicks(300)
-                    .effect(new ZoneEffect(ZoneBehaviors::flood, 6.0, 200, 16.0, SoundEvents.GENERIC_SPLASH))
+                    .effect(new ZoneEffect(ZoneBehaviors::flood, ZoneVisual.FLOOD, 6.0, 200, 16.0, SoundEvents.GENERIC_SPLASH))
                     .build());
 
     /** Freezes everything in the area, all the more the wet (wiki, Water). */
@@ -442,7 +448,7 @@ public final class MushoSpells {
     public static final DeferredHolder<Spell, Spell> DEEP_MIST = SPELLS.register("deep_mist",
             () -> Spell.builder(SpellSchool.MIXED, Rank.INTERMEDIATE).intent(SpellIntent.DEFEND).manaCost(25).cooldownTicks(400)
                     .meldedFrom(MeldIngredient.spell(WATERFALL), MeldIngredient.spell(HEAT_ISLAND), MeldIngredient.spell(ICICLE_FIELD))
-                    .effect(new ZoneEffect(ZoneBehaviors::deepMist, 7.0, 300, 0.0, SoundEvents.FIRE_EXTINGUISH))
+                    .effect(new ZoneEffect(ZoneBehaviors::deepMist, ZoneVisual.MIST, 7.0, 300, 0.0, SoundEvents.FIRE_EXTINGUISH))
                     .build());
 
     /** A sudden burst of lava (LN vol. 1 ch. 10): a fire spell + an earth spell. Rank from the glossary. */

@@ -30,6 +30,8 @@ public class SpellZone extends Entity {
     private static final EntityDataAccessor<Integer> VISUAL = SynchedEntityData.defineId(SpellZone.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Float> RADIUS = SynchedEntityData.defineId(SpellZone.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Integer> LIFETIME = SynchedEntityData.defineId(SpellZone.class, EntityDataSerializers.INT);
+    /** The entity the zone's body is drawn on (a ward around its caster), -1 if none. */
+    private static final EntityDataAccessor<Integer> FOLLOWED = SynchedEntityData.defineId(SpellZone.class, EntityDataSerializers.INT);
 
     private Behavior behavior;
     private LivingEntity caster;
@@ -64,6 +66,22 @@ public class SpellZone extends Entity {
     /** The zone's radius, as the client knows it. */
     public float visualRadius() {
         return entityData.get(RADIUS);
+    }
+
+    /**
+     * Has the client draw the zone's body on an entity rather than where the zone stands: the zone itself is only sent
+     * now and then, the entity every tick, so a ward around a running caster keeps up with it.
+     */
+    public SpellZone following(Entity entity) {
+        entityData.set(FOLLOWED, entity.getId());
+        return this;
+    }
+
+    /** The entity the zone's body is drawn on, if any is known here. */
+    @Nullable
+    public Entity followed() {
+        int id = entityData.get(FOLLOWED);
+        return id < 0 ? null : level().getEntity(id);
     }
 
     /** The zone's lifetime in ticks, as the client knows it. */
@@ -109,6 +127,7 @@ public class SpellZone extends Entity {
         builder.define(VISUAL, 0);
         builder.define(RADIUS, 1.0F);
         builder.define(LIFETIME, 100);
+        builder.define(FOLLOWED, -1);
     }
 
     @Override
