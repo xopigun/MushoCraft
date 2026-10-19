@@ -4,6 +4,10 @@ import fr.xopi.mushocraft.MushoCraft;
 import fr.xopi.mushocraft.core.MushoBlocks;
 import fr.xopi.mushocraft.core.MushoMobEffects;
 import fr.xopi.mushocraft.life.LifeService;
+import fr.xopi.mushocraft.magic.block.ConjuredBlock;
+import fr.xopi.mushocraft.magic.entity.PillarKind;
+import fr.xopi.mushocraft.magic.entity.SpellFire;
+import fr.xopi.mushocraft.magic.entity.SpellPillar;
 import fr.xopi.mushocraft.magic.entity.SpellZone;
 import fr.xopi.mushocraft.magic.spell.MushoSpells;
 import fr.xopi.mushocraft.magic.spell.Spell;
@@ -21,6 +25,8 @@ import net.minecraft.world.entity.monster.Husk;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.phys.Vec3;
+
+import java.util.List;
 import net.neoforged.neoforge.gametest.GameTestHolder;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
@@ -144,6 +150,60 @@ public final class ElementalSpellGameTests {
         cast(player, MushoSpells.EARTH_WALL.get());
         helper.assertBlockPresent(MushoBlocks.CONJURED_EARTH.get(), MIDDLE.south(3));
         helper.assertBlockPresent(MushoBlocks.CONJURED_EARTH.get(), MIDDLE.south(3).east(2).above(2));
+        TestPlayers.leave(player);
+        helper.succeed();
+    }
+
+    @GameTest(template = EMPTY)
+    public static void icePillarIsAModelOverAHiddenCore(GameTestHelper helper) {
+        ServerPlayer player = caster(helper, 30.0F);
+        cast(player, MushoSpells.ICE_PILLAR.get());
+        List<SpellPillar> pillars = helper.getLevel().getEntitiesOfClass(SpellPillar.class, player.getBoundingBox().inflate(20.0));
+        helper.assertTrue(pillars.size() == 1, "one pillar model rises, found " + pillars.size());
+        SpellPillar pillar = pillars.get(0);
+        helper.assertTrue(pillar.kind() == PillarKind.ICE_PILLAR, "it is the ice pillar model");
+        var core = helper.getLevel().getBlockState(pillar.blockPosition());
+        helper.assertTrue(core.is(MushoBlocks.CONJURED_ICE.get()) && core.getValue(ConjuredBlock.HIDDEN),
+                "its solid core is there, hidden behind the model");
+        pillar.discard();
+        TestPlayers.leave(player);
+        helper.succeed();
+    }
+
+    @GameTest(template = EMPTY)
+    public static void earthHedgehogRaisesLeaningSpikes(GameTestHelper helper) {
+        ServerPlayer player = caster(helper, 30.0F);
+        cast(player, MushoSpells.EARTH_HEDGEHOG.get());
+        List<SpellPillar> spikes = helper.getLevel().getEntitiesOfClass(SpellPillar.class, player.getBoundingBox().inflate(25.0));
+        helper.assertTrue(spikes.size() == 9, "nine spikes burst out, found " + spikes.size());
+        helper.assertTrue(spikes.stream().allMatch(spike -> spike.kind() == PillarKind.EARTH_SPIKE), "of dark stone");
+        spikes.forEach(SpellPillar::discard);
+        TestPlayers.leave(player);
+        helper.succeed();
+    }
+
+    @GameTest(template = EMPTY)
+    public static void explosionAndFlamePillarHaveABodyOfFire(GameTestHelper helper) {
+        ServerPlayer player = caster(helper, 30.0F);
+        cast(player, MushoSpells.EXPLOSION.get());
+        cast(player, MushoSpells.FLAME_PILLAR.get());
+        List<SpellFire> fires = helper.getLevel().getEntitiesOfClass(SpellFire.class, player.getBoundingBox().inflate(25.0));
+        helper.assertTrue(fires.stream().anyMatch(fire -> fire.kind() == SpellFire.Kind.BLAST), "the explosion is a fireball");
+        helper.assertTrue(fires.stream().anyMatch(fire -> fire.kind() == SpellFire.Kind.COLUMN), "the pillar is a column of flame");
+        helper.assertBlockNotPresent(MushoBlocks.CONJURED_EARTH.get(), MIDDLE);
+        fires.forEach(SpellFire::discard);
+        TestPlayers.leave(player);
+        helper.succeed();
+    }
+
+    @GameTest(template = EMPTY)
+    public static void icicleFieldSwallowsItsPreyInFrost(GameTestHelper helper) {
+        ServerPlayer player = caster(helper, 30.0F);
+        cast(player, MushoSpells.ICICLE_FIELD.get());
+        List<SpellPillar> mounds = helper.getLevel().getEntitiesOfClass(SpellPillar.class, player.getBoundingBox().inflate(25.0),
+                pillar -> pillar.kind() == PillarKind.FROST_MOUND);
+        helper.assertTrue(mounds.size() >= 6, "billowing frost mounds burst up over the field, found " + mounds.size());
+        mounds.forEach(SpellPillar::discard);
         TestPlayers.leave(player);
         helper.succeed();
     }

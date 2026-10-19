@@ -2,6 +2,7 @@ package fr.xopi.mushocraft.magic.spell.zone;
 
 import fr.xopi.mushocraft.core.MushoDamageTypes;
 import fr.xopi.mushocraft.core.MushoMobEffects;
+import fr.xopi.mushocraft.core.MushoParticles;
 import fr.xopi.mushocraft.magic.entity.SpellZone;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -155,7 +156,7 @@ public final class ZoneBehaviors {
     public static SpellZone.Behavior heatIsland(float damagePerSecond) {
         return (zone, level, age) -> {
             if (age % 5 == 0) {
-                level.sendParticles(ParticleTypes.SMALL_FLAME, zone.getX(), zone.getY() + 0.2, zone.getZ(), 12,
+                level.sendParticles(MushoParticles.FLAME.get(), zone.getX(), zone.getY() + 0.2, zone.getZ(), 12,
                         zone.radius() * 0.6, 0.1, zone.radius() * 0.6, 0.01);
             }
             LivingEntity caster = zone.caster();
@@ -182,7 +183,7 @@ public final class ZoneBehaviors {
             if (age % 3 == 0) {
                 for (int i = 0; i < 16; i++) {
                     double angle = i * Math.PI / 8.0 + age * 0.05;
-                    level.sendParticles(ParticleTypes.FLAME, zone.getX() + Math.cos(angle) * zone.radius(), zone.getY() + 0.3,
+                    level.sendParticles(MushoParticles.FLAME.get(), zone.getX() + Math.cos(angle) * zone.radius(), zone.getY() + 0.3,
                             zone.getZ() + Math.sin(angle) * zone.radius(), 1, 0.0, 0.2, 0.0, 0.01);
                 }
             }

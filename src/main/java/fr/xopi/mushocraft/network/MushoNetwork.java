@@ -26,6 +26,7 @@ public final class MushoNetwork {
         registrar.playToServer(UseMovePayload.TYPE, UseMovePayload.STREAM_CODEC, UseMovePayload::handle);
         registrar.playToServer(ReleaseMovePayload.TYPE, ReleaseMovePayload.STREAM_CODEC, ReleaseMovePayload::handle);
         registrar.playToServer(SetMoveSlotPayload.TYPE, SetMoveSlotPayload.STREAM_CODEC, SetMoveSlotPayload::handle);
+        registrar.playToClient(ChantSyncPayload.TYPE, ChantSyncPayload.STREAM_CODEC, ChantSyncPayload::handle);
         registrar.playToClient(AuraSyncPayload.TYPE, AuraSyncPayload.STREAM_CODEC, AuraSyncPayload::handle);
         registrar.playToClient(StyleSyncPayload.TYPE, StyleSyncPayload.STREAM_CODEC, StyleSyncPayload::handle);
         registrar.playToServer(ToggleAuraPayload.TYPE, ToggleAuraPayload.STREAM_CODEC, ToggleAuraPayload::handle);

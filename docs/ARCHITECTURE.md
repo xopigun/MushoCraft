@@ -134,6 +134,14 @@ Estimation : une quinzaine de classes d'effets génériques, plus une classe pou
   - **Ice Smash** : amas de pointes de glace (Blockbench + GeckoLib), animations « form » (jaillit) puis « fly » (tournoie, les pointes respirent).
   - **Water Shield** : une bulle grossit, puis se transforme en mur d'eau ondulant aux bords hérissés, l'eau déborde du sommet, puis le mur s'effondre. Des blocs invisibles assurent le blocage physique.
   - **Tornado** : entonnoir de vent de près de 16 blocs, deux couches qui tournent en sens contraires, colonne qui oscille. Physique : aspire, fait tourner et soulève créatures et objets jusqu'au sommet, d'où ils sont éjectés.
+  - **Water Shield (v2)** : le mur s'arrondit autour du joueur, comme un écran courbe, plus grand (6 × 4).
+  - **Piliers en modèles Blockbench** (entité `SpellPillar`, GeckoLib) : *Ice Pillar* (fût de glace à facettes, cristaux à la base), *Earth Lance* (pointe de roche brune en couches), *Earth Hedgehog* (pointes de pierre sombre penchées dans tous les sens), *Icicle Field* (monticules de givre qui engloutissent les cibles, comme dans l'anime). Animations « rise » (jaillit du sol), « idle » (frémit), « crumble » (s'effrite). Les blocs de collision sont cachés (propriété `hidden` de `ConjuredBlock`). L'apparence d'une éruption est une stratégie (`EruptionVisual`).
+  - **Feu** :
+    - particules dessinées pour le mod, en aplats façon anime : flamme animée en 8 images, braise, fumée, éclair blanc, onde de choc couchée au sol ;
+    - **boule de feu** : cœur blanc, flammes qui fuient vers l'arrière (plus longues avec la vitesse), halo rouge, braises et fumée ;
+    - **explosion** (entité `SpellFire`, souffle) : éclair, boule de feu en couches (blanc, jaune, orange) qui gonfle puis refroidit, nuage de fumée qui monte, onde de choc, braises. Les particules vanilla de l'explosion sont remplacées ;
+    - **Flame Pillar** : colonne de flammes dont les langues montent.
+  - **Incantation** : le sort prend forme dans la main (orbe à la couleur de l'école, particules de mana qui convergent), pour les joueurs comme pour les PNJ. Pas de cercle magique (écart E21).
 - **Grimoire** (`SpellbookScreen`) : livre en cuir, rubans par école et par style, pages par rang, glisser-déposer vers la barre de move.
 
 ### 4.3 Modes d'incantation (wiki, page *Magic*)

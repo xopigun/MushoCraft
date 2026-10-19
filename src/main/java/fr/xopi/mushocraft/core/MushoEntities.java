@@ -1,6 +1,8 @@
 package fr.xopi.mushocraft.core;
 
 import fr.xopi.mushocraft.MushoCraft;
+import fr.xopi.mushocraft.magic.entity.SpellFire;
+import fr.xopi.mushocraft.magic.entity.SpellPillar;
 import fr.xopi.mushocraft.magic.entity.SpellProjectile;
 import fr.xopi.mushocraft.magic.entity.SpellZone;
 import fr.xopi.mushocraft.magic.entity.WaterSheet;
@@ -63,6 +65,26 @@ public final class MushoEntities {
                     .clientTrackingRange(8)
                     .updateInterval(40)
                     .build(MushoCraft.id("water_sheet").toString()));
+
+    /** The visible pillar or spike of Ice Pillar, Earth Lance and Earth Hedgehog (a Blockbench model). */
+    public static final DeferredHolder<EntityType<?>, EntityType<SpellPillar>> SPELL_PILLAR =
+            ENTITY_TYPES.register("spell_pillar", () -> EntityType.Builder
+                    .<SpellPillar>of(SpellPillar::new, MobCategory.MISC)
+                    .sized(0.5F, 0.5F)
+                    .noSummon()
+                    .clientTrackingRange(8)
+                    .updateInterval(40)
+                    .build(MushoCraft.id("spell_pillar").toString()));
+
+    /** Conjured fire with a body: an explosion or a pillar of flame. */
+    public static final DeferredHolder<EntityType<?>, EntityType<SpellFire>> SPELL_FIRE =
+            ENTITY_TYPES.register("spell_fire", () -> EntityType.Builder
+                    .<SpellFire>of(SpellFire::new, MobCategory.MISC)
+                    .sized(0.5F, 0.5F)
+                    .noSummon()
+                    .clientTrackingRange(8)
+                    .updateInterval(40)
+                    .build(MushoCraft.id("spell_fire").toString()));
 
     public static final DeferredHolder<EntityType<?>, EntityType<SwordMasterEntity>> SWORD_MASTER =
             ENTITY_TYPES.register("sword_master", () -> EntityType.Builder

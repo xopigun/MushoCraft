@@ -1,6 +1,9 @@
 {
   "variants": {
-    "": {
+    "hidden=false": {
+      "model": "mushocraft:block/water_wall"
+    },
+    "hidden=true": {
       "model": "mushocraft:block/water_wall"
     }
   }

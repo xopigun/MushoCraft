@@ -1,9 +1,9 @@
 package fr.xopi.mushocraft.magic.spell.effect;
 
 import fr.xopi.mushocraft.core.MushoDamageTypes;
+import fr.xopi.mushocraft.magic.entity.SpellBlasts;
 import fr.xopi.mushocraft.magic.spell.SpellContext;
 import fr.xopi.mushocraft.magic.spell.SpellEffect;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
 /**
@@ -21,9 +21,8 @@ public final class ExplosionEffect implements SpellEffect {
     @Override
     public boolean cast(SpellContext context) {
         Vec3 point = SpellTargeting.aimedPoint(context, range);
-        context.level().explode(context.caster(), MushoDamageTypes.spell(context.level(), context.caster(), context.caster()),
-                null, point.x, point.y, point.z, (float) (radius * Math.sqrt(context.power())), false,
-                Level.ExplosionInteraction.NONE);
+        SpellBlasts.explode(context.level(), context.caster(), MushoDamageTypes.spell(context.level(), context.caster(), context.caster()),
+                point, (float) (radius * Math.sqrt(context.power()) * context.scale()));
         return true;
     }
 }

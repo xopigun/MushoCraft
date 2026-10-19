@@ -137,8 +137,14 @@ public final class SpellGameTests {
         boolean cast = MushoSpells.WATER_SHIELD.get().effect().cast(
                 new SpellContext(player, MushoSpells.WATER_SHIELD.get(), 1.0));
         helper.assertTrue(cast, "wall raised");
-        BlockPos front = player.blockPosition().relative(player.getDirection(), 2);
-        helper.assertTrue(helper.getLevel().getBlockState(front).is(MushoBlocks.WATER_WALL.get()), "water wall in front of the caster");
+        boolean ahead = false;
+        for (int distance = 2; distance <= 3; distance++) {
+            ahead |= helper.getLevel().getBlockState(player.blockPosition().relative(player.getDirection(), distance))
+                    .is(MushoBlocks.WATER_WALL.get());
+        }
+        helper.assertTrue(ahead, "water wall in front of the caster");
+        helper.assertFalse(helper.getLevel().getBlockState(player.blockPosition().relative(player.getDirection().getOpposite(), 2))
+                .is(MushoBlocks.WATER_WALL.get()), "but not behind: it curves round the front");
         TestPlayers.leave(player);
         helper.succeed();
     }

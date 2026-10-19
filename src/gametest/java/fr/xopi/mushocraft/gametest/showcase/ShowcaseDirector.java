@@ -11,7 +11,13 @@ import fr.xopi.mushocraft.core.MushoEntities;
 import fr.xopi.mushocraft.core.MushoItems;
 import fr.xopi.mushocraft.core.Rank;
 import fr.xopi.mushocraft.life.LifeService;
+import fr.xopi.mushocraft.magic.block.ConjuredBlock;
+import fr.xopi.mushocraft.magic.entity.PillarKind;
+import fr.xopi.mushocraft.magic.entity.SpellFire;
+import fr.xopi.mushocraft.magic.entity.SpellPillar;
 import fr.xopi.mushocraft.magic.entity.SpellProjectile;
+import fr.xopi.mushocraft.magic.entity.SpellZone;
+import fr.xopi.mushocraft.magic.entity.WaterSheet;
 import fr.xopi.mushocraft.magic.mana.ManaService;
 import fr.xopi.mushocraft.magic.spell.MagicService;
 import fr.xopi.mushocraft.magic.spell.MushoSpells;
@@ -41,6 +47,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -51,7 +58,6 @@ import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Consumer;
 
 /**
@@ -107,15 +113,15 @@ public final class ShowcaseDirector {
             new Step(270, () -> onServer(player -> MoveService.use(player, 3))),
             new Step(300, () -> shoot("06_water_shield")),
             new Step(302, () -> {
-                // Seen from beyond the wall, facing it: a third-person camera would bump into its invisible blocks.
-                Minecraft.getInstance().options.setCameraType(CameraType.FIRST_PERSON);
-                onServer(player -> player.teleportTo(player.serverLevel(), player.getX(), player.getY(), player.getZ() + 6.5,
-                        Set.of(), 180.0F, 8.0F));
+                // over the caster's shoulder, from above: the screen of water curves round them
+                Minecraft.getInstance().options.setCameraType(CameraType.THIRD_PERSON_BACK);
+                onServer(player -> player.setXRot(28.0F));
             }),
             new Step(318, () -> shoot("06b_water_shield_wall")),
             new Step(320, () -> {
                 Minecraft.getInstance().options.setCameraType(CameraType.FIRST_PERSON);
                 onServer(player -> {
+                    clearStage(player);
                     List.of(MushoSpells.ICE_PILLAR, MushoSpells.EX_FLAME, MushoSpells.EARTH_LANCE, MushoSpells.EXPLOSION)
                             .forEach(spell -> MagicService.learn(player, spell.get()));
                     masterAll(player);
@@ -127,7 +133,10 @@ public final class ShowcaseDirector {
                 });
             }),
             new Step(325, () -> onServer(player -> MoveService.use(player, 0))),
-            new Step(358, () -> shoot("07_ice_pillar")),
+            new Step(358, () -> {
+                logPillars();
+                shoot("07_ice_pillar");
+            }),
             new Step(360, () -> onServer(player -> {
                 player.setXRot(-5.0F);
                 MoveService.use(player, 1);
@@ -298,7 +307,23 @@ public final class ShowcaseDirector {
             })),
             new Step(1330, () -> Minecraft.getInstance().options.setCameraType(CameraType.THIRD_PERSON_BACK)),
             new Step(1340, () -> shoot("17_baby_third_person")),
-            new Step(1360, () -> Minecraft.getInstance().stop())
+            new Step(1342, () -> {
+                Minecraft.getInstance().options.setCameraType(CameraType.FIRST_PERSON);
+                Minecraft.getInstance().gui.getChat().clearMessages(false);
+                onServer(player -> {
+                    player.setYRot(0.0F);
+                    player.setXRot(8.0F);
+                    clearStage(player);
+                    raiseLabPillars(player);
+                });
+            }),
+            new Step(1352, () -> onServer(ShowcaseDirector::lightLabFires)),
+            new Step(1357, () -> {
+                logPillars();
+                shoot("00b_pillars_and_fire");
+            }),
+            new Step(1366, () -> shoot("00c_blast_smoke")),
+            new Step(1372, () -> Minecraft.getInstance().stop())
     );
 
     private static final int FLIGHT_TICKS_BEFORE_SHOT = 3;
@@ -365,6 +390,54 @@ public final class ShowcaseDirector {
         projectile.setPos(player.getX() + 1.6, player.getEyeY() + height - 0.4, player.getZ() + 3.0);
         projectile.setDeltaMovement(-speed, 0.0, 0.0);
         player.serverLevel().addFreshEntity(projectile);
+    }
+
+    /** Debug: where the pillar models are and which animation they play. */
+    private static void logPillars() {
+        Minecraft minecraft = Minecraft.getInstance();
+        for (Entity entity : minecraft.level.entitiesForRendering()) {
+            if (entity instanceof SpellPillar pillar) {
+                var controller = pillar.getAnimatableInstanceCache().getManagerForId(pillar.getId())
+                        .getAnimationControllers().get("pillar");
+                MushoCraft.LOGGER.info("Showcase pillar {} age {} at {} (player at {}): animation {} state {}", pillar.kind(),
+                        pillar.tickCount, pillar.position(), minecraft.player.position(),
+                        controller == null || controller.getCurrentAnimation() == null ? "none"
+                                : controller.getCurrentAnimation().animation().name(),
+                        controller == null ? "none" : controller.getAnimationState());
+            }
+        }
+    }
+
+    /** Clears what earlier scenes left around the player: lasting spells, conjured walls, the weather. */
+    private static void clearStage(ServerPlayer player) {
+        ServerLevel level = player.serverLevel();
+        level.getEntitiesOfClass(Entity.class, player.getBoundingBox().inflate(48.0),
+                entity -> entity instanceof WaterSheet || entity instanceof SpellZone || entity instanceof SpellPillar
+                        || entity instanceof SpellFire).forEach(Entity::discard);
+        BlockPos.betweenClosed(player.blockPosition().offset(-12, -2, -12), player.blockPosition().offset(12, 8, 12)).forEach(pos -> {
+            if (level.getBlockState(pos).getBlock() instanceof ConjuredBlock) {
+                level.removeBlock(pos, false);
+            }
+        });
+        level.setWeatherParameters(6000, 0, false, false);
+    }
+
+    /** The Blockbench pillars side by side, behind the lab projectiles: ice, earthen lance, dark spike. */
+    private static void raiseLabPillars(ServerPlayer player) {
+        ServerLevel level = player.serverLevel();
+        double z = player.getZ() + 6.5;
+        level.addFreshEntity(SpellPillar.create(level, PillarKind.ICE_PILLAR, new Vec3(player.getX() + 2.4, player.getY(), z), 3.0F, 32, 20.0F, 0.0F));
+        level.addFreshEntity(SpellPillar.create(level, PillarKind.EARTH_LANCE, new Vec3(player.getX(), player.getY(), z), 3.0F, 32, 70.0F, 4.0F));
+        level.addFreshEntity(SpellPillar.create(level, PillarKind.EARTH_SPIKE, new Vec3(player.getX() - 2.4, player.getY(), z), 2.0F, 32, 140.0F, 18.0F));
+        level.addFreshEntity(SpellPillar.create(level, PillarKind.FROST_MOUND, new Vec3(player.getX() - 1.4, player.getY(), z - 2.5), 1.4F, 32, 30.0F, 0.0F));
+    }
+
+    /** Fire beside the pillars: a burning column, a blast and a fireball drifting across. */
+    private static void lightLabFires(ServerPlayer player) {
+        ServerLevel level = player.serverLevel();
+        level.addFreshEntity(SpellFire.column(level, new Vec3(player.getX() + 5.0, player.getY(), player.getZ() + 8.0), 1.1F, 4.0F, 30));
+        level.addFreshEntity(SpellFire.blast(level, new Vec3(player.getX() - 5.0, player.getY() + 1.6, player.getZ() + 8.0), 1.8F));
+        spawnLabProjectile(player, ProjectileProfile.of(SpellElement.FIRE, 0.0F).size(1.0F).gravity(0.0F).build(), 0.3, 0.4);
     }
 
     /** The showcase films moves at their best: everything known is mastered (no random botch). */

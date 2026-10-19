@@ -2,6 +2,7 @@ package fr.xopi.mushocraft.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import fr.xopi.mushocraft.client.render.spell.CrystalClusterVisual;
+import fr.xopi.mushocraft.client.render.spell.FireVisuals;
 import fr.xopi.mushocraft.client.render.spell.ProjectileVisual;
 import fr.xopi.mushocraft.client.render.spell.WaterVisuals;
 import fr.xopi.mushocraft.magic.entity.SpellProjectile;
@@ -57,6 +58,9 @@ public class SpellProjectileRenderer extends EntityRenderer<SpellProjectile> {
     private Optional<ProjectileVisual> visualFor(SpellProjectile projectile) {
         if (projectile.shape() == ProjectileShape.CRYSTAL_CLUSTER) {
             return Optional.of(crystalCluster);
+        }
+        if (projectile.element() == SpellElement.FIRE) {
+            return Optional.of(FireVisuals.FIREBALL);
         }
         if (projectile.element() == SpellElement.WATER) {
             return Optional.of(projectile.shape() == ProjectileShape.BOLT ? WaterVisuals.WATER_ARROW : WaterVisuals.WATER_BALL);

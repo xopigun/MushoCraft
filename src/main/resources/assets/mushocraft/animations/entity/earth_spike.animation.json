@@ -1,0 +1,153 @@
+{
+	"format_version": "1.8.0",
+	"animations": {
+		"animation.earth_spike.rise": {
+			"animation_length": 0.3,
+			"bones": {
+				"body": {
+					"position": {
+						"0.0": {
+							"vector": [0, -40, 0]
+						},
+						"0.16": {
+							"vector": [0, 4, 0]
+						},
+						"0.3": {
+							"vector": [0, 0, 0]
+						}
+					},
+					"scale": {
+						"0.0": {
+							"vector": [0.7, 0.3, 0.7]
+						},
+						"0.16": {
+							"vector": [1.05, 1.15, 1.05]
+						},
+						"0.3": {
+							"vector": [1, 1, 1]
+						}
+					}
+				},
+				"shards": {
+					"scale": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"0.22": {
+							"vector": [1.2, 1.2, 1.2]
+						},
+						"0.3": {
+							"vector": [1, 1, 1]
+						}
+					}
+				},
+				"rubble": {
+					"position": {
+						"0.0": {
+							"vector": [0, -3, 0]
+						},
+						"0.12": {
+							"vector": [0, 2, 0]
+						},
+						"0.3": {
+							"vector": [0, 0, 0]
+						}
+					},
+					"scale": {
+						"0.0": {
+							"vector": [0.4, 0.4, 0.4]
+						},
+						"0.12": {
+							"vector": [1.15, 1.15, 1.15]
+						},
+						"0.3": {
+							"vector": [1, 1, 1]
+						}
+					}
+				}
+			}
+		},
+		"animation.earth_spike.idle": {
+			"loop": true,
+			"animation_length": 1.6,
+			"bones": {
+				"spike": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"0.4": {
+							"vector": [-0.8, 0, -0.6]
+						},
+						"0.8": {
+							"vector": [0.6, 0, 0.8]
+						},
+						"1.2": {
+							"vector": [-0.5, 0, 0.5]
+						},
+						"1.6": {
+							"vector": [0, 0, 0]
+						}
+					}
+				},
+				"rubble": {
+					"position": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"0.8": {
+							"vector": [0, 0.4, 0]
+						},
+						"1.6": {
+							"vector": [0, 0, 0]
+						}
+					}
+				}
+			}
+		},
+		"animation.earth_spike.crumble": {
+			"animation_length": 0.4,
+			"bones": {
+				"body": {
+					"position": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"0.4": {
+							"vector": [0, -42, 0]
+						}
+					},
+					"scale": {
+						"0.0": {
+							"vector": [1, 1, 1]
+						},
+						"0.4": {
+							"vector": [0.8, 0.8, 0.8]
+						}
+					}
+				},
+				"shards": {
+					"scale": {
+						"0.0": {
+							"vector": [1, 1, 1]
+						},
+						"0.2": {
+							"vector": [0, 0, 0]
+						}
+					}
+				},
+				"rubble": {
+					"scale": {
+						"0.0": {
+							"vector": [1, 1, 1]
+						},
+						"0.4": {
+							"vector": [0.3, 0.3, 0.3]
+						}
+					}
+				}
+			}
+		}
+	},
+	"geckolib_format_version": 2
+}

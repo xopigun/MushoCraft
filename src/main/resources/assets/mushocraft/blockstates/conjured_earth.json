@@ -1,6 +1,9 @@
 {
   "variants": {
-    "": {
+    "hidden=false": {
+      "model": "mushocraft:block/conjured_earth"
+    },
+    "hidden=true": {
       "model": "mushocraft:block/conjured_earth"
     }
   }

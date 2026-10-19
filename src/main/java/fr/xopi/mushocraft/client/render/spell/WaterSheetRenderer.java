@@ -16,8 +16,9 @@ import net.minecraft.world.phys.AABB;
 import org.joml.Vector3f;
 
 /**
- * Draws Water Shield's water: one grid that is first a swelling sphere, then morphs into a broad sheet whose surface
- * ripples, whose rim bristles with splashes (as in the anime) and whose top spills; at the end it slumps and falls.
+ * Draws Water Shield's water: one grid that is first a swelling sphere, then morphs into a broad sheet curving round
+ * the caster like a screen, whose surface ripples, whose rim bristles with splashes (as in the anime) and whose top
+ * spills; at the end it slumps and falls.
  */
 public class WaterSheetRenderer extends EntityRenderer<WaterSheet> {
     private static final LatheMesh.Material WALL = new LatheMesh.Material(0.55F, 0.82F, 1.0F, 0.42F, 0.88F, 0.5F,
@@ -31,7 +32,7 @@ public class WaterSheetRenderer extends EntityRenderer<WaterSheet> {
     /** The wall stands far beyond the entity's tiny box: cull against the whole wall instead. */
     @Override
     public boolean shouldRender(WaterSheet sheet, Frustum frustum, double x, double y, double z) {
-        float reach = Math.max(sheet.width(), sheet.height());
+        float reach = sheet.arcRadius() + Math.max(sheet.width(), sheet.height());
         return frustum.isVisible(new AABB(sheet.getX() - reach, sheet.getY(), sheet.getZ() - reach,
                 sheet.getX() + reach, sheet.getY() + sheet.height() + 1.0, sheet.getZ() + reach));
     }
@@ -46,25 +47,31 @@ public class WaterSheetRenderer extends EntityRenderer<WaterSheet> {
         float morph = smooth(Mth.clamp((age - WaterSheet.BUBBLE_TICKS) / WaterSheet.SPREAD_TICKS, 0.0F, 1.0F));
         float collapse = smooth(Mth.clamp((age - (sheet.lifetime() - WaterSheet.COLLAPSE_TICKS)) / WaterSheet.COLLAPSE_TICKS, 0.0F, 1.0F));
         float sphereCentre = height * 0.45F;
+        float arcRadius = sheet.arcRadius();
+        float span = width / arcRadius;
 
         GridMesh.Surface surface = (u, v) -> {
             // sphere: u around, v from bottom to top
             double theta = u * Math.PI * 2.0;
             double phi = v * Math.PI;
             float radius = BUBBLE_RADIUS * bubble * (1.0F + 0.06F * Mth.sin(age * 0.8F + u * 12.0F));
+            // the bubble swells where the middle of the wall will stand
             Vector3f sphere = new Vector3f((float) (Math.cos(theta) * Math.sin(phi)) * radius,
-                    sphereCentre - (float) Math.cos(phi) * radius, (float) (Math.sin(theta) * Math.sin(phi)) * radius);
+                    sphereCentre - (float) Math.cos(phi) * radius, arcRadius + (float) (Math.sin(theta) * Math.sin(phi)) * radius);
             // wall: u across, v up; ripples travel across it, the rim bristles outwards
-            float across = (u - 0.5F) * width;
             float up = v * height;
-            float ripple = 0.08F * Mth.sin(across * 2.4F + age * 0.35F) + 0.06F * Mth.sin(up * 3.1F - age * 0.5F);
+            float ripple = 0.08F * Mth.sin((u - 0.5F) * width * 2.4F + age * 0.35F) + 0.06F * Mth.sin(up * 3.1F - age * 0.5F);
             float rim = Math.max(Math.abs(u - 0.5F) * 2.0F, Math.abs(v - 0.5F) * 2.0F);
             float bristle = rim > 0.85F ? (rim - 0.85F) * 6.0F * (0.5F + 0.5F * Mth.sin(u * 47.0F + v * 31.0F + age * 0.9F)) : 0.0F;
             float spread = 1.0F + bristle * 0.18F;
-            Vector3f wall = new Vector3f(across * spread, sphereCentre + (up - sphereCentre) * spread, ripple);
+            // the wall curves round the caster like a screen; ripples push it in and out along the radius
+            float angle = (u - 0.5F) * span * spread;
+            float distance = arcRadius + ripple;
+            Vector3f wall = new Vector3f(Mth.sin(angle) * distance, sphereCentre + (up - sphereCentre) * spread, Mth.cos(angle) * distance);
             // collapse: the water slumps down and spreads at the foot of the wall
             wall.y = wall.y * (1.0F - collapse) ;
-            wall.z += collapse * (v - 0.5F) * 0.6F;
+            wall.x += collapse * Mth.sin(angle) * (v - 0.5F) * 0.6F;
+            wall.z += collapse * Mth.cos(angle) * (v - 0.5F) * 0.6F;
             return sphere.lerp(wall, morph);
         };
 

@@ -2,10 +2,12 @@ package fr.xopi.mushocraft.magic.spell;
 
 import fr.xopi.mushocraft.MushoCraft;
 import fr.xopi.mushocraft.core.MushoBlocks;
+import fr.xopi.mushocraft.core.MushoParticles;
 import fr.xopi.mushocraft.core.MushoItems;
 import fr.xopi.mushocraft.core.MushoMobEffects;
 import fr.xopi.mushocraft.core.MushoRegistries;
 import fr.xopi.mushocraft.core.Rank;
+import fr.xopi.mushocraft.magic.entity.PillarKind;
 import fr.xopi.mushocraft.magic.entity.ZoneVisual;
 import fr.xopi.mushocraft.magic.spell.effect.AreaBurstEffect;
 import fr.xopi.mushocraft.magic.spell.effect.BurstEffect;
@@ -14,7 +16,9 @@ import fr.xopi.mushocraft.magic.spell.effect.CompositeEffect;
 import fr.xopi.mushocraft.magic.spell.effect.ConeBlastEffect;
 import fr.xopi.mushocraft.magic.spell.effect.ConjureItemEffect;
 import fr.xopi.mushocraft.magic.spell.effect.CureEffect;
+import fr.xopi.mushocraft.magic.spell.effect.CurvedWallEffect;
 import fr.xopi.mushocraft.magic.spell.effect.EruptionEffect;
+import fr.xopi.mushocraft.magic.spell.effect.EruptionVisual;
 import fr.xopi.mushocraft.magic.spell.effect.ExplosionEffect;
 import fr.xopi.mushocraft.magic.spell.effect.FallingProjectileEffect;
 import fr.xopi.mushocraft.magic.spell.effect.FortressEffect;
@@ -28,7 +32,6 @@ import fr.xopi.mushocraft.magic.spell.effect.ScatteredEruptionEffect;
 import fr.xopi.mushocraft.magic.spell.effect.ScorchCasterEffect;
 import fr.xopi.mushocraft.magic.spell.effect.SelfStatusEffect;
 import fr.xopi.mushocraft.magic.spell.effect.WallEffect;
-import fr.xopi.mushocraft.magic.spell.effect.WaterSheetEffect;
 import fr.xopi.mushocraft.magic.spell.effect.WeatherEffect;
 import fr.xopi.mushocraft.magic.spell.effect.ZoneEffect;
 import fr.xopi.mushocraft.magic.spell.zone.ZoneBehaviors;
@@ -60,8 +63,7 @@ public final class MushoSpells {
     /** Creates a spout of water from the ground forming a defensive wall. */
     public static final DeferredHolder<Spell, Spell> WATER_SHIELD = SPELLS.register("water_shield",
             () -> Spell.builder(SpellSchool.WATER, Rank.BEGINNER).intent(SpellIntent.DEFEND).manaCost(8).cooldownTicks(100)
-                    .effect(new CompositeEffect(new WallEffect(MushoBlocks.WATER_WALL, 1, 3, 2, 200, SoundEvents.BUCKET_EMPTY),
-                            new WaterSheetEffect(1, 3, 2, 200)))
+                    .effect(new CurvedWallEffect(MushoBlocks.WATER_WALL, 2.5, 6.0, 4, 200, SoundEvents.BUCKET_EMPTY))
                     .build());
 
     /** Launches a bolt of water, roughly twenty centimeters long. */
@@ -151,13 +153,14 @@ public final class MushoSpells {
     public static final DeferredHolder<Spell, Spell> ICE_PILLAR = SPELLS.register("ice_pillar",
             () -> Spell.builder(SpellSchool.WATER, Rank.INTERMEDIATE).manaCost(15).cooldownTicks(80)
                     .effect(new EruptionEffect(MushoBlocks.CONJURED_ICE, 3, 7.0F, 0.8, 0, 16.0,
-                            ParticleTypes.SNOWFLAKE, SoundEvents.GLASS_PLACE))
+                            ParticleTypes.SNOWFLAKE, SoundEvents.GLASS_PLACE).lookingLike(EruptionVisual.pillar(PillarKind.ICE_PILLAR, 0.0F)))
                     .build());
 
     /** Materializes a pillar of fire (WN ch. 184). */
     public static final DeferredHolder<Spell, Spell> FLAME_PILLAR = SPELLS.register("flame_pillar",
             () -> Spell.builder(SpellSchool.FIRE, Rank.INTERMEDIATE).manaCost(16).cooldownTicks(80)
-                    .effect(new EruptionEffect(null, 4, 7.0F, 0.4, 5, 16.0, ParticleTypes.FLAME, SoundEvents.BLAZE_SHOOT))
+                    .effect(new EruptionEffect(null, 4, 7.0F, 0.4, 5, 16.0, MushoParticles.EMBER.get(), SoundEvents.BLAZE_SHOOT)
+                            .lookingLike(EruptionVisual.fireColumn(1.1F, 30)))
                     .build());
 
     /** Creates an explosion (no source cited by the wiki). Never breaks blocks. */
@@ -206,7 +209,7 @@ public final class MushoSpells {
     public static final DeferredHolder<Spell, Spell> EARTH_LANCE = SPELLS.register("earth_lance",
             () -> Spell.builder(SpellSchool.EARTH, Rank.INTERMEDIATE).manaCost(15).cooldownTicks(80)
                     .effect(new EruptionEffect(MushoBlocks.CONJURED_EARTH, 3, 8.0F, 1.0, 0, 16.0,
-                            ParticleTypes.ASH, SoundEvents.ROOTED_DIRT_PLACE))
+                            ParticleTypes.ASH, SoundEvents.ROOTED_DIRT_PLACE).lookingLike(EruptionVisual.pillar(PillarKind.EARTH_LANCE, 6.0F)))
                     .build());
 
     /** Heals wounds as severe as broken bones (LN vol. 2 ch. 2). */
@@ -273,7 +276,7 @@ public final class MushoSpells {
     public static final DeferredHolder<Spell, Spell> EARTH_HEDGEHOG = SPELLS.register("earth_hedgehog",
             () -> Spell.builder(SpellSchool.EARTH, Rank.ADVANCED).manaCost(40).cooldownTicks(200)
                     .effect(new ScatteredEruptionEffect(new EruptionEffect(MushoBlocks.CONJURED_EARTH, 2, 7.0F, 0.7, 0, 18.0,
-                            ParticleTypes.ASH, SoundEvents.ROOTED_DIRT_PLACE), 9, 3.0))
+                            ParticleTypes.ASH, SoundEvents.ROOTED_DIRT_PLACE).lookingLike(EruptionVisual.pillar(PillarKind.EARTH_SPIKE, 25.0F)), 9, 3.0))
                     .build());
 
     /** Conjures a dusty storm (no source cited by the wiki): it blinds and slows those caught in it. */
@@ -305,7 +308,7 @@ public final class MushoSpells {
     /** Spreads flames over a very wide area instantly (no source cited by the wiki). */
     public static final DeferredHolder<Spell, Spell> FLASH_OVER = SPELLS.register("flash_over",
             () -> Spell.builder(SpellSchool.FIRE, Rank.SAINT).manaCost(100).cooldownTicks(600)
-                    .effect(new AreaBurstEffect(9.0, 16.0F, 8, 24.0, ParticleTypes.FLAME, SoundEvents.FIRECHARGE_USE))
+                    .effect(new AreaBurstEffect(9.0, 16.0F, 8, 24.0, MushoParticles.FLAME.get(), SoundEvents.FIRECHARGE_USE))
                     .build());
 
     /** Releases a strong blast of wind over a wide area, all around the caster (no source cited by the wiki). */

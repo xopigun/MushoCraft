@@ -12,6 +12,7 @@ import fr.xopi.mushocraft.core.MushoDataComponents;
 import fr.xopi.mushocraft.core.MushoEntities;
 import fr.xopi.mushocraft.core.MushoItems;
 import fr.xopi.mushocraft.core.MushoMobEffects;
+import fr.xopi.mushocraft.core.MushoParticles;
 import fr.xopi.mushocraft.magic.spell.MushoSpells;
 import fr.xopi.mushocraft.sword.technique.MushoTechniques;
 import net.minecraft.resources.ResourceLocation;
@@ -39,6 +40,7 @@ public final class MushoCraft {
         MushoItems.register(modEventBus);
         MushoEntities.register(modEventBus);
         MushoMobEffects.register(modEventBus);
+        MushoParticles.register(modEventBus);
         MushoCreativeTabs.register(modEventBus);
         MushoSpells.register(modEventBus);
         MushoTechniques.register(modEventBus);

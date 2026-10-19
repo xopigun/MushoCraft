@@ -1,0 +1,113 @@
+{
+	"format_version": "1.8.0",
+	"animations": {
+		"animation.ice_pillar.rise": {
+			"animation_length": 0.35,
+			"bones": {
+				"pillar": {
+					"position": {
+						"0.0": {
+							"vector": [0, -40, 0]
+						},
+						"0.2": {
+							"vector": [0, 3, 0]
+						},
+						"0.35": {
+							"vector": [0, 0, 0]
+						}
+					},
+					"scale": {
+						"0.0": {
+							"vector": [0.6, 0.2, 0.6]
+						},
+						"0.2": {
+							"vector": [1.05, 1.12, 1.05]
+						},
+						"0.35": {
+							"vector": [1, 1, 1]
+						}
+					}
+				},
+				"crystals": {
+					"scale": {
+						"0.0": {
+							"vector": [0.1, 0.1, 0.1]
+						},
+						"0.25": {
+							"vector": [1.15, 1.15, 1.15]
+						},
+						"0.35": {
+							"vector": [1, 1, 1]
+						}
+					}
+				}
+			}
+		},
+		"animation.ice_pillar.idle": {
+			"loop": true,
+			"animation_length": 2,
+			"bones": {
+				"crystals": {
+					"scale": {
+						"0.0": {
+							"vector": [1, 1, 1]
+						},
+						"1.0": {
+							"vector": [1.05, 1.05, 1.05]
+						},
+						"2.0": {
+							"vector": [1, 1, 1]
+						}
+					}
+				},
+				"tip": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"1.0": {
+							"vector": [0, -10, 0]
+						},
+						"2.0": {
+							"vector": [0, 0, 0]
+						}
+					}
+				}
+			}
+		},
+		"animation.ice_pillar.crumble": {
+			"animation_length": 0.4,
+			"bones": {
+				"pillar": {
+					"position": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"0.4": {
+							"vector": [0, -46, 0]
+						}
+					},
+					"scale": {
+						"0.0": {
+							"vector": [1, 1, 1]
+						},
+						"0.4": {
+							"vector": [0.7, 0.9, 0.7]
+						}
+					}
+				},
+				"crystals": {
+					"scale": {
+						"0.0": {
+							"vector": [1, 1, 1]
+						},
+						"0.25": {
+							"vector": [0.2, 0.2, 0.2]
+						}
+					}
+				}
+			}
+		}
+	},
+	"geckolib_format_version": 2
+}

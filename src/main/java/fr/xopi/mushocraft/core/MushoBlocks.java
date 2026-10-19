@@ -52,6 +52,7 @@ public final class MushoBlocks {
                     .mapColor(MapColor.DIRT)
                     .strength(0.8F)
                     .sound(SoundType.ROOTED_DIRT)
+                    .noOcclusion()
                     .noLootTable()
                     .pushReaction(PushReaction.DESTROY),
                     ParticleTypes.ASH));

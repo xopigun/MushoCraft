@@ -1,11 +1,10 @@
 package fr.xopi.mushocraft.magic.ai;
 
 import fr.xopi.mushocraft.magic.focus.MagicFocus;
+import fr.xopi.mushocraft.magic.spell.ChantBroadcast;
 import fr.xopi.mushocraft.magic.spell.Spell;
 import fr.xopi.mushocraft.magic.spell.SpellContext;
 import fr.xopi.mushocraft.magic.spell.SpellIntent;
-import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
@@ -78,6 +77,7 @@ public class SpellcasterGoal extends Goal {
         chantLeft = Math.max(1, chanting.incantationTicks());
         healthAtStart = caster.getHealth();
         caster.getNavigation().stop();
+        ChantBroadcast.started(caster, chanting, chantLeft);
         caster.level().playSound(null, caster.blockPosition(), SoundEvents.ENCHANTMENT_TABLE_USE, SoundSource.HOSTILE, 0.6F, 1.4F);
     }
 
@@ -96,10 +96,6 @@ public class SpellcasterGoal extends Goal {
             stopChanting(PAUSE_BETWEEN_SPELLS);
             return;
         }
-        if (caster.tickCount % 4 == 0 && caster.level() instanceof ServerLevel level) {
-            level.sendParticles(ParticleTypes.ENCHANT, caster.getX(), caster.getY() + caster.getBbHeight() * 0.7, caster.getZ(),
-                    4, 0.4, 0.4, 0.4, 0.5);
-        }
         if (--chantLeft <= 0) {
             release(target);
         }
@@ -108,6 +104,7 @@ public class SpellcasterGoal extends Goal {
     @Override
     public void stop() {
         chanting = null;
+        ChantBroadcast.stopped(caster);
     }
 
     @Override
@@ -131,6 +128,9 @@ public class SpellcasterGoal extends Goal {
     }
 
     private void stopChanting(int pause) {
+        if (chanting != null) {
+            ChantBroadcast.stopped(caster);
+        }
         chanting = null;
         chantLeft = 0;
         nextSpellAt = now() + pause;

@@ -2,6 +2,7 @@ package fr.xopi.mushocraft.magic.entity;
 
 import fr.xopi.mushocraft.core.MushoDamageTypes;
 import fr.xopi.mushocraft.core.MushoEntities;
+import fr.xopi.mushocraft.core.MushoParticles;
 import fr.xopi.mushocraft.magic.spell.SpellElement;
 import fr.xopi.mushocraft.magic.spell.effect.ProjectileProfile;
 import fr.xopi.mushocraft.magic.spell.effect.ProjectileShape;
@@ -114,6 +115,17 @@ public class SpellProjectile extends ThrowableProjectile implements GeoEntity {
             Vec3 motion = getDeltaMovement();
             level().addParticle(element().trail(), getX() - motion.x * 0.5, getY() - motion.y * 0.5,
                     getZ() - motion.z * 0.5, 0.0, 0.0, 0.0);
+            if (element() == SpellElement.FIRE) {
+                // a fireball sheds sparks and a thin smoke
+                float spread = visualSize() * 0.35F;
+                level().addParticle(MushoParticles.EMBER.get(), getX() + (random.nextFloat() - 0.5F) * spread,
+                        getY() + getBbHeight() / 2.0 + (random.nextFloat() - 0.5F) * spread,
+                        getZ() + (random.nextFloat() - 0.5F) * spread, -motion.x * 0.2, -motion.y * 0.2, -motion.z * 0.2);
+                if (tickCount % 3 == 0) {
+                    level().addParticle(MushoParticles.SMOKE.get(), getX() - motion.x, getY() + getBbHeight() / 2.0 - motion.y,
+                            getZ() - motion.z, 0.0, 0.0, 0.0);
+                }
+            }
             if (element() == SpellElement.WATER) {
                 // conjured water sheds drops along its flight
                 float spread = visualSize() * 0.4F;
@@ -167,9 +179,10 @@ public class SpellProjectile extends ThrowableProjectile implements GeoEntity {
         super.onHit(result);
         if (level() instanceof ServerLevel server) {
             if (profile.explosionRadius() > 0.0F) {
-                server.explode(this, MushoDamageTypes.spell(server, this, getOwner()), null,
-                        getX(), getY(), getZ(), profile.explosionRadius(), false,
-                        Level.ExplosionInteraction.NONE);
+                SpellBlasts.explode(server, this, MushoDamageTypes.spell(server, this, getOwner()), position(),
+                        profile.explosionRadius());
+            } else if (element() == SpellElement.FIRE) {
+                server.addFreshEntity(SpellFire.blast(server, position(), Math.max(0.6F, visualSize() * 0.6F)));
             }
             if (profile.blindRadius() > 0.0F) {
                 double radius = profile.blindRadius();

@@ -5,9 +5,9 @@ import fr.xopi.mushocraft.combat.mastery.MasteryService;
 import fr.xopi.mushocraft.combat.move.CooldownService;
 import fr.xopi.mushocraft.combat.move.MoveService;
 import fr.xopi.mushocraft.combat.move.MoveUseResult;
+import fr.xopi.mushocraft.core.MushoParticles;
 import fr.xopi.mushocraft.magic.focus.MagicFocus;
 import fr.xopi.mushocraft.magic.mana.ManaService;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -63,6 +63,7 @@ public final class SpellCasting {
         }
         long now = CooldownService.now(caster);
         ACTIVE.put(caster.getUUID(), new ActiveCast(spell, now, now + chantTicks));
+        ChantBroadcast.started(caster, spell, chantTicks);
         setSlowed(caster, true);
         caster.serverLevel().playSound(null, caster.blockPosition(), SoundEvents.ENCHANTMENT_TABLE_USE,
                 SoundSource.PLAYERS, 0.6F, 1.4F);
@@ -126,7 +127,7 @@ public final class SpellCasting {
         }
         if (MasteryService.botches(caster, spell.ref())) {
             // Not mastered yet: the mana is spent but the spell falls apart; half the cooldown is lost.
-            caster.serverLevel().sendParticles(ParticleTypes.SMOKE, caster.getX(), caster.getEyeY(), caster.getZ(),
+            caster.serverLevel().sendParticles(MushoParticles.SMOKE.get(), caster.getX(), caster.getEyeY(), caster.getZ(),
                     12, 0.3, 0.3, 0.3, 0.02);
             CooldownService.start(caster, spell.cooldownKey(), spell.cooldownTicks() / 2);
             return MoveUseResult.fail("message.mushocraft.move.botched", spell.displayName(),
@@ -150,6 +151,7 @@ public final class SpellCasting {
 
     private static void finish(ServerPlayer caster) {
         ACTIVE.remove(caster.getUUID());
+        ChantBroadcast.stopped(caster);
         setSlowed(caster, false);
     }
 
