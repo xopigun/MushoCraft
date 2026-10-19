@@ -77,6 +77,9 @@ public final class BodyTracker {
             BodyService.train(player, BodyStat.SPEED, SPRINT_SPEED_PER_TICK);
             BodyService.train(player, BodyStat.VITALITY, SPRINT_VITALITY_PER_TICK);
         }
+        if (player.tickCount % SprintMomentum.INTERVAL_TICKS == 0) {
+            SprintMomentum.tick(player);
+        }
         if (player.tickCount % REFRESH_INTERVAL_TICKS == 0) {
             BattleAuraService.tick(player, REFRESH_INTERVAL_TICKS / 20.0);
             BodyService.apply(player);

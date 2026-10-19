@@ -54,16 +54,21 @@ public final class BodyService {
         player.setData(MushoAttachments.BODY_TRAINING, training(player).with(stat, xp));
     }
 
+    /**
+     * Fraction of a stat's maximal bonus the body really gives now: training and talent, limited by the body's
+     * maturity, raised by the Battle Aura (except vitality: the aura strengthens the body, it gives no hearts).
+     */
+    public static double effectiveShare(ServerPlayer player, BodyStat stat) {
+        double share = progress(player, stat) * BodyRules.bodyMaturity(LifeService.ageInYears(player).orElse(0.0));
+        return stat == BodyStat.VITALITY ? share : share + BattleAuraService.bonus(player);
+    }
+
     /** Recomputes every modifier given by the stats, the body's maturity and the aura. Cheap when nothing changed. */
     public static void apply(ServerPlayer player) {
         double maturity = BodyRules.bodyMaturity(LifeService.ageInYears(player).orElse(0.0));
-        double aura = BattleAuraService.bonus(player);
         for (BodyAttribute entry : BodyAttribute.ALL) {
-            double share = progress(player, entry.stat()) * maturity;
-            if (entry.stat() != BodyStat.VITALITY) {
-                share += aura;
-            }
-            set(player, entry.attribute().get(), entry.modifierId(), entry.maxBonus() * share, entry.operation());
+            set(player, entry.attribute().get(), entry.modifierId(), entry.maxBonus() * effectiveShare(player, entry.stat()),
+                    entry.operation());
         }
         set(player, Attributes.MAX_HEALTH, CHILD_HEALTH,
                 -NEWBORN_MISSING_HEALTH * (1.0 - maturity) / (1.0 - BodyRules.bodyMaturity(0.0)),
