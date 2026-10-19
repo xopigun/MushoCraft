@@ -6,16 +6,25 @@ import fr.xopi.mushocraft.core.MushoItems;
 import fr.xopi.mushocraft.core.MushoMobEffects;
 import fr.xopi.mushocraft.core.MushoRegistries;
 import fr.xopi.mushocraft.core.Rank;
+import fr.xopi.mushocraft.magic.spell.effect.BurstEffect;
+import fr.xopi.mushocraft.magic.spell.effect.CloudEffect;
+import fr.xopi.mushocraft.magic.spell.effect.CompositeEffect;
+import fr.xopi.mushocraft.magic.spell.effect.ConeBlastEffect;
 import fr.xopi.mushocraft.magic.spell.effect.ConjureItemEffect;
 import fr.xopi.mushocraft.magic.spell.effect.CureEffect;
 import fr.xopi.mushocraft.magic.spell.effect.EruptionEffect;
 import fr.xopi.mushocraft.magic.spell.effect.ExplosionEffect;
 import fr.xopi.mushocraft.magic.spell.effect.FallingProjectileEffect;
+import fr.xopi.mushocraft.magic.spell.effect.FortressEffect;
 import fr.xopi.mushocraft.magic.spell.effect.HealEffect;
+import fr.xopi.mushocraft.magic.spell.effect.PiercingRayEffect;
 import fr.xopi.mushocraft.magic.spell.effect.ProjectileEffect;
 import fr.xopi.mushocraft.magic.spell.effect.ProjectileProfile;
+import fr.xopi.mushocraft.magic.spell.effect.ScatteredEruptionEffect;
+import fr.xopi.mushocraft.magic.spell.effect.ScorchCasterEffect;
 import fr.xopi.mushocraft.magic.spell.effect.SelfStatusEffect;
 import fr.xopi.mushocraft.magic.spell.effect.WallEffect;
+import fr.xopi.mushocraft.magic.spell.effect.WeatherEffect;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.effect.MobEffects;
@@ -203,6 +212,73 @@ public final class MushoSpells {
     public static final DeferredHolder<Spell, Spell> PHYSICAL_SHIELD = SPELLS.register("physical_shield",
             () -> Spell.builder(SpellSchool.BARRIER, Rank.INTERMEDIATE).manaCost(20).cooldownTicks(400)
                     .effect(new SelfStatusEffect(MushoMobEffects.PHYSICAL_SHIELD, 300, 0, SoundEvents.ANVIL_PLACE))
+                    .build());
+
+    // ---- Advanced (school must have reached Advanced; wiki, page Magic Spells) ----
+
+    /** Shoots ice shards in all directions (LN vol. 7 ch. 2). */
+    public static final DeferredHolder<Spell, Spell> BLIZZARD_STORM = SPELLS.register("blizzard_storm",
+            () -> Spell.builder(SpellSchool.WATER, Rank.ADVANCED).manaCost(40).cooldownTicks(200)
+                    .effect(new BurstEffect(ProjectileProfile.of(SpellElement.ICE, 6.0F)
+                            .speed(1.6F).gravity(0.01F).size(0.35F).slow(60).build(), 16, SoundEvents.GLASS_BREAK))
+                    .build());
+
+    /** Manipulates clouds to bring down rain (anime, season 1; the wiki cites no volume). */
+    public static final DeferredHolder<Spell, Spell> SQUALL = SPELLS.register("squall",
+            () -> Spell.builder(SpellSchool.WATER, Rank.ADVANCED).manaCost(60).cooldownTicks(2400)
+                    .effect(new WeatherEffect(6000))
+                    .build());
+
+    /**
+     * Gathers a great wave of flame and releases it; it explodes on impact, and its heat burns the caster who
+     * channels it at close range (LN vol. 5, interlude).
+     */
+    public static final DeferredHolder<Spell, Spell> EXODUS_FLAME = SPELLS.register("exodus_flame",
+            () -> Spell.builder(SpellSchool.FIRE, Rank.ADVANCED).manaCost(45).cooldownTicks(240)
+                    .effect(new CompositeEffect(
+                            new ProjectileEffect(ProjectileProfile.of(SpellElement.FIRE, 14.0F)
+                                    .speed(1.1F).size(2.4F).ignite(8).explode(3.0F).build(), SoundEvents.BLAZE_SHOOT),
+                            new ScorchCasterEffect(1.0F)))
+                    .build());
+
+    /** A powerful, wide-reaching shockwave, improved Sonic Boom (LN vol. 16 ch. 7). */
+    public static final DeferredHolder<Spell, Spell> SONIC_BLAST = SPELLS.register("sonic_blast",
+            () -> Spell.builder(SpellSchool.WIND, Rank.ADVANCED).manaCost(35).cooldownTicks(160)
+                    .effect(new ConeBlastEffect(10.0, 35.0, 10.0F, 2.5, ParticleTypes.GUST, SoundEvents.BREEZE_WIND_CHARGE_BURST.value()))
+                    .build());
+
+    /** Wind shaped into a spinning drill that punches a hole through the target (LN vol. 16 ch. 7). */
+    public static final DeferredHolder<Spell, Spell> TORNADO_IMPACT = SPELLS.register("tornado_impact",
+            () -> Spell.builder(SpellSchool.WIND, Rank.ADVANCED).manaCost(35).cooldownTicks(160)
+                    .effect(new PiercingRayEffect(24.0, 0.6, 16.0F, ParticleTypes.SWEEP_ATTACK, SoundEvents.BREEZE_SHOOT))
+                    .build());
+
+    /** Raises a fortress of earth around the caster (LN vol. 1 ch. 6). */
+    public static final DeferredHolder<Spell, Spell> EARTH_FORTRESS = SPELLS.register("earth_fortress",
+            () -> Spell.builder(SpellSchool.EARTH, Rank.ADVANCED).manaCost(40).cooldownTicks(600)
+                    .effect(new FortressEffect(MushoBlocks.CONJURED_EARTH, 2, 3, 400, SoundEvents.ROOTED_DIRT_PLACE))
+                    .build());
+
+    /** Earthen spikes burst from the ground all around the aimed spot (LN vol. 7 ch. 4). */
+    public static final DeferredHolder<Spell, Spell> EARTH_HEDGEHOG = SPELLS.register("earth_hedgehog",
+            () -> Spell.builder(SpellSchool.EARTH, Rank.ADVANCED).manaCost(40).cooldownTicks(200)
+                    .effect(new ScatteredEruptionEffect(new EruptionEffect(MushoBlocks.CONJURED_EARTH, 2, 7.0F, 0.7, 0, 18.0,
+                            ParticleTypes.ASH, SoundEvents.ROOTED_DIRT_PLACE), 9, 3.0))
+                    .build());
+
+    /** Conjures a dusty storm (no source cited by the wiki): it blinds and slows those caught in it. */
+    public static final DeferredHolder<Spell, Spell> DUST_STORM = SPELLS.register("dust_storm",
+            () -> Spell.builder(SpellSchool.EARTH, Rank.ADVANCED).manaCost(30).cooldownTicks(300)
+                    .effect(new CloudEffect(4.0F, 200, 18.0, List.of(
+                            new CloudEffect.Affliction(MobEffects.BLINDNESS, 60, 0),
+                            new CloudEffect.Affliction(MobEffects.MOVEMENT_SLOWDOWN, 60, 1)),
+                            ParticleTypes.WHITE_ASH, SoundEvents.SAND_BREAK))
+                    .build());
+
+    /** Heals major open wounds and reattaches freshly severed limbs (LN vol. 12 ch. 9). */
+    public static final DeferredHolder<Spell, Spell> SHINE_HEALING = SPELLS.register("shine_healing",
+            () -> Spell.builder(SpellSchool.HEALING, Rank.ADVANCED).manaCost(35).cooldownTicks(160)
+                    .effect(new HealEffect(20.0F, 5.0))
                     .build());
 
     private MushoSpells() {

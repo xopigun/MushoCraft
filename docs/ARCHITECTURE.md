@@ -238,7 +238,7 @@ Limite à connaître : je n'ai accès qu'au wiki et à ses références. Je ne p
    - **Tests automatiques** : `src/gametest`, lancés par `gradlew runGameTestServer` (9 tests). Ils ne sont pas inclus dans le jar.
 3. ✅ `ManaData` + jauge de mana + circulation pour s'entraîner (nuit du 19/10, voir `docs/nuits/2026-10-19.md`).
 4. ✅ Abstraction `Move`, `Cooldowns`, barre de move branchée sur le mode Epic Fight, écran des moves (nuit du 19/10).
-5. 🟡 Moteur de sorts + 11 sorts Débutants + 12 Intermédiaires + maîtrise par école (nuit du 19/10) ; restent les rangs Avancé et plus, la magie mixte, l'incantation abrégée et silencieuse.
+5. 🟡 Moteur de sorts + 11 sorts Débutants + 12 Intermédiaires + 9 Avancés + maîtrise par école (nuit du 19/10) ; restent les rangs Saint et plus, la magie mixte (dont *Magma Gush*), l'incantation abrégée et silencieuse.
 6. ✅ Stats physiques + entraînement + aura de combat (nuit du 19/10).
 7. 🟡 Styles + 7 techniques + recharge partagée + règles de rang + enchaînements de base propres à chaque style sur l'épée et le tachi (nuit du 19/10) ; restent les autres armes et les autres techniques.
 8. 🟡 Maîtres PNJ : maîtres d'épée et précepteurs de magie, avec patch Epic Fight, skins originaux, œufs d'apparition et apparition naturelle rare (nuit du 19/10). Restent des lieux dédiés (dojos, église de Milis).

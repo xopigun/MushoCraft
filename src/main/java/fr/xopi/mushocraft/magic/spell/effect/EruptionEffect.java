@@ -49,8 +49,13 @@ public final class EruptionEffect implements SpellEffect {
 
     @Override
     public boolean cast(SpellContext context) {
+        eruptAt(context, SpellTargeting.groundBelow(context, SpellTargeting.aimedPoint(context, range)));
+        return true;
+    }
+
+    /** The eruption itself, at a given spot (also used by {@link ScatteredEruptionEffect}). */
+    void eruptAt(SpellContext context, BlockPos base) {
         ServerLevel level = context.level();
-        BlockPos base = SpellTargeting.groundBelow(context, SpellTargeting.aimedPoint(context, range));
         Vec3 center = Vec3.atBottomCenterOf(base);
         AABB area = new AABB(center.x - HIT_RADIUS, center.y, center.z - HIT_RADIUS,
                 center.x + HIT_RADIUS, center.y + height, center.z + HIT_RADIUS);
@@ -75,6 +80,9 @@ public final class EruptionEffect implements SpellEffect {
             level.sendParticles(particle, center.x, center.y + up + 0.5, center.z, 10, 0.35, 0.4, 0.35, 0.02);
         }
         level.playSound(null, base, sound, SoundSource.PLAYERS, 1.0F, 1.0F);
-        return true;
+    }
+
+    double range() {
+        return range;
     }
 }

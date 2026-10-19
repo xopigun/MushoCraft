@@ -181,10 +181,49 @@ public final class ShowcaseDirector {
                     .filter(master -> master.style() == SwordStyle.SWORD_GOD)
                     .findFirst().ifPresent(master -> master.interact(player, InteractionHand.MAIN_HAND)))),
             new Step(795, () -> shootKeepingChat("19_master_lesson")),
-            new Step(800, () -> onServer(player -> LifeService.rebirth(player))),
-            new Step(830, () -> Minecraft.getInstance().options.setCameraType(CameraType.THIRD_PERSON_BACK)),
-            new Step(840, () -> shoot("17_baby_third_person")),
-            new Step(860, () -> Minecraft.getInstance().stop())
+            new Step(800, () -> {
+                Minecraft.getInstance().options.setCameraType(CameraType.THIRD_PERSON_BACK);
+                onServer(player -> {
+                    player.getInventory().clearContent();
+                    player.setXRot(0.0F);
+                    List.of(MushoSpells.BLIZZARD_STORM, MushoSpells.EARTH_HEDGEHOG, MushoSpells.EARTH_FORTRESS)
+                            .forEach(spell -> MagicService.learn(player, spell.get()));
+                    MoveService.setSlot(player, 0, Optional.of(MushoSpells.BLIZZARD_STORM.get().ref()));
+                    MoveService.setSlot(player, 1, Optional.of(MushoSpells.EARTH_HEDGEHOG.get().ref()));
+                    MoveService.setSlot(player, 2, Optional.of(MushoSpells.EARTH_FORTRESS.get().ref()));
+                    ManaService.refill(player);
+                    CooldownService.clear(player);
+                    setBattleMode(player, true);
+                });
+            }),
+            new Step(810, () -> onServer(player -> logUse(player, 0))),
+            new Step(811, () -> shootWhenProjectileFlies("20_blizzard_storm")),
+            new Step(870, () -> onServer(player -> {
+                player.setXRot(25.0F);
+                logUse(player, 1);
+            })),
+            new Step(926, () -> shoot("21_earth_hedgehog")),
+            new Step(930, () -> onServer(player -> {
+                player.setXRot(10.0F);
+                logUse(player, 2);
+            })),
+            new Step(985, () -> {
+                Minecraft.getInstance().options.setCameraType(CameraType.FIRST_PERSON);
+                onServer(player -> {
+                    player.teleportTo(player.getX() + 6.0, player.getY(), player.getZ() - 3.0);
+                    player.setYRot(60.0F);
+                    player.setYHeadRot(60.0F);
+                    player.setXRot(15.0F);
+                });
+            }),
+            new Step(995, () -> shoot("22_earth_fortress")),
+            new Step(1000, () -> onServer(player -> {
+                setBattleMode(player, false);
+                LifeService.rebirth(player);
+            })),
+            new Step(1030, () -> Minecraft.getInstance().options.setCameraType(CameraType.THIRD_PERSON_BACK)),
+            new Step(1040, () -> shoot("17_baby_third_person")),
+            new Step(1060, () -> Minecraft.getInstance().stop())
     );
 
     private static final int FLIGHT_TICKS_BEFORE_SHOT = 3;

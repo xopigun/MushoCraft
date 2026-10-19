@@ -67,7 +67,9 @@ public final class SpellCasting {
         if (now >= cast.end()) {
             finish(caster);
             MoveUseResult result = complete(caster, cast.spell());
-            result.failure().ifPresent(message -> caster.displayClientMessage(message, true));
+            // A chant ends by calling out the spell's name, which also replaces the progress bar.
+            caster.displayClientMessage(result.failure().orElseGet(() -> Component.translatable(
+                    "message.mushocraft.magic.released", cast.spell().displayName())), true);
         } else if ((now - cast.start()) % 5 == 0) {
             showProgress(caster, cast.spell(), (now - cast.start()) / (double) (cast.end() - cast.start()));
         }
