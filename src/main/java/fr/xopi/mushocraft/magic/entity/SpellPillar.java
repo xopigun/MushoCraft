@@ -20,7 +20,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 /**
  * The visible body of a pillar or spike that a spell raises from the ground (Ice Pillar, Earth Lance, Earth
- * Hedgehog): a Blockbench model that bursts out, lives a little, then sinks and crumbles. Its solidity comes from
+ * Hedgehog, the frost of Icicle Field): a model that bursts out, lives a little, then sinks and crumbles. Its solidity comes from
  * invisible conjured blocks placed by the spell; this entity is only its look. Not saved.
  */
 public class SpellPillar extends Entity implements GeoEntity {
@@ -78,6 +78,9 @@ public class SpellPillar extends Entity implements GeoEntity {
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+        if (!kind().isBlockbench()) {
+            return;
+        }
         String model = kind().model();
         RawAnimation riseThenIdle = RawAnimation.begin().thenPlay("animation." + model + ".rise").thenLoop("animation." + model + ".idle");
         RawAnimation crumble = RawAnimation.begin().thenPlay("animation." + model + ".crumble");

@@ -5,9 +5,12 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 
+import javax.annotation.Nullable;
+
 /**
- * The look of a {@link SpellPillar} (a pillar, a spike or a mound): which Blockbench model (made from anime references, played by GeckoLib), which
- * texture, and how it breaks up.
+ * The look of a {@link SpellPillar} (a pillar, a spike or a mound): which texture, how it breaks up, and how it is
+ * drawn. Solids (ice, rock) are Blockbench models made from anime references, played by GeckoLib; soft shapes (frost)
+ * are smooth meshes built by the client's code (choice of Xopi, 19/10).
  */
 public enum PillarKind {
     /** Ice Pillar: a faceted shaft of ice with crystals at its foot. */
@@ -17,8 +20,9 @@ public enum PillarKind {
     /** Earth Hedgehog: dark stone spikes, as in the anime. */
     EARTH_SPIKE("earth_spike", "dark_stone", 2.75F, false, ParticleTypes.ASH, SoundEvents.STONE_BREAK),
     /** Icicle Field: a billowing mound of frost that swallows what it catches, as in the anime. */
-    FROST_MOUND("frost_mound", "frost", 2.13F, false, ParticleTypes.SNOWFLAKE, SoundEvents.POWDER_SNOW_BREAK);
+    FROST_MOUND(null, "frost", 1.0F, false, ParticleTypes.SNOWFLAKE, SoundEvents.POWDER_SNOW_BREAK);
 
+    @Nullable
     private final String model;
     private final String texture;
     private final float modelHeight;
@@ -26,7 +30,7 @@ public enum PillarKind {
     private final ParticleOptions debris;
     private final SoundEvent breakSound;
 
-    PillarKind(String model, String texture, float modelHeight, boolean translucent, ParticleOptions debris, SoundEvent breakSound) {
+    PillarKind(@Nullable String model, String texture, float modelHeight, boolean translucent, ParticleOptions debris, SoundEvent breakSound) {
         this.model = model;
         this.texture = texture;
         this.modelHeight = modelHeight;
@@ -35,9 +39,20 @@ public enum PillarKind {
         this.breakSound = breakSound;
     }
 
-    /** The GeckoLib model (geo/entity/&lt;model&gt;.geo.json) and its animations (animation.&lt;model&gt;.rise, idle, crumble). */
+    /**
+     * The GeckoLib model (geo/entity/&lt;model&gt;.geo.json) and its animations (animation.&lt;model&gt;.rise, idle,
+     * crumble). Only for {@link #isBlockbench() Blockbench} kinds.
+     */
     public String model() {
+        if (model == null) {
+            throw new IllegalStateException(this + " is drawn as a mesh, it has no Blockbench model");
+        }
         return model;
+    }
+
+    /** Whether this is a Blockbench model; otherwise a mesh built by the client. */
+    public boolean isBlockbench() {
+        return model != null;
     }
 
     /** textures/entity/spell/&lt;texture&gt;.png */

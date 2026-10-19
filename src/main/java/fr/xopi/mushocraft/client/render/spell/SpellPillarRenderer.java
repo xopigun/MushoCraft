@@ -18,7 +18,7 @@ import javax.annotation.Nullable;
 
 /**
  * Draws a {@link SpellPillar}: its Blockbench model (GeckoLib), scaled to the pillar's height, turned and leaning as the
- * spell set it. Ice is translucent; rock is opaque.
+ * spell set it. Ice is translucent; rock is opaque. Frost is a mesh instead (see {@link FrostVisuals}).
  */
 public class SpellPillarRenderer extends EntityRenderer<SpellPillar> {
     private final GeoEntityRenderer<SpellPillar> geo;
@@ -43,6 +43,11 @@ public class SpellPillarRenderer extends EntityRenderer<SpellPillar> {
 
     @Override
     public void render(SpellPillar pillar, float yaw, float partialTicks, PoseStack poseStack, MultiBufferSource buffers, int light) {
+        if (!pillar.kind().isBlockbench()) {
+            FrostVisuals.renderMound(pillar, partialTicks, poseStack, buffers, light);
+            super.render(pillar, yaw, partialTicks, poseStack, buffers, light);
+            return;
+        }
         float scale = pillar.height() / pillar.kind().modelHeight();
         poseStack.pushPose();
         // lean first, then the model's own yaw is applied by the GeckoLib renderer
