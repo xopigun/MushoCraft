@@ -31,6 +31,11 @@ public final class MushoMobEffects {
             () -> new MobEffect(MobEffectCategory.BENEFICIAL, 0xFF7A2A) {
             });
 
+    /** Confinement Barrier: shut in a barrier where magic cannot be used (wiki, Magic Spells). */
+    public static final DeferredHolder<MobEffect, MobEffect> CONFINED = MOB_EFFECTS.register("confined",
+            () -> new MobEffect(MobEffectCategory.HARMFUL, 0xE8D88A) {
+            });
+
     private MushoMobEffects() {
     }
 

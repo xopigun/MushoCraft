@@ -4,6 +4,7 @@ import fr.xopi.mushocraft.MushoCraft;
 import fr.xopi.mushocraft.combat.mastery.MasteryRules;
 import fr.xopi.mushocraft.combat.mastery.MasteryService;
 import fr.xopi.mushocraft.life.LifeService;
+import fr.xopi.mushocraft.magic.entity.SpellPillar;
 import fr.xopi.mushocraft.magic.entity.SpellZone;
 import fr.xopi.mushocraft.magic.spell.MagicService;
 import fr.xopi.mushocraft.magic.spell.MushoSpells;
@@ -146,6 +147,7 @@ public final class MeldedMagicGameTests {
         // soaked by the first part, the second freezes twice as long
         helper.assertTrue(target.getTicksFrozen() >= target.getTicksRequiredToFreeze() + 280,
                 "frozen through: " + target.getTicksFrozen());
+        helper.getLevel().getEntitiesOfClass(SpellPillar.class, player.getBoundingBox().inflate(25.0)).forEach(SpellPillar::discard);
         TestPlayers.leave(player);
         helper.succeed();
     }

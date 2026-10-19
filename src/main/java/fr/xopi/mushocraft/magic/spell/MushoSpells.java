@@ -31,6 +31,7 @@ import fr.xopi.mushocraft.magic.spell.effect.ProjectileShape;
 import fr.xopi.mushocraft.magic.spell.effect.ScatteredEruptionEffect;
 import fr.xopi.mushocraft.magic.spell.effect.ScorchCasterEffect;
 import fr.xopi.mushocraft.magic.spell.effect.SelfStatusEffect;
+import fr.xopi.mushocraft.magic.spell.effect.TargetedZoneEffect;
 import fr.xopi.mushocraft.magic.spell.effect.WallEffect;
 import fr.xopi.mushocraft.magic.spell.effect.WeatherEffect;
 import fr.xopi.mushocraft.magic.spell.effect.ZoneEffect;
@@ -340,6 +341,27 @@ public final class MushoSpells {
     public static final DeferredHolder<Spell, Spell> SPIRIT_SEALING_BARRIER = SPELLS.register("spirit_sealing_barrier",
             () -> Spell.builder(SpellSchool.BARRIER, Rank.SAINT).manaCost(100).cooldownTicks(900)
                     .effect(new ZoneEffect(() -> ZoneBehaviors.spiritSeal(5.0F), 6.0, 300, 20.0, SoundEvents.BEACON_ACTIVATE))
+                    .build());
+
+    // ---- King rank: the only spells the wiki names at this rank (Emperor and God: none, see docs/ECARTS.md, E23) ----
+
+    /**
+     * A thundercloud gathers over the target and condenses all its energy into one bolt (LN vol. 13 ch. 6). Falls on
+     * the aimed spot when no creature is aimed at.
+     */
+    public static final DeferredHolder<Spell, Spell> LIGHTNING = SPELLS.register("lightning",
+            () -> Spell.builder(SpellSchool.WATER, Rank.KING).manaCost(250).cooldownTicks(1200)
+                    .effect(new TargetedZoneEffect(target -> ZoneBehaviors.lightning(target, 30, 60.0F), 2.0, 40, 48.0, false,
+                            SoundEvents.LIGHTNING_BOLT_THUNDER))
+                    .build());
+
+    /**
+     * Shuts the target inside a barrier it cannot leave, where magic cannot be used (LN vol. 6 ch. 4). Fizzles without
+     * a creature to confine.
+     */
+    public static final DeferredHolder<Spell, Spell> CONFINEMENT_BARRIER = SPELLS.register("confinement_barrier",
+            () -> Spell.builder(SpellSchool.BARRIER, Rank.KING).manaCost(220).cooldownTicks(1200)
+                    .effect(new TargetedZoneEffect(ZoneBehaviors::confinement, 1.6, 300, 24.0, true, SoundEvents.BEACON_POWER_SELECT))
                     .build());
 
     // ---- Spells the wiki gives no rank (ranks chosen for the game: docs/ECARTS.md, E19) ----

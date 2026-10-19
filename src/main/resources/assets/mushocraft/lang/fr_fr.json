@@ -295,5 +295,11 @@
   "spell.mushocraft.bora_blast.desc": "Une rafale de vent glacé devant vous, qui gèle et engourdit.",
   "message.mushocraft.magic.meld.any_of": "un sort de %s",
   "message.mushocraft.magic.meld.discovered": "En mêlant %2$s, vous avez découvert %1$s !",
-  "screen.mushocraft.moves.melded_from": "Mélange : %s"
+  "screen.mushocraft.moves.melded_from": "Mélange : %s",
+  "spell.mushocraft.lightning": "Foudre",
+  "spell.mushocraft.lightning.desc": "Un nuage d'orage se forme au-dessus de votre cible, puis concentre toute son énergie en un seul éclair.",
+  "spell.mushocraft.confinement_barrier": "Barrière de confinement",
+  "spell.mushocraft.confinement_barrier.desc": "Enferme la créature visée dans une barrière qu'elle ne peut quitter, où aucune magie ne fonctionne.",
+  "effect.mushocraft.confined": "Confiné",
+  "message.mushocraft.magic.confined": "Vous êtes enfermé dans une barrière : la magie ne fonctionne pas ici."
 }

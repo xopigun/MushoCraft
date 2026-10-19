@@ -295,5 +295,11 @@
   "spell.mushocraft.bora_blast.desc": "A gust of freezing wind in front of you that freezes and numbs.",
   "message.mushocraft.magic.meld.any_of": "a %s spell",
   "message.mushocraft.magic.meld.discovered": "By melding %2$s, you have discovered %1$s!",
-  "screen.mushocraft.moves.melded_from": "Melded from: %s"
+  "screen.mushocraft.moves.melded_from": "Melded from: %s",
+  "spell.mushocraft.lightning": "Lightning",
+  "spell.mushocraft.lightning.desc": "A thundercloud gathers over your target, then pours all its energy into a single bolt.",
+  "spell.mushocraft.confinement_barrier": "Confinement Barrier",
+  "spell.mushocraft.confinement_barrier.desc": "Shuts the creature you aim at in a barrier it cannot leave, where no magic can be used.",
+  "effect.mushocraft.confined": "Confined",
+  "message.mushocraft.magic.confined": "You are shut in a barrier: magic cannot be used here."
 }

@@ -5,6 +5,7 @@ import fr.xopi.mushocraft.combat.mastery.MasteryService;
 import fr.xopi.mushocraft.combat.move.CooldownService;
 import fr.xopi.mushocraft.combat.move.MoveService;
 import fr.xopi.mushocraft.combat.move.MoveUseResult;
+import fr.xopi.mushocraft.core.MushoMobEffects;
 import fr.xopi.mushocraft.core.MushoParticles;
 import fr.xopi.mushocraft.magic.focus.MagicFocus;
 import fr.xopi.mushocraft.magic.mana.ManaService;
@@ -42,6 +43,10 @@ public final class SpellCasting {
         }
         if (ACTIVE.containsKey(caster.getUUID())) {
             return MoveUseResult.fail("message.mushocraft.magic.already_chanting");
+        }
+        if (caster.hasEffect(MushoMobEffects.CONFINED)) {
+            // shut inside a Confinement Barrier: magic cannot be used there
+            return MoveUseResult.fail("message.mushocraft.magic.confined");
         }
         if (ManaService.snapshot(caster).current() < spell.manaCost()) {
             return MoveUseResult.fail("message.mushocraft.magic.not_enough_mana", spell.displayName());

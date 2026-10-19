@@ -327,4 +327,76 @@ public final class ZoneBehaviors {
             }
         };
     }
+
+    // ---- King rank ----
+
+    /**
+     * Lightning: a thundercloud gathers over the target and condenses all its energy into a single bolt (wiki, Magic
+     * Spells; LN vol. 13 ch. 6). The cloud follows the target while it gathers; then the bolt falls and the zone ends.
+     * The bolt is visual only: its damage is dealt here.
+     */
+    public static SpellZone.Behavior lightning(LivingEntity target, int gatherTicks, float damage) {
+        return (zone, level, age) -> {
+            if (target != null && target.isAlive() && age < gatherTicks) {
+                zone.setPos(target.position());
+            }
+            if (age < gatherTicks) {
+                double spread = 4.0 * (1.0 - (double) age / gatherTicks) + 0.8;
+                level.sendParticles(ParticleTypes.CLOUD, zone.getX(), zone.getY() + 9.0, zone.getZ(), 12, spread, 0.4, spread, 0.0);
+                if (age % 5 == 0) {
+                    level.playSound(null, zone.blockPosition().above(8), SoundEvents.LIGHTNING_BOLT_THUNDER, SoundSource.WEATHER,
+                            0.6F, 1.6F);
+                }
+                return;
+            }
+            if (age == gatherTicks) {
+                LightningBolt bolt = EntityType.LIGHTNING_BOLT.create(level);
+                if (bolt != null) {
+                    bolt.moveTo(zone.position());
+                    bolt.setVisualOnly(true);
+                    level.addFreshEntity(bolt);
+                }
+                for (LivingEntity struck : zone.creaturesInside(4.0)) {
+                    struck.hurt(MushoDamageTypes.spell(level, zone, zone.caster()), (float) (damage * zone.power()));
+                    struck.igniteForSeconds(4);
+                }
+                level.playSound(null, zone.blockPosition(), SoundEvents.LIGHTNING_BOLT_IMPACT, SoundSource.PLAYERS, 3.0F, 0.8F);
+                zone.discard();
+            }
+        };
+    }
+
+    /**
+     * Confinement Barrier: the target is shut inside a barrier it cannot leave, where magic cannot be used (wiki,
+     * Magic Spells; LN vol. 6 ch. 4). The zone holds it until the spell ends.
+     */
+    public static SpellZone.Behavior confinement(LivingEntity prisoner) {
+        return (zone, level, age) -> {
+            if (prisoner == null || !prisoner.isAlive() || prisoner.level() != level) {
+                zone.discard();
+                return;
+            }
+            prisoner.addEffect(new MobEffectInstance(MushoMobEffects.CONFINED, 10, 0, false, true));
+            Vec3 centre = zone.position();
+            Vec3 offset = prisoner.position().subtract(centre);
+            double limit = Math.max(0.2, zone.radius() - prisoner.getBbWidth() / 2.0);
+            if (offset.horizontalDistance() > limit || Math.abs(offset.y) > zone.radius() + 1.0) {
+                // the barrier throws it back inside
+                Vec3 flat = new Vec3(offset.x, 0.0, offset.z);
+                Vec3 inside = flat.lengthSqr() < 1.0E-6 ? centre : centre.add(flat.normalize().scale(limit * 0.8));
+                prisoner.teleportTo(inside.x, centre.y, inside.z);
+                prisoner.setDeltaMovement(Vec3.ZERO);
+                prisoner.hurtMarked = true;
+            }
+            if (age % 4 == 0) {
+                RandomSource random = level.getRandom();
+                for (int i = 0; i < 6; i++) {
+                    double angle = random.nextDouble() * Math.PI * 2.0;
+                    double height = random.nextDouble() * (prisoner.getBbHeight() + 0.6);
+                    level.sendParticles(ParticleTypes.END_ROD, centre.x + Math.cos(angle) * zone.radius(), centre.y + height,
+                            centre.z + Math.sin(angle) * zone.radius(), 1, 0.0, 0.0, 0.0, 0.0);
+                }
+            }
+        };
+    }
 }

@@ -158,10 +158,10 @@ public final class ElementalSpellGameTests {
     public static void icePillarIsAModelOverAHiddenCore(GameTestHelper helper) {
         ServerPlayer player = caster(helper, 30.0F);
         cast(player, MushoSpells.ICE_PILLAR.get());
-        List<SpellPillar> pillars = helper.getLevel().getEntitiesOfClass(SpellPillar.class, player.getBoundingBox().inflate(20.0));
+        List<SpellPillar> pillars = helper.getLevel().getEntitiesOfClass(SpellPillar.class, player.getBoundingBox().inflate(20.0),
+                pillar -> pillar.kind() == PillarKind.ICE_PILLAR);
         helper.assertTrue(pillars.size() == 1, "one pillar model rises, found " + pillars.size());
         SpellPillar pillar = pillars.get(0);
-        helper.assertTrue(pillar.kind() == PillarKind.ICE_PILLAR, "it is the ice pillar model");
         var core = helper.getLevel().getBlockState(pillar.blockPosition());
         helper.assertTrue(core.is(MushoBlocks.CONJURED_ICE.get()) && core.getValue(ConjuredBlock.HIDDEN),
                 "its solid core is there, hidden behind the model");
@@ -174,9 +174,9 @@ public final class ElementalSpellGameTests {
     public static void earthHedgehogRaisesLeaningSpikes(GameTestHelper helper) {
         ServerPlayer player = caster(helper, 30.0F);
         cast(player, MushoSpells.EARTH_HEDGEHOG.get());
-        List<SpellPillar> spikes = helper.getLevel().getEntitiesOfClass(SpellPillar.class, player.getBoundingBox().inflate(25.0));
-        helper.assertTrue(spikes.size() == 9, "nine spikes burst out, found " + spikes.size());
-        helper.assertTrue(spikes.stream().allMatch(spike -> spike.kind() == PillarKind.EARTH_SPIKE), "of dark stone");
+        List<SpellPillar> spikes = helper.getLevel().getEntitiesOfClass(SpellPillar.class, player.getBoundingBox().inflate(25.0),
+                pillar -> pillar.kind() == PillarKind.EARTH_SPIKE);
+        helper.assertTrue(spikes.size() == 9, "nine spikes of dark stone burst out, found " + spikes.size());
         spikes.forEach(SpellPillar::discard);
         TestPlayers.leave(player);
         helper.succeed();

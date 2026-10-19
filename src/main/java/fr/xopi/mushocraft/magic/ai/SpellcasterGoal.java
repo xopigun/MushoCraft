@@ -1,5 +1,6 @@
 package fr.xopi.mushocraft.magic.ai;
 
+import fr.xopi.mushocraft.core.MushoMobEffects;
 import fr.xopi.mushocraft.magic.focus.MagicFocus;
 import fr.xopi.mushocraft.magic.spell.ChantBroadcast;
 import fr.xopi.mushocraft.magic.spell.Spell;
@@ -59,7 +60,7 @@ public class SpellcasterGoal extends Goal {
 
     @Override
     public boolean canUse() {
-        if (now() < nextSpellAt) {
+        if (now() < nextSpellAt || caster.hasEffect(MushoMobEffects.CONFINED)) {
             return false;
         }
         Optional<Spell> choice = choose();
@@ -69,7 +70,7 @@ public class SpellcasterGoal extends Goal {
 
     @Override
     public boolean canContinueToUse() {
-        return chanting != null && chantLeft > 0 && caster.isAlive();
+        return chanting != null && chantLeft > 0 && caster.isAlive() && !caster.hasEffect(MushoMobEffects.CONFINED);
     }
 
     @Override
