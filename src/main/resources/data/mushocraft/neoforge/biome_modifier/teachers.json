@@ -1,0 +1,8 @@
+{
+  "type": "neoforge:add_spawns",
+  "biomes": "#mushocraft:has_teachers",
+  "spawners": [
+    { "type": "mushocraft:sword_master", "weight": 1, "minCount": 1, "maxCount": 1 },
+    { "type": "mushocraft:magic_tutor", "weight": 1, "minCount": 1, "maxCount": 1 }
+  ]
+}

@@ -11,6 +11,7 @@ import fr.xopi.mushocraft.magic.spell.MushoSpells;
 import fr.xopi.mushocraft.magic.spell.SpellSchool;
 import fr.xopi.mushocraft.npc.MagicTutorEntity;
 import fr.xopi.mushocraft.npc.SwordMasterEntity;
+import fr.xopi.mushocraft.npc.TeacherEntity;
 import fr.xopi.mushocraft.sword.StyleRules;
 import fr.xopi.mushocraft.sword.SwordService;
 import fr.xopi.mushocraft.sword.SwordStyle;
@@ -20,8 +21,11 @@ import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.level.GameType;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.gametest.GameTestHolder;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
@@ -141,6 +145,28 @@ public final class TeacherGameTests {
         helper.assertValueEqual(copy.style(), SwordStyle.NORTH_GOD, "style saved");
         helper.assertValueEqual(copy.rank(), Rank.KING, "rank saved");
         master.discard();
+        helper.succeed();
+    }
+
+    @GameTest(template = EMPTY)
+    public static void teachersNeverSpawnNextToAnother(GameTestHelper helper) {
+        helper.setBlock(new BlockPos(2, 0, 2), Blocks.GRASS_BLOCK);
+        BlockPos spot = helper.absolutePos(new BlockPos(2, 1, 2));
+        RandomSource random = RandomSource.create(42L);
+
+        boolean aloneCanSpawn = false;
+        for (int attempt = 0; attempt < 64 && !aloneCanSpawn; attempt++) {
+            aloneCanSpawn = TeacherEntity.checkTeacherSpawnRules(MushoEntities.SWORD_MASTER.get(), helper.getLevel(),
+                    MobSpawnType.NATURAL, spot, random);
+        }
+        helper.assertTrue(aloneCanSpawn, "a teacher can appear where there is none");
+
+        MagicTutorEntity tutor = tutor(helper, SpellSchool.FIRE, Rank.INTERMEDIATE);
+        for (int attempt = 0; attempt < 64; attempt++) {
+            helper.assertFalse(TeacherEntity.checkTeacherSpawnRules(MushoEntities.SWORD_MASTER.get(), helper.getLevel(),
+                    MobSpawnType.NATURAL, spot, random), "never two teachers close together");
+        }
+        tutor.discard();
         helper.succeed();
     }
 }

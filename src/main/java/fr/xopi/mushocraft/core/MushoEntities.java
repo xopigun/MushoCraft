@@ -4,14 +4,20 @@ import fr.xopi.mushocraft.MushoCraft;
 import fr.xopi.mushocraft.magic.entity.SpellProjectile;
 import fr.xopi.mushocraft.npc.MagicTutorEntity;
 import fr.xopi.mushocraft.npc.SwordMasterEntity;
+import fr.xopi.mushocraft.npc.TeacherEntity;
 import fr.xopi.mushocraft.sword.entity.ThrownWeapon;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.entity.SpawnPlacementTypes;
+import net.minecraft.world.level.levelgen.Heightmap;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
+import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
+
+import java.util.List;
 
 /**
  * Entity types of the mod.
@@ -56,6 +62,14 @@ public final class MushoEntities {
     public static void register(IEventBus modEventBus) {
         ENTITY_TYPES.register(modEventBus);
         modEventBus.addListener(MushoEntities::onCreateAttributes);
+        modEventBus.addListener(MushoEntities::onRegisterSpawnPlacements);
+    }
+
+    private static void onRegisterSpawnPlacements(RegisterSpawnPlacementsEvent event) {
+        for (EntityType<? extends TeacherEntity> teacher : List.of(SWORD_MASTER.get(), MAGIC_TUTOR.get())) {
+            event.register(teacher, SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                    TeacherEntity::checkTeacherSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        }
     }
 
     private static void onCreateAttributes(EntityAttributeCreationEvent event) {
