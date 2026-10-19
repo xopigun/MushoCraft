@@ -240,7 +240,8 @@ public final class GalleryDirector {
                 entity -> entity instanceof WaterSheet || entity instanceof SpellZone || entity instanceof SpellPillar
                         || entity instanceof SpellFire || entity instanceof SpellProjectile || entity instanceof SpellBeam
                         || entity instanceof Husk || entity instanceof AreaEffectCloud
-                        || entity instanceof MushoMonster || entity instanceof ThrownTrick).forEach(Entity::discard);
+                        || entity instanceof MushoMonster || entity instanceof ThrownTrick
+                        || entity instanceof net.minecraft.world.entity.monster.Skeleton).forEach(Entity::discard);
         BlockPos.betweenClosed(player.blockPosition().offset(-14, -2, -14), player.blockPosition().offset(14, 10, 14)).forEach(pos -> {
             if (level.getBlockState(pos).getBlock() instanceof ConjuredBlock) {
                 level.removeBlock(pos, false);

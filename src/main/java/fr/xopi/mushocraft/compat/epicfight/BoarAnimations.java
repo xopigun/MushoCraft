@@ -67,6 +67,7 @@ public record BoarAnimations(
     public AnimationAccessor<? extends StaticAnimation> action(MonsterAction action) {
         return switch (action) {
             case CALL -> roar;
+            default -> null;
         };
     }
 }

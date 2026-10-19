@@ -21,12 +21,14 @@ public final class MonsterAnimations {
     public static final AssetAccessor<Armature> TERMINATE_BOAR_ARMATURE = armature("terminate_boar");
     public static final AssetAccessor<Armature> LUSTER_GRIZZLY_ARMATURE = armature("luster_grizzly");
     public static final AssetAccessor<Armature> GOBLIN_ARMATURE = armature("goblin");
+    public static final AssetAccessor<Armature> WRAITH_ARMATURE = armature("wraith");
 
     public static CanineAnimations ASSAULT_DOG;
     public static CanineAnimations PAX_COYOTE;
     public static BoarAnimations TERMINATE_BOAR;
     public static BearAnimations LUSTER_GRIZZLY;
     public static GoblinAnimations GOBLIN;
+    public static WraithAnimations WRAITH;
 
     private MonsterAnimations() {
     }
@@ -46,5 +48,6 @@ public final class MonsterAnimations {
         TERMINATE_BOAR = BoarAnimations.register(builder, "terminate_boar", TERMINATE_BOAR_ARMATURE);
         LUSTER_GRIZZLY = BearAnimations.register(builder, "luster_grizzly", LUSTER_GRIZZLY_ARMATURE);
         GOBLIN = GoblinAnimations.register(builder, "goblin", GOBLIN_ARMATURE);
+        WRAITH = WraithAnimations.register(builder, "wraith", WRAITH_ARMATURE);
     }
 }

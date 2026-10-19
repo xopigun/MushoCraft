@@ -55,6 +55,7 @@ public record CanineAnimations(
     public AnimationAccessor<? extends StaticAnimation> action(MonsterAction action) {
         return switch (action) {
             case CALL -> howl;
+            default -> null;
         };
     }
 }

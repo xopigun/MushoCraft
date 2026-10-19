@@ -13,6 +13,10 @@ public final class MonsterActions {
 
     public static boolean play(LivingEntity monster, MonsterAction action) {
         MonsterPatch<?> patch = EpicFightCapabilities.getEntityPatch(monster, MonsterPatch.class);
-        return patch != null && EpicFightAnimations.play(monster, patch.animations().action(action));
+        if (patch == null) {
+            return false;
+        }
+        var animation = patch.animations().action(action);
+        return animation != null && EpicFightAnimations.play(monster, animation);
     }
 }

@@ -52,6 +52,7 @@ public record GoblinAnimations(
     public AnimationAccessor<? extends StaticAnimation> action(MonsterAction action) {
         return switch (action) {
             case CALL -> shout;
+            default -> null;
         };
     }
 }

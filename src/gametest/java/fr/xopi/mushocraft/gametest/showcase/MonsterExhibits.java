@@ -5,11 +5,13 @@ import fr.xopi.mushocraft.compat.epicfight.BoarAnimations;
 import fr.xopi.mushocraft.compat.epicfight.CanineAnimations;
 import fr.xopi.mushocraft.compat.epicfight.EpicFightAnimations;
 import fr.xopi.mushocraft.compat.epicfight.GoblinAnimations;
+import fr.xopi.mushocraft.compat.epicfight.WraithAnimations;
 import fr.xopi.mushocraft.compat.epicfight.MonsterAnimations;
 import fr.xopi.mushocraft.core.MushoEntities;
 import fr.xopi.mushocraft.gametest.showcase.GalleryDirector.Exhibit;
 import fr.xopi.mushocraft.monster.MushoMonster;
 import fr.xopi.mushocraft.monster.TerminateBoar;
+import fr.xopi.mushocraft.monster.Wraith;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EntityType;
@@ -69,6 +71,14 @@ final class MonsterExhibits {
         goblinClips.put("hit", () -> goblin.get().hit());
         goblinClips.put("death", () -> goblin.get().death());
         species(all, "goblin", MushoEntities.GOBLIN.get(), goblinClips, 3.2, player -> packHunt(player, MushoEntities.GOBLIN.get()));
+        Supplier<WraithAnimations> wraith = () -> MonsterAnimations.WRAITH;
+        Map<String, Supplier<AnimationAccessor<? extends StaticAnimation>>> wraithClips = new LinkedHashMap<>();
+        wraithClips.put("walk", () -> wraith.get().walk());
+        wraithClips.put("claw", () -> wraith.get().claw());
+        wraithClips.put("cast", () -> wraith.get().cast());
+        wraithClips.put("raise_dead", () -> wraith.get().raiseDead());
+        wraithClips.put("death", () -> wraith.get().death());
+        species(all, "wraith", MushoEntities.WRAITH.get(), wraithClips, 3.6, MonsterExhibits::wraithHunt);
     }
 
     private static <T extends MushoMonster> void canine(List<Exhibit> all, String name, EntityType<T> type,
@@ -139,6 +149,20 @@ final class MonsterExhibits {
             level.addFreshEntity(monster);
             monster.setTarget(prey);
         }
+    }
+
+    /** A Deadly Wraith sets upon the dummy: it raises its skeletons and casts at it. */
+    private static void wraithHunt(ServerPlayer player) {
+        ServerLevel level = player.serverLevel();
+        Husk prey = prey(player);
+        Wraith wraith = MushoEntities.WRAITH.get().create(level);
+        if (prey == null || wraith == null) {
+            return;
+        }
+        wraith.moveTo(player.getX() + 3, player.getY(), player.getZ() + 14, 180.0F, 0.0F);
+        wraith.setDeadly(true);
+        level.addFreshEntity(wraith);
+        wraith.setTarget(prey);
     }
 
     /** A Terminate Boar and the dogs it comes with, as met in the wild, set upon the dummy. */

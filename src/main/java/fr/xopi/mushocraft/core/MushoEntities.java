@@ -11,6 +11,7 @@ import fr.xopi.mushocraft.magic.summon.LamplightSpirit;
 import fr.xopi.mushocraft.magic.summon.SummonedSpirit;
 import fr.xopi.mushocraft.monster.AssaultDog;
 import fr.xopi.mushocraft.monster.MushoMonster;
+import fr.xopi.mushocraft.monster.Wraith;
 import fr.xopi.mushocraft.monster.Goblin;
 import fr.xopi.mushocraft.monster.LusterGrizzly;
 import fr.xopi.mushocraft.monster.PaxCoyote;
@@ -24,6 +25,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.SpawnPlacementTypes;
+import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
@@ -188,6 +190,14 @@ public final class MushoEntities {
                     .clientTrackingRange(10)
                     .build(MushoCraft.id("goblin").toString()));
 
+    /** Wraith, an undead that raises skeletons; the Deadly Wraith casts attack magic (rank C, A). */
+    public static final DeferredHolder<EntityType<?>, EntityType<Wraith>> WRAITH =
+            ENTITY_TYPES.register("wraith", () -> EntityType.Builder
+                    .<Wraith>of(Wraith::new, MobCategory.MONSTER)
+                    .sized(0.7F, 2.1F)
+                    .clientTrackingRange(10)
+                    .build(MushoCraft.id("wraith").toString()));
+
     private MushoEntities() {
     }
 
@@ -206,6 +216,9 @@ public final class MushoEntities {
             event.register(monster, SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
                     MushoMonster::checkMonsterSpawn, RegisterSpawnPlacementsEvent.Operation.REPLACE);
         }
+        // restless souls haunt the dark: wraiths only appear where it is dark, like the undead
+        event.register(WRAITH.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                Monster::checkMonsterSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
     }
 
     private static void onCreateAttributes(EntityAttributeCreationEvent event) {
@@ -217,5 +230,6 @@ public final class MushoEntities {
         event.put(TERMINATE_BOAR.get(), TerminateBoar.createAttributes().build());
         event.put(LUSTER_GRIZZLY.get(), LusterGrizzly.createAttributes().build());
         event.put(GOBLIN.get(), Goblin.createAttributes().build());
+        event.put(WRAITH.get(), Wraith.createAttributes().build());
     }
 }
