@@ -26,14 +26,16 @@ Pas de shader, pas de post-traitement, pas de bloom : uniquement des types de re
 12. **Tremblement de caméra** déclenché par un effet de statut, qui s'éteint tout seul (roulis et translation sinusoïdaux).
 13. **Un son à chaque tick** tant que l'effet dure, à hauteur aléatoire, et deux sons superposés à l'impact.
 
-## Ce qu'on adopte dans MushoCraft (ordre proposé)
+## Ce qu'on adopte dans MushoCraft (ordre proposé, état au 19/10)
 
-1. Tremblement de caméra pour les gros sorts.
-2. Particules de feu additives, avec passage du feu à la fumée et deux teintes.
-3. Plans orientés doubles faces : entailles, anneaux de choc le long des projectiles, anneaux au sol.
-4. Rayons en prismes imbriqués (*Water Cannon*, rayons de lumière).
-5. Coque lumineuse sur nos maillages (boules, orbes).
-6. Éclairs procéduraux (*Lightning*, *Cumulonimbus*).
-7. Traînées en ruban avec halo.
-8. Particules émises depuis les os des modèles Blockbench.
-9. Flipbooks dessinés en haute résolution pour les impacts signatures : le plus coûteux, car il faut dessiner.
+1. ✅ Tremblement de caméra pour les gros sorts (réglage client `effects.cameraShake`).
+2. ✅ Particules de feu additives, avec passage du feu à la fumée et deux teintes.
+3. ✅ Plans orientés doubles faces : entailles des techniques d'épée, anneaux de choc le long des projectiles de vent et des souffles, anneaux au sol.
+4. ✅ Rayons en prismes imbriqués (*Tornado Impact*).
+5. ✅ Coque lumineuse sur les projectiles de lumière, de vent et de glace.
+6. ✅ Éclairs procéduraux (*Lightning*, *Cumulonimbus*).
+7. ✅ Traînées en ruban avec halo (feu, vent, lumière, glace).
+8. ✅ Particules émises depuis les os des modèles Blockbench (pointe du pilier de glace, éclats des pics de terre).
+9. ⏳ Flipbooks dessinés en haute résolution pour les impacts signatures : le plus coûteux, car il faut dessiner.
+
+**Outil de contrôle** : `gradlew runClientGallery` lance chaque sort du catalogue en vue à la première personne, sur une arène dans le ciel, et enregistre deux captures par sort (`run/screenshots/gallery_*`).
