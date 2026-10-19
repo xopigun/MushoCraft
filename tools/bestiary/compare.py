@@ -1,6 +1,6 @@
 """
 A creature's model beside its reference images, to judge it at a glance: references on the left, the model from three
-angles in the middle, in-game screenshots on the right (cropped around the creature when a box is given).
+angles in the middle (in its idle pose), in-game screenshots on the right (cropped around the creature when a box is given).
 
     python compare.py creature OUT.png --refs a.png b.png [--game shot.png[@x0,y0,x1,y1] ...]
 
@@ -33,13 +33,15 @@ def main():
     p.add_argument('--refs', nargs='*', default=[])
     p.add_argument('--game', nargs='*', default=[])
     a = p.parse_args()
-    model, painter, _ = importlib.import_module(a.creature).build()
+    model, painter, clips = importlib.import_module(a.creature).build()
+    idle = next((c for c in clips if c.name == 'idle'), None)
+    pose = idle.pose(0.0) if idle else None
     import tempfile, os
     tex_path = os.path.join(tempfile.gettempdir(), a.creature + '_compare_tex.png')
     texture = Image.fromarray(model.paint(painter, tex_path), 'RGBA')
     tiles = [labelled(fit(Image.open(r)), 'reference') for r in a.refs]
     for yaw, pitch, name in ((35, 12, 'model 3/4'), (90, 0, 'model side'), (-20, 8, 'model front')):
-        tiles.append(labelled(model.render(texture, yaw=yaw, pitch=pitch, size=H, background=(232, 232, 236)), name))
+        tiles.append(labelled(model.render(texture, pose=pose, yaw=yaw, pitch=pitch, size=H, background=(232, 232, 236)), name))
     for g in a.game:
         path, _, box = g.partition('@')
         img = Image.open(path)

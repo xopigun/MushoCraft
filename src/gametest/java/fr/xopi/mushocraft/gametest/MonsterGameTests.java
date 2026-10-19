@@ -7,6 +7,7 @@ import fr.xopi.mushocraft.monster.EngagementTokens;
 import fr.xopi.mushocraft.monster.MonsterPack;
 import fr.xopi.mushocraft.monster.MushoMonster;
 import fr.xopi.mushocraft.monster.PaxCoyote;
+import fr.xopi.mushocraft.monster.TerminateBoar;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
@@ -174,5 +175,29 @@ public final class MonsterGameTests {
                 "the mates turn on whoever wounded one of them");
         clear(dogs, attacker);
         helper.succeed();
+    }
+
+    @GameTest(template = EMPTY)
+    public static void aTerminateBoarComesWithItsDogs(GameTestHelper helper) {
+        TerminateBoar boar = helper.spawn(MushoEntities.TERMINATE_BOAR.get(), new BlockPos(4, 1, 4));
+        boar.finalizeSpawn(helper.getLevel(), helper.getLevel().getCurrentDifficultyAt(boar.blockPosition()), MobSpawnType.NATURAL, null);
+        List<MushoMonster> dogs = MonsterPack.mates(boar);
+        helper.assertTrue(boar.isPackLeader(), "the boar leads");
+        helper.assertTrue(dogs.size() >= 3 && dogs.stream().allMatch(AssaultDog.class::isInstance), "three or four Assault Dogs follow it");
+        dogs.forEach(MushoMonster::discard);
+        boar.discard();
+        helper.succeed();
+    }
+
+    @GameTest(template = EMPTY, timeoutTicks = 200)
+    public static void aTerminateBoarStrikesItsPrey(GameTestHelper helper) {
+        TerminateBoar boar = helper.spawn(MushoEntities.TERMINATE_BOAR.get(), new BlockPos(1, 1, 1));
+        Husk husk = prey(helper, new BlockPos(4, 1, 4));
+        float before = husk.getHealth();
+        boar.setTarget(husk);
+        helper.succeedWhen(() -> {
+            helper.assertTrue(husk.getHealth() < before || !husk.isAlive(), "struck");
+            clear(List.of(boar), husk);
+        });
     }
 }

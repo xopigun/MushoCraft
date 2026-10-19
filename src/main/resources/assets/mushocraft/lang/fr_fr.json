@@ -245,6 +245,8 @@
   "item.mushocraft.assault_dog_spawn_egg": "Œuf d'apparition de chien d'assaut",
   "entity.mushocraft.pax_coyote": "Coyote de Pax",
   "item.mushocraft.pax_coyote_spawn_egg": "Œuf d'apparition de coyote de Pax",
+  "entity.mushocraft.terminate_boar": "Sanglier terminateur",
+  "item.mushocraft.terminate_boar_spawn_egg": "Œuf d'apparition de sanglier terminateur",
   "monster_rank.mushocraft.f": "Rang F",
   "monster_rank.mushocraft.e": "Rang E",
   "monster_rank.mushocraft.d": "Rang D",

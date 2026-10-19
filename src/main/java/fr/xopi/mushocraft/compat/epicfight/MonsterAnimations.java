@@ -18,9 +18,11 @@ import yesman.epicfight.gameasset.Armatures;
 public final class MonsterAnimations {
     public static final AssetAccessor<Armature> ASSAULT_DOG_ARMATURE = armature("assault_dog");
     public static final AssetAccessor<Armature> PAX_COYOTE_ARMATURE = armature("pax_coyote");
+    public static final AssetAccessor<Armature> TERMINATE_BOAR_ARMATURE = armature("terminate_boar");
 
     public static CanineAnimations ASSAULT_DOG;
     public static CanineAnimations PAX_COYOTE;
+    public static BoarAnimations TERMINATE_BOAR;
 
     private MonsterAnimations() {
     }
@@ -37,5 +39,6 @@ public final class MonsterAnimations {
     private static void build(AnimationBuilder builder) {
         ASSAULT_DOG = CanineAnimations.register(builder, "assault_dog", ASSAULT_DOG_ARMATURE);
         PAX_COYOTE = CanineAnimations.register(builder, "pax_coyote", PAX_COYOTE_ARMATURE);
+        TERMINATE_BOAR = BoarAnimations.register(builder, "terminate_boar", TERMINATE_BOAR_ARMATURE);
     }
 }

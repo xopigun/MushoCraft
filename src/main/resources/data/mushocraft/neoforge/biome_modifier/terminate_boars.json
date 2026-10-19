@@ -1,0 +1,12 @@
+{
+  "type": "neoforge:add_spawns",
+  "biomes": "#mushocraft:has_assault_dogs",
+  "spawners": [
+    {
+      "type": "mushocraft:terminate_boar",
+      "weight": 2,
+      "minCount": 1,
+      "maxCount": 1
+    }
+  ]
+}

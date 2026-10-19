@@ -73,6 +73,7 @@ public final class MushoClientSetup {
         event.registerEntityRenderer(MushoEntities.MAGIC_TUTOR.get(), TeacherRenderer::new);
         event.registerEntityRenderer(MushoEntities.ASSAULT_DOG.get(), context -> new MonsterRenderer<>(context, 0.5F));
         event.registerEntityRenderer(MushoEntities.PAX_COYOTE.get(), context -> new MonsterRenderer<>(context, 0.5F));
+        event.registerEntityRenderer(MushoEntities.TERMINATE_BOAR.get(), context -> new MonsterRenderer<>(context, 1.0F));
     }
 
     @SubscribeEvent

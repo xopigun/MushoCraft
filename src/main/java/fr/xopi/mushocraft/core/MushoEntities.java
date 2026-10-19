@@ -12,6 +12,7 @@ import fr.xopi.mushocraft.magic.summon.SummonedSpirit;
 import fr.xopi.mushocraft.monster.AssaultDog;
 import fr.xopi.mushocraft.monster.MushoMonster;
 import fr.xopi.mushocraft.monster.PaxCoyote;
+import fr.xopi.mushocraft.monster.TerminateBoar;
 import fr.xopi.mushocraft.npc.MagicTutorEntity;
 import fr.xopi.mushocraft.npc.SwordMasterEntity;
 import fr.xopi.mushocraft.npc.TeacherEntity;
@@ -151,6 +152,14 @@ public final class MushoEntities {
                     .clientTrackingRange(10)
                     .build(MushoCraft.id("pax_coyote").toString()));
 
+    /** Terminate Boar, a bipedal four-armed monster leading Assault Dogs (rank D). */
+    public static final DeferredHolder<EntityType<?>, EntityType<TerminateBoar>> TERMINATE_BOAR =
+            ENTITY_TYPES.register("terminate_boar", () -> EntityType.Builder
+                    .<TerminateBoar>of(TerminateBoar::new, MobCategory.MONSTER)
+                    .sized(1.6F, 3.1F)
+                    .clientTrackingRange(10)
+                    .build(MushoCraft.id("terminate_boar").toString()));
+
     private MushoEntities() {
     }
 
@@ -165,7 +174,7 @@ public final class MushoEntities {
             event.register(teacher, SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
                     TeacherEntity::checkTeacherSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
         }
-        for (EntityType<? extends MushoMonster> monster : List.of(ASSAULT_DOG.get(), PAX_COYOTE.get())) {
+        for (EntityType<? extends MushoMonster> monster : List.of(ASSAULT_DOG.get(), PAX_COYOTE.get(), TERMINATE_BOAR.get())) {
             event.register(monster, SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
                     MushoMonster::checkMonsterSpawn, RegisterSpawnPlacementsEvent.Operation.REPLACE);
         }
@@ -177,5 +186,6 @@ public final class MushoEntities {
         event.put(SUMMONED_SPIRIT.get(), SummonedSpirit.createAttributes().build());
         event.put(ASSAULT_DOG.get(), AssaultDog.createAttributes().build());
         event.put(PAX_COYOTE.get(), PaxCoyote.createAttributes().build());
+        event.put(TERMINATE_BOAR.get(), TerminateBoar.createAttributes().build());
     }
 }
