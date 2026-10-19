@@ -100,6 +100,9 @@ public final class SpellFx {
         level.sendParticles(OrientedParticleOptions.facing(MushoParticles.SHOCK_WAVE.get(), new Vec3(0.0, 1.0, 0.0),
                 level.random.nextFloat() * 360.0F, (float) (width * 1.4), rgb), target.getX(), target.getY() + 0.05, target.getZ(),
                 1, 0.0, 0.0, 0.0, 0.0);
+        // and twinkling stars all about, as the anime draws healing light
+        level.sendParticles(ColorParticleOption.create(MushoParticles.SPARKLE.get(), 0xFF000000 | rgb), target.getX(),
+                target.getY() + target.getBbHeight() * 0.6, target.getZ(), 14, width * 0.8, target.getBbHeight() * 0.45, width * 0.8, 0.02);
     }
 
     /** Where a creature's hand is, held a little before it: its right hand, or its left one. */

@@ -2,6 +2,7 @@ package fr.xopi.mushocraft.client.render.spell;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import fr.xopi.mushocraft.MushoCraft;
+import fr.xopi.mushocraft.client.fx.ClientMist;
 import fr.xopi.mushocraft.client.render.mesh.BillowCluster;
 import fr.xopi.mushocraft.client.render.mesh.LatheMesh;
 import fr.xopi.mushocraft.client.render.mesh.Premultiplied;
@@ -140,12 +141,31 @@ final class ZoneBodies {
         poseStack.popPose();
     }
 
+    private static final ResourceLocation MUD = MushoCraft.id("textures/entity/spell/mud.png");
+    private static final LatheMesh.Material MUD_SURFACE = new LatheMesh.Material(1.0F, 1.0F, 1.0F, 0.96F, 1.0F, 0.08F,
+            3.0F, 2.0F, 0.002F, 0.0F);
+
+    /** Quagmire, after the anime (S1): the ground turned into a sheet of green-brown mud, slowly churning. */
+    static void mud(SpellZone zone, float age, PoseStack poseStack, MultiBufferSource buffers, int light) {
+        float presence = presence(zone, age);
+        float spread = zone.visualRadius() * Mth.clamp(age / 10.0F, 0.0F, 1.0F);
+        LatheMesh.Profile sheet = t -> new float[]{0.06F, t};
+        LatheMesh.Deform churn = (point, t, angle) -> point.y += 0.05F * Mth.sin(t * 9.0F + angle * 3.0F - age * 0.15F) - 0.06F * t * t;
+        poseStack.pushPose();
+        poseStack.scale(spread, presence, spread);
+        LatheMesh.render(poseStack.last(), buffers.getBuffer(RenderType.entityTranslucent(MUD)), sheet, churn,
+                MUD_SURFACE, 10, 28, age, light);
+        poseStack.popPose();
+    }
+
     private static final LatheMesh.Material FOG_BANK = new LatheMesh.Material(1.0F, 1.0F, 1.0F, 0.38F, 0.12F, 0.6F,
             1.0F, 1.0F, 0.003F, 0.002F);
 
     /** Deep Mist: low banks of thick fog rolling slowly round the caster. */
     static void mist(SpellZone zone, float age, PoseStack poseStack, MultiBufferSource buffers, int light) {
-        banks(zone, age, poseStack, buffers, 1.0F, 1.0F, 1.0F, 0.004F, 0.3F, -0.2F, 6, 1.0F);
+        // from inside, the screen's white fog takes over (ClientMist): the banks, whose inner faces would show dark, fade
+        float inside = ClientMist.depth(Minecraft.getInstance().gameRenderer.getMainCamera());
+        banks(zone, age, poseStack, buffers, 1.0F, 1.0F, 1.0F, 0.004F, 0.42F, -0.2F, 8, 1.05F, 2.0F * (1.0F - inside));
     }
 
     /** Dust Storm, Sandstorm: banks of sand-coloured dust whirling round fast, taller than fog. */
@@ -212,6 +232,12 @@ final class ZoneBodies {
      */
     private static void banks(SpellZone zone, float age, PoseStack poseStack, MultiBufferSource buffers, float red, float green,
                               float blue, float spin, float tallness, float height, int banks, float spread) {
+        banks(zone, age, poseStack, buffers, red, green, blue, spin, tallness, height, banks, spread, 1.0F);
+    }
+
+    /** @param opacity how much more opaque than the usual fog bank (Deep Mist: thick) */
+    private static void banks(SpellZone zone, float age, PoseStack poseStack, MultiBufferSource buffers, float red, float green,
+                              float blue, float spin, float tallness, float height, int banks, float spread, float opacity) {
         float presence = presence(zone, age);
         float radius = zone.visualRadius() * spread;
         for (int i = 0; i < banks; i++) {
@@ -223,8 +249,8 @@ final class ZoneBodies {
             poseStack.scale(radius * 0.7F, radius * tallness, radius * 0.7F);
             BillowCluster.render(poseStack, buffers.getBuffer(RenderType.entityTranslucent(FOG)), billows,
                     Mth.clamp(age / 20.0F, 0.0F, 1.0F), 0.05F,
-                    new LatheMesh.Material(red, green, blue, FOG_BANK.alphaFacing() * presence,
-                            FOG_BANK.alphaRim() * presence, FOG_BANK.rimWhiten(), 1.0F, 1.0F, 0.003F, 0.002F),
+                    new LatheMesh.Material(red, green, blue, Math.min(1.0F, FOG_BANK.alphaFacing() * presence * opacity),
+                            Math.min(1.0F, FOG_BANK.alphaRim() * presence * opacity), FOG_BANK.rimWhiten(), 1.0F, 1.0F, 0.003F, 0.002F),
                     age + i * 7.0F, LightTexture.FULL_BRIGHT);
             poseStack.popPose();
         }

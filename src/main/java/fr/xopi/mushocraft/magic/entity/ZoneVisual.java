@@ -30,6 +30,10 @@ public enum ZoneVisual {
     THUNDERHEAD,
     /** Electric: the same cloud compressed small and low over its target, gathering fast. */
     CHARGED_CLOUD,
+    /** Burning Place: a wall of roaring flame in a ring round the caster it follows. */
+    FLAME_RING,
+    /** Quagmire: a sheet of churning mud over the ground. */
+    MUD,
     /** Flamethrower: a torrent of flame poured where the caster it follows looks. */
     FLAME_JET,
     /** Water Splash: a crown of water leaping up and falling back. */

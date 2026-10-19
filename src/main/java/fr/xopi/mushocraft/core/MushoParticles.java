@@ -74,6 +74,19 @@ public final class MushoParticles {
                     return ColorParticleOption.streamCodec(this);
                 }
             });
+    /** A twinkle of light (healing): a four-pointed star, tinted by its colour. */
+    public static final DeferredHolder<ParticleType<?>, ParticleType<ColorParticleOption>> SPARKLE =
+            PARTICLE_TYPES.register("sparkle", () -> new ParticleType<ColorParticleOption>(false) {
+                @Override
+                public MapCodec<ColorParticleOption> codec() {
+                    return ColorParticleOption.codec(this);
+                }
+
+                @Override
+                public StreamCodec<? super RegistryFriendlyByteBuf, ColorParticleOption> streamCodec() {
+                    return ColorParticleOption.streamCodec(this);
+                }
+            });
     /** A drawn explosion: white-hot ball, orange ball tearing open, smoke; its size is given by the x speed. */
     public static final DeferredHolder<ParticleType<?>, SimpleParticleType> BLAST = simple("blast");
     /** A line of rushing air, drawn along the way it moves, as wind is drawn in the anime; its speed sets its way. */

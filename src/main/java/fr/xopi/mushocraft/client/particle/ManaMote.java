@@ -4,19 +4,18 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.particle.ParticleRenderType;
-import net.minecraft.client.particle.SpriteSet;
-import net.minecraft.client.particle.TextureSheetParticle;
+import net.minecraft.client.particle.SingleQuadParticle;
 import net.minecraft.core.particles.ColorParticleOption;
 
 /**
  * A mote of mana drawn into a caster's hand as the spell takes shape. Its speed is aimed so that it reaches the hand
  * at the end of its short life; it brightens as it arrives. Tinted with its spell school's colour.
  */
-public final class ManaMote extends TextureSheetParticle {
+public final class ManaMote extends SingleQuadParticle {
     public static final int LIFETIME = 10;
+    private static final SmoothSheet SHEET = SmoothSheet.MOTE;
 
-    ManaMote(ClientLevel level, double x, double y, double z, double dx, double dy, double dz, ColorParticleOption colour,
-             SpriteSet sprites) {
+    ManaMote(ClientLevel level, double x, double y, double z, double dx, double dy, double dz, ColorParticleOption colour) {
         super(level, x, y, z);
         this.xd = dx;
         this.yd = dy;
@@ -28,8 +27,28 @@ public final class ManaMote extends TextureSheetParticle {
         this.quadSize = 0.05F + random.nextFloat() * 0.03F;
         setColor(colour.getRed(), colour.getGreen(), colour.getBlue());
         this.alpha = 0.0F;
-        pickSprite(sprites);
     }
+
+    @Override
+    protected float getU0() {
+        return SHEET.u0(0);
+    }
+
+    @Override
+    protected float getU1() {
+        return SHEET.u1(0);
+    }
+
+    @Override
+    protected float getV0() {
+        return 0.0F;
+    }
+
+    @Override
+    protected float getV1() {
+        return 1.0F;
+    }
+
 
     @Override
     public void tick() {
@@ -46,14 +65,14 @@ public final class ManaMote extends TextureSheetParticle {
 
     @Override
     public ParticleRenderType getRenderType() {
-        return ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
+        return SHEET.renderType();
     }
 
-    public record Provider(SpriteSet sprites) implements ParticleProvider<ColorParticleOption> {
+    public static final class Provider implements ParticleProvider<ColorParticleOption> {
         @Override
         public Particle createParticle(ColorParticleOption colour, ClientLevel level, double x, double y, double z,
                                        double dx, double dy, double dz) {
-            return new ManaMote(level, x, y, z, dx, dy, dz, colour, sprites);
+            return new ManaMote(level, x, y, z, dx, dy, dz, colour);
         }
     }
 }

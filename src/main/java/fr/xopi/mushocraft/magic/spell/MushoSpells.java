@@ -508,7 +508,8 @@ public final class MushoSpells {
     /** A wreath of fire around the caster engulfs whoever comes close (wiki, Fire). */
     public static final DeferredHolder<Spell, Spell> BURNING_PLACE = SPELLS.register("burning_place",
             () -> Spell.builder(SpellSchool.FIRE, Rank.INTERMEDIATE).intent(SpellIntent.DEFEND).manaCost(18).cooldownTicks(400)
-                    .effect(new ZoneEffect(() -> ZoneBehaviors.burningRing(3.0F, 4), 3.0, 120, 0.0, SoundEvents.BLAZE_SHOOT))
+                    .effect(new ZoneEffect(() -> ZoneBehaviors.burningRing(3.0F, 4), ZoneVisual.FLAME_RING, 3.0, 120, 0.0,
+                            SoundEvents.BLAZE_SHOOT).followingCaster())
                     .build());
 
     /** Shoots a blade of flame that sears and slices (wiki, Fire). */
@@ -555,7 +556,7 @@ public final class MushoSpells {
     public static final DeferredHolder<Spell, Spell> QUAGMIRE = SPELLS.register("quagmire",
             () -> Spell.builder(SpellSchool.MIXED, Rank.INTERMEDIATE).manaCost(20).cooldownTicks(300)
                     .meldedFrom(MeldIngredient.anyOf(SpellSchool.WATER), MeldIngredient.anyOf(SpellSchool.EARTH))
-                    .effect(new ZoneEffect(ZoneBehaviors::quagmire, 3.5, 200, 18.0, SoundEvents.MUD_PLACE))
+                    .effect(new ZoneEffect(ZoneBehaviors::quagmire, ZoneVisual.MUD, 3.5, 200, 18.0, SoundEvents.MUD_PLACE))
                     .build());
 
     /** A rain of mud that leaves the ground slippery and loose (LN vol. 17 ch. 2): a water spell + an earth spell. */
@@ -581,7 +582,7 @@ public final class MushoSpells {
                     .effect(new CompositeEffect(
                             new AreaBurstEffect(5.0, 2.0F, 0, 16.0, ParticleTypes.SPLASH, SoundEvents.GENERIC_SPLASH,
                                     List.of(new CloudEffect.Affliction(MushoMobEffects.SOAKED, 200, 0))),
-                            new FreezeFieldEffect(5.0, 7.0F, 140, 16.0)))
+                            new FreezeFieldEffect(5.0, 7.0F, 140, 16.0).withCrystals()))
                     .build());
 
     /** A strong gust of freezing wind that disables the enemy (LN vol. 5 ch. 1): Icicle Field + Blast. */

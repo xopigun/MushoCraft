@@ -38,28 +38,39 @@ public final class FreezeFieldEffect implements SpellEffect {
     private final double range;
     private final boolean aroundCaster;
     private final boolean freezesWater;
+    private final boolean crystals;
 
     public FreezeFieldEffect(double radius, float damage, int freezeTicks, double range) {
-        this(radius, damage, freezeTicks, range, false, false);
+        this(radius, damage, freezeTicks, range, false, false, false);
     }
 
-    private FreezeFieldEffect(double radius, float damage, int freezeTicks, double range, boolean aroundCaster, boolean freezesWater) {
+    private FreezeFieldEffect(double radius, float damage, int freezeTicks, double range, boolean aroundCaster, boolean freezesWater,
+                              boolean crystals) {
         this.radius = radius;
         this.damage = damage;
         this.freezeTicks = freezeTicks;
         this.range = range;
         this.aroundCaster = aroundCaster;
         this.freezesWater = freezesWater;
+        this.crystals = crystals;
     }
 
     /** The field spreads all around the caster, who is spared, instead of at the aimed spot. */
     public FreezeFieldEffect aroundCaster() {
-        return new FreezeFieldEffect(radius, damage, freezeTicks, range, true, freezesWater);
+        return new FreezeFieldEffect(radius, damage, freezeTicks, range, true, freezesWater, crystals);
+    }
+
+    /**
+     * Great crystals of ice surge up round the field, leaning outwards, as in the anime's Frost Nova (S2, Roxy): the water
+     * that soaked everything freezes through into walls of ice.
+     */
+    public FreezeFieldEffect withCrystals() {
+        return new FreezeFieldEffect(radius, damage, freezeTicks, range, aroundCaster, freezesWater, true);
     }
 
     /** The surface of the water in the field freezes over. */
     public FreezeFieldEffect freezingWater() {
-        return new FreezeFieldEffect(radius, damage, freezeTicks, range, aroundCaster, true);
+        return new FreezeFieldEffect(radius, damage, freezeTicks, range, aroundCaster, true, crystals);
     }
 
     @Override
@@ -70,11 +81,21 @@ public final class FreezeFieldEffect implements SpellEffect {
         double reach = radius * context.scale();
         RandomSource random = context.caster().getRandom();
         int lifetime = freezeTicks + 20;
-        for (int i = 0; i < Math.round(reach * 1.5); i++) {
+        for (int i = 0; i < Math.round(reach * 2.2); i++) {
             double angle = random.nextDouble() * Math.PI * 2.0;
             double distance = Math.sqrt(random.nextDouble()) * reach;
             Vec3 spot = new Vec3(center.x + Math.cos(angle) * distance, center.y, center.z + Math.sin(angle) * distance);
-            raiseMound(level, spot, (float) ((1.3 + random.nextDouble() * 0.8) * context.scale()), lifetime, random);
+            raiseMound(level, spot, (float) ((2.0 + random.nextDouble() * 1.2) * context.scale()), lifetime, random);
+        }
+        if (crystals) {
+            for (int i = 0; i < 9; i++) {
+                double angle = i * Math.PI * 2.0 / 9.0 + random.nextDouble() * 0.4;
+                Vec3 spot = new Vec3(center.x + Math.cos(angle) * reach * 0.8, center.y, center.z + Math.sin(angle) * reach * 0.8);
+                // leaning outwards: the yaw faces away from the centre
+                float yaw = (float) Math.toDegrees(Math.atan2(-Math.cos(angle), Math.sin(angle)));
+                level.addFreshEntity(SpellPillar.create(level, PillarKind.ICE_LANCE, spot, (float) ((2.4 + random.nextDouble() * 1.4)
+                        * context.scale()), lifetime, yaw, 22.0F));
+            }
         }
         for (LivingEntity target : level.getEntitiesOfClass(LivingEntity.class, new AABB(center, center).inflate(reach, 2.0, reach),
                 entity -> entity != context.caster() && entity.distanceToSqr(center) <= reach * reach + 4.0)) {

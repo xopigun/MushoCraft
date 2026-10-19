@@ -249,6 +249,34 @@ public final class FireVisuals {
         poseStack.popPose();
     }
 
+    /**
+     * Burning Place, after the anime (S1, the wall of fire): a ring of roaring flame round the caster, a little over head
+     * height, its top licking up in tongues; it flares up, roars, then dies down.
+     */
+    static void renderRing(SpellZone zone, float age, PoseStack poseStack, MultiBufferSource buffers) {
+        float rise = Mth.clamp(age / 6.0F, 0.0F, 1.0F);
+        float fade = Mth.clamp((zone.visualLifetime() - age) / 10.0F, 0.0F, 1.0F);
+        float radius = zone.visualRadius();
+        float height = 2.3F * rise * (0.5F + 0.5F * fade);
+        if (height < 0.05F) {
+            return;
+        }
+        // a wall: the profile runs up at the ring's radius, narrowing a little towards the top
+        LatheMesh.Profile wall = t -> new float[]{t, 1.0F - 0.08F * t};
+        LatheMesh.Deform tongues = (point, t, angle) -> {
+            float lick = 1.0F + 0.55F * t * t * (0.5F + 0.5F * Mth.sin(angle * 11.0F + age * 0.9F))
+                    * (0.6F + 0.4F * Mth.sin(angle * 5.0F - age * 0.5F));
+            point.y *= lick;
+        };
+        poseStack.pushPose();
+        poseStack.scale(radius, height, radius);
+        LatheMesh.render(poseStack.last(), buffers.getBuffer(RenderType.entityTranslucentEmissive(FIRE)), wall, tongues,
+                withAlpha(BLAST_OUTER, fade), 10, 48, age, GLOW);
+        poseStack.scale(0.97F, 0.8F, 0.97F);
+        LatheMesh.render(poseStack.last(), glow(buffers), wall, tongues, withAlpha(FLAME, fade), 8, 48, age + 4.0F, GLOW);
+        poseStack.popPose();
+    }
+
     private static LatheMesh.Material withAlpha(LatheMesh.Material material, float factor) {
         return new LatheMesh.Material(material.red(), material.green(), material.blue(), material.alphaFacing() * factor,
                 material.alphaRim() * factor, material.rimWhiten(), material.uRepeat(), material.vRepeat(),

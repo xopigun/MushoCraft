@@ -30,6 +30,13 @@ public final class SmoothSheet {
     /** Explosions: a white-hot ball, an orange ball that tears open, smoke (textures/effect/blast.png, drawn for MushoCraft). */
     public static final SmoothSheet BLAST = new SmoothSheet("blast", 12, false);
     /** Wind: one soft line of rushing air, bright at its head (textures/effect/wind_streak.png, drawn for MushoCraft). */
+    /** Smoke: four puffs of billows, cel-shaded grey, after the anime (textures/effect/smoke.png, drawn for MushoCraft). */
+    public static final SmoothSheet SMOKE = new SmoothSheet("smoke", 4, false);
+    /** A twinkle: a four-pointed star (textures/effect/sparkle.png, drawn for MushoCraft). */
+    public static final SmoothSheet SPARKLE = new SmoothSheet("sparkle", 1, true);
+    /** A soft round mote of light (textures/effect/mote.png, drawn for MushoCraft): mana drawn in, and the same added as glow. */
+    public static final SmoothSheet MOTE = new SmoothSheet("mote", 1, false);
+    public static final SmoothSheet MOTE_GLOW = new SmoothSheet("mote", 1, true);
     public static final SmoothSheet WIND_STREAK = new SmoothSheet("wind_streak", 1, true);
 
     private final ResourceLocation texture;
@@ -68,6 +75,10 @@ public final class SmoothSheet {
 
     public ParticleRenderType renderType() {
         return renderType;
+    }
+
+    public int frames() {
+        return frames;
     }
 
     /** The frame shown at this point of a life (0 to 1). */

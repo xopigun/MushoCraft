@@ -13,6 +13,7 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.particle.ParticleRenderType;
+import net.minecraft.client.particle.SingleQuadParticle;
 import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.client.particle.TextureSheetParticle;
 import net.minecraft.client.renderer.GameRenderer;
@@ -159,22 +160,47 @@ public final class FireParticles {
     }
 
     /** A puff of smoke: swells and rises slowly, then thins away. */
-    public static final class Smoke extends TextureSheetParticle {
+    public static final class Smoke extends SingleQuadParticle {
         private final float startSize;
+        /** Which of the drawn puffs this one is. */
+        private final int puff;
 
-        Smoke(ClientLevel level, double x, double y, double z, double dx, double dy, double dz, SpriteSet sprites) {
+        Smoke(ClientLevel level, double x, double y, double z, double dx, double dy, double dz) {
             super(level, x, y, z, dx, dy, dz);
             this.xd = dx + (random.nextDouble() - 0.5) * 0.03;
             this.yd = dy + 0.01 + random.nextDouble() * 0.02;
             this.zd = dz + (random.nextDouble() - 0.5) * 0.03;
             this.friction = 0.92F;
             this.gravity = -0.004F;
-            this.lifetime = 28 + random.nextInt(24);
+            this.lifetime = 22 + random.nextInt(16);
             this.startSize = 0.35F + random.nextFloat() * 0.3F;
             this.quadSize = startSize;
-            this.roll = random.nextFloat() * Mth.TWO_PI;
+            // the drawn puffs are lit from above: they only turn a little, never upside down
+            this.roll = (random.nextFloat() - 0.5F) * 0.6F;
             this.oRoll = roll;
-            pickSprite(sprites);
+            this.puff = random.nextInt(SmoothSheet.SMOKE.frames());
+            float grey = 0.82F + random.nextFloat() * 0.14F;
+            setColor(grey, grey, grey * 1.02F);
+        }
+
+        @Override
+        protected float getU0() {
+            return SmoothSheet.SMOKE.u0(puff);
+        }
+
+        @Override
+        protected float getU1() {
+            return SmoothSheet.SMOKE.u1(puff);
+        }
+
+        @Override
+        protected float getV0() {
+            return 0.0F;
+        }
+
+        @Override
+        protected float getV1() {
+            return 1.0F;
         }
 
         @Override
@@ -183,15 +209,15 @@ public final class FireParticles {
             if (!removed) {
                 float life = (float) age / lifetime;
                 quadSize = startSize * (1.0F + life * 1.6F);
-                alpha = life < 0.1F ? life * 10.0F * 0.85F : 0.85F * (1.0F - (life - 0.1F) / 0.9F);
+                alpha = life < 0.1F ? life * 10.0F * 0.9F : 0.9F * (1.0F - (life - 0.1F) / 0.9F);
                 oRoll = roll;
-                roll += 0.01F;
+                roll += 0.004F;
             }
         }
 
         @Override
         public ParticleRenderType getRenderType() {
-            return ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
+            return SmoothSheet.SMOKE.renderType();
         }
     }
 
@@ -307,11 +333,11 @@ public final class FireParticles {
         }
     }
 
-    public record SmokeProvider(SpriteSet sprites) implements ParticleProvider<SimpleParticleType> {
+    public static final class SmokeProvider implements ParticleProvider<SimpleParticleType> {
         @Override
         public Particle createParticle(SimpleParticleType type, ClientLevel level, double x, double y, double z,
                                        double dx, double dy, double dz) {
-            return new Smoke(level, x, y, z, dx, dy, dz, sprites);
+            return new Smoke(level, x, y, z, dx, dy, dz);
         }
     }
 

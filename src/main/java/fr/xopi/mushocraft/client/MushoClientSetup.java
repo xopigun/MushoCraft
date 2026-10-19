@@ -10,6 +10,7 @@ import fr.xopi.mushocraft.client.particle.FlipbookParticle;
 import fr.xopi.mushocraft.client.particle.ManaMote;
 import fr.xopi.mushocraft.client.particle.OrientedParticle;
 import fr.xopi.mushocraft.client.particle.RisingLight;
+import fr.xopi.mushocraft.client.particle.SparkleParticle;
 import fr.xopi.mushocraft.client.particle.StreakParticle;
 import fr.xopi.mushocraft.client.render.SpellOrbModel;
 import fr.xopi.mushocraft.client.render.SpellProjectileRenderer;
@@ -75,17 +76,18 @@ public final class MushoClientSetup {
     public static void onRegisterParticles(RegisterParticleProvidersEvent event) {
         event.registerSpriteSet(MushoParticles.FLAME.get(), FireParticles.FlameProvider::new);
         event.registerSpriteSet(MushoParticles.EMBER.get(), FireParticles.EmberProvider::new);
-        event.registerSpriteSet(MushoParticles.SMOKE.get(), FireParticles.SmokeProvider::new);
+        event.registerSpecial(MushoParticles.SMOKE.get(), new FireParticles.SmokeProvider());
         event.registerSpriteSet(MushoParticles.FLASH.get(), FireParticles.FlashProvider::new);
         event.registerSpriteSet(MushoParticles.SHOCK_RING.get(), FireParticles.ShockRingProvider::new);
-        event.registerSpriteSet(MushoParticles.MANA_MOTE.get(), ManaMote.Provider::new);
+        event.registerSpecial(MushoParticles.MANA_MOTE.get(), new ManaMote.Provider());
         event.registerSpecial(MushoParticles.SHOCK_WAVE.get(), new OrientedParticle.ShockWaveProvider());
         event.registerSpecial(MushoParticles.SLASH.get(), new OrientedParticle.SlashProvider());
         event.registerSpriteSet(MushoParticles.ARC.get(), ArcParticle.Provider::new);
-        event.registerSpriteSet(MushoParticles.RISING_LIGHT.get(), RisingLight.Provider::new);
+        event.registerSpecial(MushoParticles.RISING_LIGHT.get(), new RisingLight.Provider());
         event.registerSpecial(MushoParticles.IMPACT.get(), new FlipbookParticle.ImpactProvider());
         event.registerSpecial(MushoParticles.BLAST.get(), new FlipbookParticle.BlastProvider());
         event.registerSpecial(MushoParticles.WIND_STREAK.get(), new StreakParticle.Provider());
+        event.registerSpecial(MushoParticles.SPARKLE.get(), new SparkleParticle.Provider());
     }
 
     @SubscribeEvent

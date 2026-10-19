@@ -64,7 +64,7 @@ public class SpellZoneRenderer extends EntityRenderer<SpellZone> {
         switch (zone.visual()) {
             case TORNADO -> renderTornado(zone, age, poseStack, buffers);
             case WARD_MAGIC -> ZoneBodies.ward(zone, age, partialTicks, poseStack, buffers, 0x7FD4FF);
-            case WARD_PHYSICAL -> ZoneBodies.ward(zone, age, partialTicks, poseStack, buffers, 0xE0B070);
+            case WARD_PHYSICAL -> ZoneBodies.ward(zone, age, partialTicks, poseStack, buffers, 0xFF78D8);
             case SEALING_DOME -> ZoneBodies.sealingDome(zone, age, poseStack, buffers);
             case CONFINEMENT_CELL -> ZoneBodies.confinementCell(zone, age, poseStack, buffers);
             case WATERFALL -> ZoneBodies.waterfall(zone, age, poseStack, buffers, light);
@@ -75,6 +75,8 @@ public class SpellZoneRenderer extends EntityRenderer<SpellZone> {
             case THUNDERHEAD -> ZoneBodies.thunderhead(zone, age, poseStack, buffers, 8.5F, 30.0F);
             case CHARGED_CLOUD -> ZoneBodies.chargedCloud(zone, age, poseStack, buffers);
             case SPLASH_CROWN -> ZoneBodies.splashCrown(zone, age, poseStack, buffers, light);
+            case FLAME_RING -> FireVisuals.renderRing(zone, age, poseStack, buffers);
+            case MUD -> ZoneBodies.mud(zone, age, poseStack, buffers, light);
             case FLAME_JET -> {
                 if (followed != null) {
                     FireVisuals.renderJet(zone, followed, age, partialTicks, poseStack, buffers);

@@ -202,6 +202,13 @@ public class SpellProjectile extends ThrowableProjectile implements GeoEntity {
                         .forEach(entity -> entity.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 80, 0), getOwner()));
                 server.sendParticles(ParticleTypes.WHITE_ASH, getX(), getY(), getZ(), (int) (radius * radius * 20), radius * 0.6,
                         radius * 0.4, radius * 0.6, 0.02);
+                // the sand billows up into a cloud where it burst, as in the anime (S2), and settles
+                if (getOwner() instanceof LivingEntity owner) {
+                    SpellZone cloud = SpellZone.create(server, owner, (zone, world, age) -> {
+                    }, ZoneVisual.DUST_STORM, radius * 1.1, 1.0, 70);
+                    cloud.setPos(position().subtract(0.0, 0.5, 0.0));
+                    server.addFreshEntity(cloud);
+                }
             }
             server.sendParticles(element().trail(), getX(), getY(), getZ(), 12, 0.2, 0.2, 0.2, 0.05);
             // a drawn hit spark, tinted by the element; its size is a half-width, kept to the projectile's scale so a big

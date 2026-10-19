@@ -47,7 +47,7 @@ public final class ZoneBehaviors {
                 level.setWeatherParameters(0, 1200, true, true);
             }
             if (age % 10 == 0) {
-                level.sendParticles(ParticleTypes.CLOUD, zone.getX(), zone.getY() + 12.0, zone.getZ(), 30,
+                level.sendParticles(MushoParticles.SMOKE.get(), zone.getX(), zone.getY() + 12.0, zone.getZ(), 30,
                         zone.radius() * 0.6, 0.5, zone.radius() * 0.6, 0.01);
                 level.sendParticles(ParticleTypes.FALLING_WATER, zone.getX(), zone.getY() + 10.0, zone.getZ(), 40,
                         zone.radius() * 0.6, 2.0, zone.radius() * 0.6, 0.0);
@@ -118,7 +118,7 @@ public final class ZoneBehaviors {
             if (age % 4 == 0) {
                 double angle = age * 0.5;
                 double radius = zone.radius() * 0.3;
-                level.sendParticles(ParticleTypes.POOF, zone.getX() + Math.cos(angle) * radius, zone.getY() + 0.3,
+                level.sendParticles(MushoParticles.SMOKE.get(), zone.getX() + Math.cos(angle) * radius, zone.getY() + 0.3,
                         zone.getZ() + Math.sin(angle) * radius, 6, 0.6, 0.1, 0.6, 0.05);
             }
             if (age % 20 == 0) {
@@ -282,7 +282,7 @@ public final class ZoneBehaviors {
         return (zone, level, age) -> {
             double radius = zone.radius();
             if (age % 2 == 0) {
-                level.sendParticles(ParticleTypes.CLOUD, zone.getX(), zone.getY() + 1.2, zone.getZ(), (int) (radius * 2),
+                level.sendParticles(MushoParticles.SMOKE.get(), zone.getX(), zone.getY() + 1.2, zone.getZ(), (int) (radius * 2),
                         radius * 0.6, 0.8, radius * 0.6, 0.0);
             }
             if (age % 10 != 0) {
@@ -387,7 +387,7 @@ public final class ZoneBehaviors {
             }
             if (age < gatherTicks) {
                 double spread = 4.0 * (1.0 - (double) age / gatherTicks) + 0.8;
-                level.sendParticles(ParticleTypes.CLOUD, zone.getX(), zone.getY() + 9.0, zone.getZ(), 12, spread, 0.4, spread, 0.0);
+                level.sendParticles(MushoParticles.SMOKE.get(), zone.getX(), zone.getY() + 9.0, zone.getZ(), 12, spread, 0.4, spread, 0.0);
                 if (age % 3 == 0) {
                     // the gathered energy crackles inside the cloud
                     RandomSource random = level.getRandom();

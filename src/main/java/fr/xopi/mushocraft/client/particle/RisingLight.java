@@ -4,8 +4,7 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.particle.ParticleRenderType;
-import net.minecraft.client.particle.SpriteSet;
-import net.minecraft.client.particle.TextureSheetParticle;
+import net.minecraft.client.particle.SingleQuadParticle;
 import net.minecraft.core.particles.ColorParticleOption;
 import net.minecraft.util.Mth;
 
@@ -13,14 +12,14 @@ import net.minecraft.util.Mth;
  * A mote of soft light drifting up and twinkling, as healing and holy magic gather on a body. Tinted by its option,
  * added to the light behind it, it swells, then shrinks away.
  */
-public final class RisingLight extends TextureSheetParticle {
+public final class RisingLight extends SingleQuadParticle {
+    private static final SmoothSheet SHEET = SmoothSheet.MOTE_GLOW;
     private final float startSize;
     private final float red;
     private final float green;
     private final float blue;
 
-    RisingLight(ClientLevel level, double x, double y, double z, double dx, double dy, double dz, ColorParticleOption colour,
-                SpriteSet sprites) {
+    RisingLight(ClientLevel level, double x, double y, double z, double dx, double dy, double dz, ColorParticleOption colour) {
         super(level, x, y, z);
         this.xd = dx + (random.nextDouble() - 0.5) * 0.01;
         this.yd = 0.02 + random.nextDouble() * 0.03 + dy;
@@ -34,8 +33,28 @@ public final class RisingLight extends TextureSheetParticle {
         this.red = colour.getRed();
         this.green = colour.getGreen();
         this.blue = colour.getBlue();
-        pickSprite(sprites);
     }
+
+    @Override
+    protected float getU0() {
+        return SHEET.u0(0);
+    }
+
+    @Override
+    protected float getU1() {
+        return SHEET.u1(0);
+    }
+
+    @Override
+    protected float getV0() {
+        return 0.0F;
+    }
+
+    @Override
+    protected float getV1() {
+        return 1.0F;
+    }
+
 
     @Override
     public void tick() {
@@ -57,14 +76,14 @@ public final class RisingLight extends TextureSheetParticle {
 
     @Override
     public ParticleRenderType getRenderType() {
-        return FireParticles.ADDITIVE;
+        return SHEET.renderType();
     }
 
-    public record Provider(SpriteSet sprites) implements ParticleProvider<ColorParticleOption> {
+    public static final class Provider implements ParticleProvider<ColorParticleOption> {
         @Override
         public Particle createParticle(ColorParticleOption colour, ClientLevel level, double x, double y, double z,
                                        double dx, double dy, double dz) {
-            return new RisingLight(level, x, y, z, dx, dy, dz, colour, sprites);
+            return new RisingLight(level, x, y, z, dx, dy, dz, colour);
         }
     }
 }
