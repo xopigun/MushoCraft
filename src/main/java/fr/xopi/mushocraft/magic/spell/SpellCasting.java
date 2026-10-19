@@ -3,6 +3,7 @@ package fr.xopi.mushocraft.magic.spell;
 import fr.xopi.mushocraft.MushoCraft;
 import fr.xopi.mushocraft.combat.mastery.MasteryService;
 import fr.xopi.mushocraft.combat.move.CooldownService;
+import fr.xopi.mushocraft.combat.move.MoveService;
 import fr.xopi.mushocraft.combat.move.MoveUseResult;
 import fr.xopi.mushocraft.magic.focus.MagicFocus;
 import fr.xopi.mushocraft.magic.mana.ManaService;
@@ -97,6 +98,19 @@ public final class SpellCasting {
             caster.displayClientMessage(Component.translatable("message.mushocraft.magic.interrupted",
                     cast.spell().displayName()), true);
         }
+    }
+
+    /**
+     * The caster let go of the key before the end of the chant: the spell is abandoned, no mana spent.
+     * Only the chant started from that slot is abandoned.
+     */
+    public static void abandon(ServerPlayer caster, int slot) {
+        ActiveCast cast = ACTIVE.get(caster.getUUID());
+        if (cast == null || MoveService.loadout(caster).get(slot).filter(cast.spell().ref()::equals).isEmpty()) {
+            return;
+        }
+        finish(caster);
+        caster.displayClientMessage(Component.translatable("message.mushocraft.magic.abandoned", cast.spell().displayName()), true);
     }
 
     /** Drops any chant without message, for logouts and deaths. */

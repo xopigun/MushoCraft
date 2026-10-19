@@ -1,6 +1,7 @@
 package fr.xopi.mushocraft.gametest;
 
 import fr.xopi.mushocraft.MushoCraft;
+import fr.xopi.mushocraft.combat.move.MoveService;
 import fr.xopi.mushocraft.combat.mastery.MasteryRules;
 import fr.xopi.mushocraft.combat.mastery.MasteryService;
 import fr.xopi.mushocraft.core.MushoAttachments;
@@ -82,6 +83,22 @@ public final class IncantationGameTests {
         var balls = helper.getLevel().getEntitiesOfClass(SpellProjectile.class, player.getBoundingBox().inflate(4.0));
         helper.assertValueEqual(balls.size(), 1, "the water ball is already flying");
         balls.forEach(SpellProjectile::discard);
+        TestPlayers.leave(player);
+        helper.succeed();
+    }
+
+    @GameTest(template = EMPTY)
+    public static void lettingGoAbandonsTheChant(GameTestHelper helper) {
+        ServerPlayer player = caster(helper, 20.0);
+        Spell waterBall = MushoSpells.WATER_BALL.get();
+        MagicService.learn(player, waterBall);
+        MasteryService.setRepetitions(player, waterBall.ref(), MasteryRules.REPETITIONS_TO_MASTER);
+        int slot = MoveService.loadout(player).firstSlotOf(waterBall.ref()).orElseThrow();
+        double mana = ManaService.snapshot(player).current();
+        helper.assertTrue(SpellCasting.begin(player, waterBall).success(), "chant begins");
+        SpellCasting.abandon(player, slot);
+        helper.assertTrue(SpellCasting.chanting(player).isEmpty(), "letting go of the key abandons the chant");
+        TestPlayers.expectClose(helper, ManaService.snapshot(player).current(), mana, "no mana spent");
         TestPlayers.leave(player);
         helper.succeed();
     }

@@ -73,6 +73,7 @@
   "screen.mushocraft.moves.incantation": "Se lance en : %s",
   "message.mushocraft.magic.abbreviated_unlocked": "Vous connaissez assez %s pour en abréger l'incantation.",
   "message.mushocraft.magic.silent_unlocked": "Votre mana obéit à votre esprit : vous pouvez lancer sans un mot les sorts que vous maîtrisez.",
+  "message.mushocraft.magic.abandoned": "Vous relâchez : l'incantation de %s se dissipe.",
   "message.mushocraft.magic.chanting": "Incantation : %s  %s",
   "message.mushocraft.magic.learned": "Vous avez appris %s.",
   "message.mushocraft.magic.book_known": "Vous connaissez déjà tout ce livre.",

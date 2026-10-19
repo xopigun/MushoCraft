@@ -73,6 +73,7 @@
   "screen.mushocraft.moves.incantation": "Cast with: %s",
   "message.mushocraft.magic.abbreviated_unlocked": "You know %s well enough to truncate its incantation.",
   "message.mushocraft.magic.silent_unlocked": "Your mana obeys your mind: you can now cast the spells you master without a word.",
+  "message.mushocraft.magic.abandoned": "You let go: the chant of %s fades.",
   "message.mushocraft.magic.chanting": "Chanting %s  %s",
   "message.mushocraft.magic.learned": "You have learned %s.",
   "message.mushocraft.magic.book_known": "You already know everything in this book.",

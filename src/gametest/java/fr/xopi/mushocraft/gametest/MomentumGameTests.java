@@ -1,6 +1,11 @@
 package fr.xopi.mushocraft.gametest;
 
 import fr.xopi.mushocraft.MushoCraft;
+import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
+import yesman.epicfight.world.capabilities.EpicFightCapabilities;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.InteractionHand;
 import fr.xopi.mushocraft.body.BodyService;
 import fr.xopi.mushocraft.body.BodyStat;
 import fr.xopi.mushocraft.body.SprintMomentum;
@@ -139,6 +144,21 @@ public final class MomentumGameTests {
         helper.assertTrue(player.getMaxHealth() >= 39.0F, "ten more hearts (" + player.getMaxHealth() + ")");
         helper.assertTrue(player.getAttributeValue(Attributes.ARMOR) >= 9.9, "armor");
         helper.assertTrue(player.getAttributeValue(Attributes.ARMOR_TOUGHNESS) >= 5.9, "armor toughness");
+        TestPlayers.leave(player);
+        helper.succeed();
+    }
+
+    @GameTest(template = EMPTY)
+    public static void epicFightSwingsFasterWithSpeed(GameTestHelper helper) {
+        ServerPlayer player = runner(helper, 0.0);
+        player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.IRON_SWORD));
+        LivingEntityPatch<?> patch = EpicFightCapabilities.getEntityPatch(player, LivingEntityPatch.class);
+        helper.assertTrue(patch != null, "Epic Fight patch");
+        float before = patch.getAttackSpeed(InteractionHand.MAIN_HAND);
+        BodyService.setExperience(player, BodyStat.SPEED, FULLY_TRAINED);
+        BodyService.apply(player);
+        float after = patch.getAttackSpeed(InteractionHand.MAIN_HAND);
+        helper.assertTrue(after > before * 1.5F, "Epic Fight's attack speed (animation pace) rises: " + before + " -> " + after);
         TestPlayers.leave(player);
         helper.succeed();
     }

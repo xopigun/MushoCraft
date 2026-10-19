@@ -73,6 +73,16 @@ public final class MoveLoadout {
         return slots.contains(Optional.of(move));
     }
 
+    /** The first slot holding this move, if it is in the bar. */
+    public Optional<Integer> firstSlotOf(MoveRef move) {
+        for (int slot = 0; slot < SIZE; slot++) {
+            if (get(slot).filter(move::equals).isPresent()) {
+                return Optional.of(slot);
+            }
+        }
+        return Optional.empty();
+    }
+
     public Optional<Integer> firstEmptySlot() {
         for (int i = 0; i < SIZE; i++) {
             if (slots.get(i).isEmpty()) {
