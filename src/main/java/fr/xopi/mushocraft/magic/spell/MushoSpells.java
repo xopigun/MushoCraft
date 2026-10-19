@@ -6,6 +6,7 @@ import fr.xopi.mushocraft.core.MushoItems;
 import fr.xopi.mushocraft.core.MushoMobEffects;
 import fr.xopi.mushocraft.core.MushoRegistries;
 import fr.xopi.mushocraft.core.Rank;
+import fr.xopi.mushocraft.magic.spell.effect.AreaBurstEffect;
 import fr.xopi.mushocraft.magic.spell.effect.BurstEffect;
 import fr.xopi.mushocraft.magic.spell.effect.CloudEffect;
 import fr.xopi.mushocraft.magic.spell.effect.CompositeEffect;
@@ -25,6 +26,8 @@ import fr.xopi.mushocraft.magic.spell.effect.ScorchCasterEffect;
 import fr.xopi.mushocraft.magic.spell.effect.SelfStatusEffect;
 import fr.xopi.mushocraft.magic.spell.effect.WallEffect;
 import fr.xopi.mushocraft.magic.spell.effect.WeatherEffect;
+import fr.xopi.mushocraft.magic.spell.effect.ZoneEffect;
+import fr.xopi.mushocraft.magic.spell.zone.ZoneBehaviors;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.effect.MobEffects;
@@ -279,6 +282,52 @@ public final class MushoSpells {
     public static final DeferredHolder<Spell, Spell> SHINE_HEALING = SPELLS.register("shine_healing",
             () -> Spell.builder(SpellSchool.HEALING, Rank.ADVANCED).intent(SpellIntent.SUPPORT).manaCost(35).cooldownTicks(160)
                     .effect(new HealEffect(20.0F, 5.0))
+                    .build());
+
+    // ---- Saint (wiki, page Magic Spells) ----
+
+    /**
+     * Calls down a thundercloud: rain falls and lightning strikes inside the storm for a while (LN vol. 1 ch. 6, the
+     * spell Rudeus passes his Saint water exam with). Bolts deal their damage but set nothing alight.
+     */
+    public static final DeferredHolder<Spell, Spell> CUMULONIMBUS = SPELLS.register("cumulonimbus",
+            () -> Spell.builder(SpellSchool.WATER, Rank.SAINT).manaCost(120).cooldownTicks(1200)
+                    .effect(new ZoneEffect(() -> ZoneBehaviors.thunderstorm(12, 14.0F), 10.0, 300, 32.0, SoundEvents.LIGHTNING_BOLT_THUNDER))
+                    .build());
+
+    /** Spreads flames over a very wide area instantly (no source cited by the wiki). */
+    public static final DeferredHolder<Spell, Spell> FLASH_OVER = SPELLS.register("flash_over",
+            () -> Spell.builder(SpellSchool.FIRE, Rank.SAINT).manaCost(100).cooldownTicks(600)
+                    .effect(new AreaBurstEffect(9.0, 16.0F, 8, 24.0, ParticleTypes.FLAME, SoundEvents.FIRECHARGE_USE))
+                    .build());
+
+    /** Releases a strong blast of wind over a wide area, all around the caster (no source cited by the wiki). */
+    public static final DeferredHolder<Spell, Spell> VIOLENT_STORM = SPELLS.register("violent_storm",
+            () -> Spell.builder(SpellSchool.WIND, Rank.SAINT).manaCost(90).cooldownTicks(600)
+                    .effect(new ConeBlastEffect(12.0, 180.0, 12.0F, 4.0, ParticleTypes.GUST_EMITTER_SMALL,
+                            SoundEvents.BREEZE_WIND_CHARGE_BURST.value()))
+                    .build());
+
+    /** Creates a tornado that draws in and lifts everything around (LN vol. 7 ch. 4). */
+    public static final DeferredHolder<Spell, Spell> TORNADO = SPELLS.register("tornado",
+            () -> Spell.builder(SpellSchool.WIND, Rank.SAINT).manaCost(110).cooldownTicks(900)
+                    .effect(new ZoneEffect(() -> ZoneBehaviors.vortex(0.12, 0.09, 4.0F), 6.0, 200, 24.0, SoundEvents.ELYTRA_FLYING))
+                    .build());
+
+    /** A fierce torrent of sand and wind blanketing a wide area (LN vol. 9 ch. 7). */
+    public static final DeferredHolder<Spell, Spell> SANDSTORM = SPELLS.register("sandstorm",
+            () -> Spell.builder(SpellSchool.EARTH, Rank.SAINT).manaCost(100).cooldownTicks(900)
+                    .effect(new CloudEffect(9.0F, 300, 24.0, List.of(
+                            new CloudEffect.Affliction(MobEffects.BLINDNESS, 80, 0),
+                            new CloudEffect.Affliction(MobEffects.MOVEMENT_SLOWDOWN, 80, 2),
+                            new CloudEffect.Affliction(MobEffects.WEAKNESS, 80, 1)),
+                            ParticleTypes.WHITE_ASH, SoundEvents.SAND_BREAK))
+                    .build());
+
+    /** A barrier that seals spirits: the undead inside are held fast and worn away (LN vol. 20 ch. 3). */
+    public static final DeferredHolder<Spell, Spell> SPIRIT_SEALING_BARRIER = SPELLS.register("spirit_sealing_barrier",
+            () -> Spell.builder(SpellSchool.BARRIER, Rank.SAINT).manaCost(100).cooldownTicks(900)
+                    .effect(new ZoneEffect(() -> ZoneBehaviors.spiritSeal(5.0F), 6.0, 300, 20.0, SoundEvents.BEACON_ACTIVATE))
                     .build());
 
     private MushoSpells() {

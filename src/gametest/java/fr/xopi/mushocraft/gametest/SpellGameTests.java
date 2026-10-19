@@ -186,7 +186,8 @@ public final class SpellGameTests {
         light.setPos(start);
         light.shoot(0.0, 0.0, 1.0, 0.8F, 0.0F);
         helper.getLevel().addFreshEntity(light);
-        helper.succeedWhen(() -> helper.assertTrue(before - zombie.getHealth() >= 8.9F,
+        // 3 x 3 = 9, less the zombie's natural armor (2 points): 8.856.
+        helper.succeedWhen(() -> helper.assertTrue(before - zombie.getHealth() >= 8.5F,
                 "undead take triple damage, lost " + (before - zombie.getHealth())));
     }
 

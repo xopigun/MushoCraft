@@ -2,6 +2,7 @@ package fr.xopi.mushocraft.core;
 
 import fr.xopi.mushocraft.MushoCraft;
 import fr.xopi.mushocraft.magic.entity.SpellProjectile;
+import fr.xopi.mushocraft.magic.entity.SpellZone;
 import fr.xopi.mushocraft.npc.MagicTutorEntity;
 import fr.xopi.mushocraft.npc.SwordMasterEntity;
 import fr.xopi.mushocraft.npc.TeacherEntity;
@@ -41,6 +42,16 @@ public final class MushoEntities {
                     .clientTrackingRange(6)
                     .updateInterval(5)
                     .build(MushoCraft.id("thrown_weapon").toString()));
+
+    /** Invisible place of a lasting spell (storm, tornado, sealing barrier). */
+    public static final DeferredHolder<EntityType<?>, EntityType<SpellZone>> SPELL_ZONE =
+            ENTITY_TYPES.register("spell_zone", () -> EntityType.Builder
+                    .<SpellZone>of(SpellZone::new, MobCategory.MISC)
+                    .sized(0.5F, 0.5F)
+                    .noSummon()
+                    .clientTrackingRange(4)
+                    .updateInterval(20)
+                    .build(MushoCraft.id("spell_zone").toString()));
 
     public static final DeferredHolder<EntityType<?>, EntityType<SwordMasterEntity>> SWORD_MASTER =
             ENTITY_TYPES.register("sword_master", () -> EntityType.Builder

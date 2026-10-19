@@ -226,13 +226,45 @@ public final class ShowcaseDirector {
                 });
             }),
             new Step(995, () -> shoot("22_earth_fortress")),
-            new Step(1000, () -> onServer(player -> {
+            new Step(1000, () -> {
+                Minecraft.getInstance().options.setCameraType(CameraType.THIRD_PERSON_BACK);
+                onServer(player -> {
+                    player.setYRot(0.0F);
+                    player.setYHeadRot(0.0F);
+                    player.setXRot(25.0F);
+                    ManaService.setTrained(player, 2000.0);
+                    ManaService.refill(player);
+                    CooldownService.clear(player);
+                    List.of(MushoSpells.CUMULONIMBUS, MushoSpells.TORNADO, MushoSpells.FLASH_OVER)
+                            .forEach(spell -> MagicService.learn(player, spell.get()));
+                    masterAll(player);
+                    MoveService.setSlot(player, 3, Optional.of(MushoSpells.CUMULONIMBUS.get().ref()));
+                    MoveService.setSlot(player, 4, Optional.of(MushoSpells.TORNADO.get().ref()));
+                    MoveService.setSlot(player, 5, Optional.of(MushoSpells.FLASH_OVER.get().ref()));
+                    // One spell left half-practised: its mastery gauge shows under its slot.
+                    MoveService.setSlot(player, 8, Optional.of(MushoSpells.WATER_ARROW.get().ref()));
+                    MasteryService.setRepetitions(player, MushoSpells.WATER_ARROW.get().ref(), 20.0);
+                });
+            }),
+            new Step(1005, () -> onServer(player -> logUse(player, 3))),
+            new Step(1095, () -> shoot("24_cumulonimbus")),
+            new Step(1110, () -> onServer(player -> {
+                ManaService.refill(player);
+                logUse(player, 4);
+            })),
+            new Step(1200, () -> shoot("25_tornado")),
+            new Step(1210, () -> onServer(player -> {
+                ManaService.refill(player);
+                logUse(player, 5);
+            })),
+            new Step(1283, () -> shoot("26_flash_over")),
+            new Step(1300, () -> onServer(player -> {
                 setBattleMode(player, false);
                 LifeService.rebirth(player);
             })),
-            new Step(1030, () -> Minecraft.getInstance().options.setCameraType(CameraType.THIRD_PERSON_BACK)),
-            new Step(1040, () -> shoot("17_baby_third_person")),
-            new Step(1060, () -> Minecraft.getInstance().stop())
+            new Step(1330, () -> Minecraft.getInstance().options.setCameraType(CameraType.THIRD_PERSON_BACK)),
+            new Step(1340, () -> shoot("17_baby_third_person")),
+            new Step(1360, () -> Minecraft.getInstance().stop())
     );
 
     private static final int FLIGHT_TICKS_BEFORE_SHOT = 3;
