@@ -21,6 +21,10 @@ public final class MushoDamageTypes {
     public static final TagKey<DamageType> BLOCKED_BY_MAGIC_SHIELD =
             TagKey.create(Registries.DAMAGE_TYPE, MushoCraft.id("blocked_by_magic_shield"));
 
+    /** Damage that Physical Shield weakens: blows and missiles (wiki, Magic Spells). */
+    public static final TagKey<DamageType> BLOCKED_BY_PHYSICAL_SHIELD =
+            TagKey.create(Registries.DAMAGE_TYPE, MushoCraft.id("blocked_by_physical_shield"));
+
     private MushoDamageTypes() {
     }
 

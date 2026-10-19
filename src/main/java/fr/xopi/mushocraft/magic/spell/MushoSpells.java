@@ -7,11 +7,15 @@ import fr.xopi.mushocraft.core.MushoMobEffects;
 import fr.xopi.mushocraft.core.MushoRegistries;
 import fr.xopi.mushocraft.magic.spell.effect.ConjureItemEffect;
 import fr.xopi.mushocraft.magic.spell.effect.CureEffect;
+import fr.xopi.mushocraft.magic.spell.effect.EruptionEffect;
+import fr.xopi.mushocraft.magic.spell.effect.ExplosionEffect;
+import fr.xopi.mushocraft.magic.spell.effect.FallingProjectileEffect;
 import fr.xopi.mushocraft.magic.spell.effect.HealEffect;
 import fr.xopi.mushocraft.magic.spell.effect.ProjectileEffect;
 import fr.xopi.mushocraft.magic.spell.effect.ProjectileProfile;
 import fr.xopi.mushocraft.magic.spell.effect.SelfStatusEffect;
 import fr.xopi.mushocraft.magic.spell.effect.WallEffect;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.effect.MobEffects;
 import net.neoforged.bus.api.IEventBus;
@@ -112,6 +116,92 @@ public final class MushoSpells {
             () -> Spell.builder(SpellSchool.DIVINE_STRIKE, SpellRank.BEGINNER).manaCost(6).cooldownTicks(30)
                     .effect(new ProjectileEffect(ProjectileProfile.of(SpellElement.LIGHT, 3.0F)
                             .speed(2.0F).size(0.5F).undeadMultiplier(3.0F).build(), SoundEvents.AMETHYST_BLOCK_CHIME))
+                    .build());
+
+    // ---- Intermediate (school must have reached Intermediate to study them) ----
+
+    /** Launches forth a large concentration of water (LN vol. 4 ch. 4). */
+    public static final DeferredHolder<Spell, Spell> WATER_CANNON = SPELLS.register("water_cannon",
+            () -> Spell.builder(SpellSchool.WATER, SpellRank.INTERMEDIATE).manaCost(15).cooldownTicks(60)
+                    .effect(new ProjectileEffect(ProjectileProfile.of(SpellElement.WATER, 8.0F)
+                            .speed(1.6F).gravity(0.01F).size(1.2F).knockback(2.0F).build(), SoundEvents.GENERIC_SPLASH))
+                    .build());
+
+    /** A shaft of ice springing up from the ground (LN vol. 1 ch. 8). */
+    public static final DeferredHolder<Spell, Spell> ICE_PILLAR = SPELLS.register("ice_pillar",
+            () -> Spell.builder(SpellSchool.WATER, SpellRank.INTERMEDIATE).manaCost(15).cooldownTicks(80)
+                    .effect(new EruptionEffect(MushoBlocks.CONJURED_ICE, 3, 7.0F, 0.8, 0, 16.0,
+                            ParticleTypes.SNOWFLAKE, SoundEvents.GLASS_PLACE))
+                    .build());
+
+    /** Materializes a pillar of fire (WN ch. 184). */
+    public static final DeferredHolder<Spell, Spell> FLAME_PILLAR = SPELLS.register("flame_pillar",
+            () -> Spell.builder(SpellSchool.FIRE, SpellRank.INTERMEDIATE).manaCost(16).cooldownTicks(80)
+                    .effect(new EruptionEffect(null, 4, 7.0F, 0.4, 5, 16.0, ParticleTypes.FLAME, SoundEvents.BLAZE_SHOOT))
+                    .build());
+
+    /** Creates an explosion (no source cited by the wiki). Never breaks blocks. */
+    public static final DeferredHolder<Spell, Spell> EXPLOSION = SPELLS.register("explosion",
+            () -> Spell.builder(SpellSchool.FIRE, SpellRank.INTERMEDIATE).manaCost(20).cooldownTicks(100)
+                    .effect(new ExplosionEffect(2.5F, 20.0))
+                    .build());
+
+    /** Launches a large fireball about two meters across (LN vol. 7 ch. 2). */
+    public static final DeferredHolder<Spell, Spell> EX_FLAME = SPELLS.register("ex_flame",
+            () -> Spell.builder(SpellSchool.FIRE, SpellRank.INTERMEDIATE).manaCost(22).cooldownTicks(120)
+                    .effect(new ProjectileEffect(ProjectileProfile.of(SpellElement.FIRE, 8.0F)
+                            .speed(1.0F).size(2.0F).ignite(5).explode(1.5F).build(), SoundEvents.BLAZE_SHOOT))
+                    .build());
+
+    /** Launches a slicing wind blade that throws the target away (LN vol. 2 ch. 2). */
+    public static final DeferredHolder<Spell, Spell> SONIC_BOOM = SPELLS.register("sonic_boom",
+            () -> Spell.builder(SpellSchool.WIND, SpellRank.INTERMEDIATE).manaCost(12).cooldownTicks(60)
+                    .effect(new ProjectileEffect(ProjectileProfile.of(SpellElement.WIND, 5.0F)
+                            .speed(2.2F).size(0.6F).knockback(2.5F).build(), SoundEvents.BREEZE_SHOOT))
+                    .build());
+
+    /** Shoots a gust of cutting wind (no source cited by the wiki). */
+    public static final DeferredHolder<Spell, Spell> WIND_SLICE = SPELLS.register("wind_slice",
+            () -> Spell.builder(SpellSchool.WIND, SpellRank.INTERMEDIATE).manaCost(12).cooldownTicks(40)
+                    .effect(new ProjectileEffect(ProjectileProfile.of(SpellElement.WIND, 7.0F)
+                            .speed(2.6F).size(0.4F).build(), SoundEvents.BREEZE_SHOOT))
+                    .build());
+
+    /** Rudeus' signature: a bullet-shaped rock fired at high speed (LN vol. 6). */
+    public static final DeferredHolder<Spell, Spell> STONE_CANNON = SPELLS.register("stone_cannon",
+            () -> Spell.builder(SpellSchool.EARTH, SpellRank.INTERMEDIATE).manaCost(18).cooldownTicks(60)
+                    .effect(new ProjectileEffect(ProjectileProfile.of(SpellElement.EARTH, 12.0F)
+                            .speed(3.2F).gravity(0.01F).size(0.5F).knockback(1.0F).build(), SoundEvents.STONE_PLACE))
+                    .build());
+
+    /** Summons a boulder above the target to drop on it (LN vol. 12 ch. 8). */
+    public static final DeferredHolder<Spell, Spell> EARTH_PILLAR = SPELLS.register("earth_pillar",
+            () -> Spell.builder(SpellSchool.EARTH, SpellRank.INTERMEDIATE).manaCost(16).cooldownTicks(80)
+                    .effect(new FallingProjectileEffect(ProjectileProfile.of(SpellElement.EARTH, 10.0F)
+                            .speed(0.6F).gravity(0.08F).size(1.4F).knockback(0.6F).build(), 8.0, 16.0,
+                            SoundEvents.STONE_PLACE))
+                    .build());
+
+    /** An earthen spike rising from the ground (LN vol. 6 ch. 3). */
+    public static final DeferredHolder<Spell, Spell> EARTH_LANCE = SPELLS.register("earth_lance",
+            () -> Spell.builder(SpellSchool.EARTH, SpellRank.INTERMEDIATE).manaCost(15).cooldownTicks(80)
+                    .effect(new EruptionEffect(MushoBlocks.CONJURED_EARTH, 3, 8.0F, 1.0, 0, 16.0,
+                            ParticleTypes.ASH, SoundEvents.ROOTED_DIRT_PLACE))
+                    .build());
+
+    /** Heals wounds as severe as broken bones (LN vol. 2 ch. 2). */
+    public static final DeferredHolder<Spell, Spell> X_HEALING = SPELLS.register("x_healing",
+            () -> Spell.builder(SpellSchool.HEALING, SpellRank.INTERMEDIATE).manaCost(18).cooldownTicks(100)
+                    .effect(new HealEffect(10.0F, 5.0))
+                    .build());
+
+    /**
+     * Barrier that blocks physical attacks (LN vol. 4 ch. 6). Above Beginner, only the Holy Knights of Milis may
+     * teach barrier magic (WN ch. 69): no book teaches it, a teacher will.
+     */
+    public static final DeferredHolder<Spell, Spell> PHYSICAL_SHIELD = SPELLS.register("physical_shield",
+            () -> Spell.builder(SpellSchool.BARRIER, SpellRank.INTERMEDIATE).manaCost(20).cooldownTicks(400)
+                    .effect(new SelfStatusEffect(MushoMobEffects.PHYSICAL_SHIELD, 300, 0, SoundEvents.ANVIL_PLACE))
                     .build());
 
     private MushoSpells() {

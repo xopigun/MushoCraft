@@ -43,6 +43,19 @@ public final class MushoItems {
             () -> new SpellBookItem(new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON), () -> List.of(
                     MushoSpells.MAGIC_SHIELD.get(), MushoSpells.EXORCIST_LIGHT.get())));
 
+    /** Intermediate attack magic of the four elements. Each spell needs its school at Intermediate. */
+    public static final DeferredItem<SpellBookItem> INTERMEDIATE_ATTACK_TREATISE = ITEMS.register("intermediate_attack_treatise",
+            () -> new SpellBookItem(new Item.Properties().stacksTo(1).rarity(Rarity.RARE), () -> List.of(
+                    MushoSpells.WATER_CANNON.get(), MushoSpells.ICE_PILLAR.get(), MushoSpells.FLAME_PILLAR.get(),
+                    MushoSpells.EXPLOSION.get(), MushoSpells.EX_FLAME.get(), MushoSpells.SONIC_BOOM.get(),
+                    MushoSpells.WIND_SLICE.get(), MushoSpells.STONE_CANNON.get(), MushoSpells.EARTH_PILLAR.get(),
+                    MushoSpells.EARTH_LANCE.get())));
+
+    /** Intermediate healing. */
+    public static final DeferredItem<SpellBookItem> INTERMEDIATE_HEALING_TREATISE = ITEMS.register("intermediate_healing_treatise",
+            () -> new SpellBookItem(new Item.Properties().stacksTo(1).rarity(Rarity.RARE), () -> List.of(
+                    MushoSpells.X_HEALING.get())));
+
     private MushoItems() {
     }
 

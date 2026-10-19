@@ -30,10 +30,11 @@ Dernière mise à jour : 19/10/2026.
 | M8 | Incantation silencieuse en 4 temps | Forme, puis ajout de puissance (taille), puis vitesse, puis relâchement. Apprentissage lié à la pratique jeune. | wiki *Magic* § Silent Spell-casting | à relever | conforme |
 | M9 | Cercles magiques | Puissance fixe, le plus rapide à utiliser ; méthode principale de l'invocation. Inventés par Kirisis Calisis. | LN vol. 1 ch. 3 ; LN vol. 10 ch. 11 | à relever | conforme |
 | M10 | 7 rangs de sort | Beginner, Intermediate, Advanced, Saint, King, Emperor, God. Le rang suit en général le mana nécessaire. | wiki *Magic* § Magic Rank Title | à relever | conforme |
-| M11 | Titre de mage | Le titre d'un mage = le sort le plus avancé qu'il sait lancer. | wiki *Magic* § Magic Rank Title | à relever | conforme |
+| M11 | Titre de mage | Le titre d'un mage = le sort le plus avancé qu'il sait lancer. | wiki *Magic* § Magic Rank Title | à relever | conforme (`MagicService.title`) |
+| M11b | Progression par école | Pas de règle chiffrée dans le roman ; les mages ont un rang par école (ex. Rudeus Saint de l'eau). | wiki *Magic* | à relever | jeu (expérience par école, `MagicProficiency`) |
 | M12 | Pas de contrainte de rang sur le mana | Décision de design : la capacité est un nombre, pas un rang. | — | — | jeu |
 | M13 | Magie mixte | Enchaîner des sorts d'écoles différentes ; réservée à la magie d'attaque. | wiki *Magic* § Mixed Magic | à relever | conforme |
-| M14 | Barrière et frappe divine bridées | Milis contrôle l'enseignement au-delà du rang Débutant ; Ranoa n'enseigne que le rang Débutant. | WN ch. 69 | à relever | conforme (prévu pour l'apprentissage) |
+| M14 | Barrière et frappe divine bridées | Milis contrôle l'enseignement au-delà du rang Débutant ; Ranoa n'enseigne que le rang Débutant. | WN ch. 69 | à relever | conforme : seuls les sorts Débutants de ces écoles sont dans un livre ; *Physical Shield* attend un chevalier de Milis |
 | M15 | Effets du soin par rang | Débutant : petites plaies. Intermédiaire : blessures graves. Avancé : rattache un membre tout juste tranché. Saint : restaure si les os sont là. Roi : régénère. Dieu : ressuscite un mort récent. | manga *Roxy Gets Serious* vol. 8 ch. 39 ; LN vol. 17 ch. 10 ; Q&A de l'auteur | à relever | à vérifier |
 | M16 | Détoxification | La plupart des maux se soignent au rang Débutant ; les cas graves demandent un rang plus élevé. | LN vol. 1 ch. 8 (selon le wiki) | à relever | conforme |
 | M17 | Foudre rangée dans l'eau | Du vivant de Rudeus, la foudre dérive de la magie de l'eau (*Lightning* vient de *Cumulonimbus*). | LN vol. 13 ch. 6 | à relever | conforme |

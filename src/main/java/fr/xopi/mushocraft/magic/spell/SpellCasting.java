@@ -93,10 +93,12 @@ public final class SpellCasting {
         if (!ManaService.trySpend(caster, spell.manaCost())) {
             return MoveUseResult.fail("message.mushocraft.magic.not_enough_mana", spell.displayName());
         }
-        if (!spell.effect().cast(new SpellContext(caster, spell, 1.0))) {
+        double power = MagicService.proficiency(caster).power(spell);
+        if (!spell.effect().cast(new SpellContext(caster, spell, power))) {
             ManaService.restore(caster, spell.manaCost());
             return MoveUseResult.fail("message.mushocraft.magic.fizzled", spell.displayName());
         }
+        MagicService.gainExperience(caster, spell.school(), spell.manaCost());
         CooldownService.start(caster, spell.cooldownKey(), spell.cooldownTicks());
         return MoveUseResult.SUCCESS;
     }

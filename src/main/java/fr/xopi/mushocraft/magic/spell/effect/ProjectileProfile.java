@@ -14,6 +14,7 @@ import fr.xopi.mushocraft.magic.spell.SpellElement;
  * @param igniteSeconds  seconds the target burns (fire)
  * @param slowTicks      ticks of slowness on hit (ice)
  * @param undeadMultiplier damage multiplier against undead (divine strike)
+ * @param explosionRadius  radius of the blast on impact, 0 for none; never breaks blocks
  */
 public record ProjectileProfile(
         SpellElement element,
@@ -24,7 +25,8 @@ public record ProjectileProfile(
         float knockback,
         int igniteSeconds,
         int slowTicks,
-        float undeadMultiplier
+        float undeadMultiplier,
+        float explosionRadius
 ) {
     public static final Codec<ProjectileProfile> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             SpellElement.CODEC.fieldOf("element").forGetter(ProjectileProfile::element),
@@ -35,7 +37,8 @@ public record ProjectileProfile(
             Codec.FLOAT.fieldOf("knockback").forGetter(ProjectileProfile::knockback),
             Codec.INT.fieldOf("ignite_seconds").forGetter(ProjectileProfile::igniteSeconds),
             Codec.INT.fieldOf("slow_ticks").forGetter(ProjectileProfile::slowTicks),
-            Codec.FLOAT.fieldOf("undead_multiplier").forGetter(ProjectileProfile::undeadMultiplier)
+            Codec.FLOAT.fieldOf("undead_multiplier").forGetter(ProjectileProfile::undeadMultiplier),
+            Codec.FLOAT.optionalFieldOf("explosion_radius", 0.0F).forGetter(ProjectileProfile::explosionRadius)
     ).apply(instance, ProjectileProfile::new));
 
     public static Builder of(SpellElement element, float damage) {
@@ -44,7 +47,7 @@ public record ProjectileProfile(
 
     public ProjectileProfile scaled(double power) {
         return new ProjectileProfile(element, (float) (damage * power), speed, gravity, size, knockback,
-                igniteSeconds, slowTicks, undeadMultiplier);
+                igniteSeconds, slowTicks, undeadMultiplier, explosionRadius);
     }
 
     public static final class Builder {
@@ -57,6 +60,7 @@ public record ProjectileProfile(
         private int igniteSeconds;
         private int slowTicks;
         private float undeadMultiplier = 1.0F;
+        private float explosionRadius;
 
         private Builder(SpellElement element, float damage) {
             this.element = element;
@@ -98,9 +102,14 @@ public record ProjectileProfile(
             return this;
         }
 
+        public Builder explode(float radius) {
+            this.explosionRadius = radius;
+            return this;
+        }
+
         public ProjectileProfile build() {
             return new ProjectileProfile(element, damage, speed, gravity, size, knockback, igniteSeconds, slowTicks,
-                    undeadMultiplier);
+                    undeadMultiplier, explosionRadius);
         }
     }
 }

@@ -26,6 +26,7 @@ import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 /**
@@ -79,14 +80,43 @@ public final class ShowcaseDirector {
             new Step(265, () -> Minecraft.getInstance().options.setCameraType(CameraType.THIRD_PERSON_BACK)),
             new Step(270, () -> onServer(player -> MoveService.use(player, 3))),
             new Step(300, () -> shoot("06_water_shield")),
-            new Step(310, () -> onServer(player -> {
+            new Step(305, () -> {
+                Minecraft.getInstance().options.setCameraType(CameraType.FIRST_PERSON);
+                onServer(player -> {
+                    List.of(MushoSpells.ICE_PILLAR, MushoSpells.EX_FLAME, MushoSpells.EARTH_LANCE, MushoSpells.EXPLOSION)
+                            .forEach(spell -> MagicService.learn(player, spell.get()));
+                    MoveService.setSlot(player, 0, Optional.of(MushoSpells.ICE_PILLAR.get().ref()));
+                    MoveService.setSlot(player, 1, Optional.of(MushoSpells.EX_FLAME.get().ref()));
+                    MoveService.setSlot(player, 2, Optional.of(MushoSpells.EARTH_LANCE.get().ref()));
+                    MoveService.setSlot(player, 3, Optional.of(MushoSpells.EXPLOSION.get().ref()));
+                    player.teleportTo(player.serverLevel(), player.getX() + 4, player.getY(), player.getZ(), 0.0F, 25.0F);
+                });
+            }),
+            new Step(315, () -> onServer(player -> MoveService.use(player, 0))),
+            new Step(350, () -> shoot("07_ice_pillar")),
+            new Step(360, () -> onServer(player -> {
+                player.setXRot(-5.0F);
+                MoveService.use(player, 1);
+            })),
+            new Step(361, () -> shootWhenProjectileFlies("08_ex_flame_flight")),
+            new Step(420, () -> onServer(player -> {
+                player.setXRot(25.0F);
+                MoveService.use(player, 2);
+            })),
+            new Step(458, () -> shoot("09_earth_lance")),
+            new Step(470, () -> onServer(player -> MoveService.use(player, 3))),
+            new Step(507, () -> shoot("10_explosion")),
+            new Step(520, () -> onServer(player -> {
                 setBattleMode(player, false);
                 LifeService.rebirth(player);
             })),
-            new Step(340, () -> shoot("07_baby_third_person")),
-            new Step(350, () -> Minecraft.getInstance().options.setCameraType(CameraType.FIRST_PERSON)),
-            new Step(360, () -> shoot("08_baby_hud")),
-            new Step(380, () -> Minecraft.getInstance().stop())
+            new Step(550, () -> {
+                Minecraft.getInstance().options.setCameraType(CameraType.THIRD_PERSON_BACK);
+            }),
+            new Step(560, () -> shoot("11_baby_third_person")),
+            new Step(570, () -> Minecraft.getInstance().options.setCameraType(CameraType.FIRST_PERSON)),
+            new Step(580, () -> shoot("12_baby_hud")),
+            new Step(600, () -> Minecraft.getInstance().stop())
     );
 
     private static final int FLIGHT_TICKS_BEFORE_SHOT = 3;

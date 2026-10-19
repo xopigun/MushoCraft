@@ -33,9 +33,21 @@ public class SpellBookItem extends Item {
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (player instanceof ServerPlayer serverPlayer) {
-            long learned = spells.get().stream().filter(spell -> MagicService.learn(serverPlayer, spell)).count();
-            if (learned == 0) {
+            boolean learnedAny = false;
+            boolean allKnown = true;
+            for (Spell spell : spells.get()) {
+                MagicService.StudyResult result = MagicService.study(serverPlayer, spell);
+                learnedAny |= result == MagicService.StudyResult.LEARNED;
+                allKnown &= result == MagicService.StudyResult.ALREADY_KNOWN;
+                if (result == MagicService.StudyResult.NOT_READY) {
+                    serverPlayer.sendSystemMessage(Component.translatable("message.mushocraft.magic.not_ready",
+                            spell.displayName(), spell.school().displayName(), spell.rank().displayName()));
+                }
+            }
+            if (allKnown) {
                 serverPlayer.displayClientMessage(Component.translatable("message.mushocraft.magic.book_known"), true);
+            } else if (!learnedAny) {
+                serverPlayer.displayClientMessage(Component.translatable("message.mushocraft.magic.book_too_hard"), true);
             }
             level.playSound(null, player.blockPosition(), SoundEvents.BOOK_PAGE_TURN, SoundSource.PLAYERS, 1.0F, 1.0F);
         }

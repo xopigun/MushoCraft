@@ -118,6 +118,11 @@ public class SpellProjectile extends ThrowableProjectile {
     protected void onHit(HitResult result) {
         super.onHit(result);
         if (level() instanceof ServerLevel server) {
+            if (profile.explosionRadius() > 0.0F) {
+                server.explode(this, MushoDamageTypes.spell(server, this, getOwner()), null,
+                        getX(), getY(), getZ(), profile.explosionRadius(), false,
+                        Level.ExplosionInteraction.NONE);
+            }
             server.sendParticles(element().trail(), getX(), getY(), getZ(), 12, 0.2, 0.2, 0.2, 0.05);
             server.playSound(null, getX(), getY(), getZ(), impactSound(), SoundSource.PLAYERS, 0.7F, 1.2F);
             discard();

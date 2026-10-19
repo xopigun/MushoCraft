@@ -22,7 +22,8 @@ public final class ProjectileEffect implements SpellEffect {
     @Override
     public boolean cast(SpellContext context) {
         Vec3 look = context.look();
-        Vec3 start = context.eyes().add(look.scale(0.6)).subtract(0.0, 0.2, 0.0);
+        // Big masses (Ex-Flame) take shape further ahead, so they do not swallow the caster's view.
+        Vec3 start = context.eyes().add(look.scale(0.6 + profile.size() * 0.6)).subtract(0.0, 0.2, 0.0);
         SpellProjectile projectile = SpellProjectile.create(context.level(), context.caster(), profile.scaled(context.power()));
         projectile.setPos(start);
         projectile.shoot(look.x, look.y, look.z, profile.speed(), 0.5F);

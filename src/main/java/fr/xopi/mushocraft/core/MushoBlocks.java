@@ -30,6 +30,29 @@ public final class MushoBlocks {
                     .isSuffocating((state, level, pos) -> false),
                     ParticleTypes.SPLASH));
 
+    /** Shaft of ice raised by Ice Pillar. */
+    public static final DeferredBlock<ConjuredBlock> CONJURED_ICE = BLOCKS.register("conjured_ice",
+            () -> new ConjuredBlock(BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.ICE)
+                    .strength(0.5F)
+                    .friction(0.98F)
+                    .sound(SoundType.GLASS)
+                    .noOcclusion()
+                    .noLootTable()
+                    .pushReaction(PushReaction.DESTROY)
+                    .isViewBlocking((state, level, pos) -> false),
+                    ParticleTypes.SNOWFLAKE));
+
+    /** Earthen spike raised by Earth Lance. */
+    public static final DeferredBlock<ConjuredBlock> CONJURED_EARTH = BLOCKS.register("conjured_earth",
+            () -> new ConjuredBlock(BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.DIRT)
+                    .strength(0.8F)
+                    .sound(SoundType.ROOTED_DIRT)
+                    .noLootTable()
+                    .pushReaction(PushReaction.DESTROY),
+                    ParticleTypes.ASH));
+
     private MushoBlocks() {
     }
 

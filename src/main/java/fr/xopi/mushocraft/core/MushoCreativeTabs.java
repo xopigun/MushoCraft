@@ -22,6 +22,8 @@ public final class MushoCreativeTabs {
                         output.accept(MushoItems.MAGIC_TEXTBOOK.get());
                         output.accept(MushoItems.HEALING_PRIMER.get());
                         output.accept(MushoItems.MILIS_PRAYER_BOOK.get());
+                        output.accept(MushoItems.INTERMEDIATE_ATTACK_TREATISE.get());
+                        output.accept(MushoItems.INTERMEDIATE_HEALING_TREATISE.get());
                     })
                     .build());
 
