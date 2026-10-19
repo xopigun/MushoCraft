@@ -78,10 +78,10 @@ public class SpellPillarRenderer extends EntityRenderer<SpellPillar> {
         }
         float scale = pillar.height() / pillar.kind().modelHeight();
         poseStack.pushPose();
-        // lean first, then the model's own yaw is applied by the GeckoLib renderer
+        // GeckoLib only turns living entities by their yaw (a pillar always gets 0), so the yaw is applied here: a wall's
+        // model then runs along the same line as its hidden blocks, whichever way it was raised; then the lean
         poseStack.mulPose(Axis.YP.rotationDegrees(-pillar.getYRot()));
         poseStack.mulPose(Axis.XP.rotationDegrees(pillar.getXRot()));
-        poseStack.mulPose(Axis.YP.rotationDegrees(pillar.getYRot()));
         poseStack.scale(scale, scale, scale);
         geo.render(pillar, pillar.getYRot(), partialTicks, poseStack, buffers, light);
         poseStack.popPose();

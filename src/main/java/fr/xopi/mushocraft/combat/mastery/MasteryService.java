@@ -47,7 +47,8 @@ public final class MasteryService {
      * @return true if the move is botched
      */
     public static boolean botches(ServerPlayer player, MoveRef move) {
-        if (player.getRandom().nextDouble() >= curve(move).failureChance(repetitions(player, move))) {
+        // in creative mode a move never fails (decision of Xopi, 19/10): one builds and tries things out there
+        if (player.isCreative() || player.getRandom().nextDouble() >= curve(move).failureChance(repetitions(player, move))) {
             return false;
         }
         practise(player, move, MasteryRules.FAILED_ATTEMPT);

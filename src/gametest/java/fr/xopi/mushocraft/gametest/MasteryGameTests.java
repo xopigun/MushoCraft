@@ -11,6 +11,7 @@ import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.level.GameType;
 import net.neoforged.neoforge.gametest.GameTestHolder;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
@@ -44,6 +45,18 @@ public final class MasteryGameTests {
         helper.assertTrue(botched >= 3 && botched <= 30, "some attempts fail (" + botched + "/40)");
         TestPlayers.expectClose(helper, MasteryService.repetitions(player, move), botched * MasteryRules.FAILED_ATTEMPT,
                 "each failure still counts for half a repetition");
+        TestPlayers.leave(player);
+        helper.succeed();
+    }
+
+    @GameTest(template = EMPTY)
+    public static void nothingFailsInCreativeMode(GameTestHelper helper) {
+        ServerPlayer player = TestPlayers.join(helper);
+        player.setGameMode(GameType.CREATIVE);
+        MoveRef move = MushoSpells.DISTURB_MAGIC.get().ref();
+        for (int attempt = 0; attempt < 100; attempt++) {
+            helper.assertFalse(MasteryService.botches(player, move), "in creative mode even a fresh, hard move succeeds");
+        }
         TestPlayers.leave(player);
         helper.succeed();
     }

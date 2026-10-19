@@ -1,6 +1,7 @@
 package fr.xopi.mushocraft.client.hud;
 
 import fr.xopi.mushocraft.client.ClientMoveState;
+import fr.xopi.mushocraft.client.screen.MoveIcons;
 import fr.xopi.mushocraft.combat.move.Move;
 import fr.xopi.mushocraft.combat.move.MoveLoadout;
 import fr.xopi.mushocraft.combat.move.MoveRef;
@@ -51,7 +52,7 @@ public final class MoveBarLayer implements LayeredDraw.Layer {
     }
 
     private static void drawMove(GuiGraphics graphics, Move move, int x, int y) {
-        graphics.blit(move.icon(), x, y, 0, 0, 16, 16, 16, 16);
+        MoveIcons.draw(graphics, move.icon(), x, y);
         drawMastery(graphics, move, x, y);
         float fraction = ClientMoveState.cooldownFraction(move.cooldownKey());
         if (fraction > 0.0F) {

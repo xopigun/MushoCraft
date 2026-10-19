@@ -72,6 +72,17 @@ public class SpellbookScreen extends Screen {
         return false;
     }
 
+    /** How many categories (ribbons) the book has. */
+    public int categoryCount() {
+        return categories.size();
+    }
+
+    /** Opens the book at a category, first spread (as clicking its ribbon does). */
+    public void openCategory(int index) {
+        category = Math.floorMod(index, Math.max(1, categories.size()));
+        spread = 0;
+    }
+
     private int bookLeft() {
         return (width - BOOK_W) / 2;
     }
@@ -159,7 +170,7 @@ public class SpellbookScreen extends Screen {
         }
 
         if (dragging && selected.isPresent()) {
-            selected.flatMap(MoveRef::resolve).ifPresent(move -> graphics.blit(move.icon(), mouseX - 8, mouseY - 8, 0, 0, 16, 16, 16, 16));
+            selected.flatMap(MoveRef::resolve).ifPresent(move -> MoveIcons.draw(graphics, move.icon(), mouseX - 8, mouseY - 8));
         } else if (hovered.isPresent()) {
             graphics.renderComponentTooltip(font, entryTooltip(hovered.get()), mouseX, mouseY);
         } else {
@@ -179,7 +190,7 @@ public class SpellbookScreen extends Screen {
             graphics.pose().pushPose();
             graphics.pose().translate(x + 6, y + 3, 0);
             graphics.pose().scale(0.625F, 0.625F, 1.0F);
-            graphics.blit(categories.get(i).icon(), 0, 0, 0, 0, 16, 16, 16, 16);
+            MoveIcons.draw(graphics, categories.get(i).icon(), 0, 0);
             graphics.pose().popPose();
             if (!active && inside(mouseX, mouseY, x + 3, y, 16, 13)) {
                 graphics.fill(x + 3, y, x + 19, y + 13, HOVER);
@@ -228,7 +239,7 @@ public class SpellbookScreen extends Screen {
         boolean known = isKnown(move);
         boolean isSelected = selected.equals(Optional.of(move.ref()));
         graphics.blit(TEXTURE, x, y, isSelected ? 134 : 116, 192, 18, 18, TEX, TEX_H);
-        graphics.blit(move.icon(), x + 1, y + 1, 0, 0, 16, 16, 16, 16);
+        MoveIcons.draw(graphics, move.icon(), x + 1, y + 1);
         if (!known) {
             graphics.fill(x + 1, y + 1, x + 17, y + 17, 0xB0E2D4B0);
             graphics.blit(TEXTURE, x + 5, y + 4, 152, 191, 8, 11, TEX, TEX_H);
@@ -267,7 +278,7 @@ public class SpellbookScreen extends Screen {
             int x = barLeft() + 3 + slot * 20;
             int y = barTop() + 3;
             Optional<Move> move = loadout.get(slot).flatMap(MoveRef::resolve);
-            move.ifPresent(m -> graphics.blit(m.icon(), x, y, 0, 0, 16, 16, 16, 16));
+            move.ifPresent(m -> MoveIcons.draw(graphics, m.icon(), x, y));
             graphics.drawString(font, String.valueOf(slot + 1), x + 11, y + 9, 0xE0E0E0, true);
             if (inside(mouseX, mouseY, x, y, 16, 16)) {
                 graphics.fill(x, y, x + 16, y + 16, HOVER);

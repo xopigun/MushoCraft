@@ -12,7 +12,11 @@ import fr.xopi.mushocraft.magic.entity.SpellZone;
 import fr.xopi.mushocraft.magic.entity.WaterSheet;
 import fr.xopi.mushocraft.magic.fx.SpellFx;
 import fr.xopi.mushocraft.magic.mana.ManaService;
+import fr.xopi.mushocraft.client.screen.SpellbookScreen;
+import fr.xopi.mushocraft.combat.move.MoveService;
 import fr.xopi.mushocraft.magic.spell.ChantBroadcast;
+import fr.xopi.mushocraft.magic.spell.MagicService;
+import fr.xopi.mushocraft.sword.SwordService;
 import fr.xopi.mushocraft.magic.spell.MushoSpells;
 import fr.xopi.mushocraft.magic.spell.Spell;
 import fr.xopi.mushocraft.magic.spell.SpellContext;
@@ -38,6 +42,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 /**
@@ -96,7 +101,7 @@ public final class GalleryDirector {
         int index = elapsed / TICKS_PER_SPELL;
         int phase = elapsed % TICKS_PER_SPELL;
         if (index >= exhibits.size()) {
-            minecraft.stop();
+            showBook(minecraft, elapsed - exhibits.size() * TICKS_PER_SPELL);
             return;
         }
         Exhibit exhibit = exhibits.get(index);
@@ -117,6 +122,44 @@ public final class GalleryDirector {
         }
     }
 
+    /** Casts a spell as if facing the given yaw, without turning the camera. */
+    private static void castFacing(ServerPlayer player, Spell spell, float yaw) {
+        player.setYRot(yaw);
+        player.setYHeadRot(yaw);
+        spell.effect().cast(new SpellContext(player, spell, 1.0));
+    }
+
+    /**
+     * The close of the round: every move learnt, a few on the move bar, the spellbook opened at each of its ribbons in
+     * turn, one screenshot each (gallery_book_NN.png), to see the move icons as a player does.
+     */
+    private static void showBook(Minecraft minecraft, int tick) {
+        if (tick == 0) {
+            onServer(player -> {
+                MushoRegistries.SPELL.stream().forEach(spell -> MagicService.learn(player, spell));
+                MushoRegistries.TECHNIQUE.stream().forEach(technique -> SwordService.learn(player, technique));
+                List<Spell> some = MushoRegistries.SPELL.stream().limit(9).toList();
+                for (int slot = 0; slot < some.size(); slot++) {
+                    MoveService.setSlot(player, slot, Optional.of(some.get(slot).ref()));
+                }
+            });
+        } else if (tick == 10) {
+            minecraft.options.hideGui = false;
+            minecraft.setScreen(new SpellbookScreen());
+        } else if (tick >= 20 && minecraft.screen instanceof SpellbookScreen book) {
+            int page = (tick - 20) / 8;
+            if (page >= book.categoryCount()) {
+                minecraft.stop();
+            } else if ((tick - 20) % 8 == 0) {
+                book.openCategory(page);
+            } else if ((tick - 20) % 8 == 4) {
+                shoot(minecraft, String.format(Locale.ROOT, "gallery_book_%02d", page));
+            }
+        } else if (tick > 60) {
+            minecraft.stop();
+        }
+    }
+
     /** Something to show: every spell, in order, then the effects no spell shows. */
     private record Exhibit(String name, Consumer<ServerPlayer> show) {
     }
@@ -130,6 +173,12 @@ public final class GalleryDirector {
                 })));
         // a sword technique's slash, as Technique draws it
         all.add(new Exhibit("fx_slash", player -> SpellFx.slash(player.serverLevel(), player, player.getLookAngle(), 1.6F, 0xDDEEFF)));
+        // walls raised sideways (east, then west) while the camera looks south: both must show edge-on, side by side
+        all.add(new Exhibit("fx_walls_sideways", player -> {
+            castFacing(player, MushoSpells.EARTH_WALL.get(), -90.0F);
+            castFacing(player, MushoSpells.ICE_FORTRESS.get(), 90.0F);
+            player.setYRot(0.0F);
+        }));
         // Disturb Magic on a spell taking shape in the dummy's hands
         all.add(new Exhibit("fx_disturb_chant", player -> player.serverLevel().getEntitiesOfClass(Husk.class,
                 player.getBoundingBox().inflate(16.0)).stream().findFirst().ifPresent(dummy -> {

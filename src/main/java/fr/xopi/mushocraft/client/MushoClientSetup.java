@@ -9,8 +9,8 @@ import fr.xopi.mushocraft.client.particle.FireParticles;
 import fr.xopi.mushocraft.client.particle.FlipbookParticle;
 import fr.xopi.mushocraft.client.particle.ManaMote;
 import fr.xopi.mushocraft.client.particle.OrientedParticle;
-import fr.xopi.mushocraft.client.particle.StreakParticle;
 import fr.xopi.mushocraft.client.particle.RisingLight;
+import fr.xopi.mushocraft.client.particle.StreakParticle;
 import fr.xopi.mushocraft.client.render.SpellOrbModel;
 import fr.xopi.mushocraft.client.render.SpellProjectileRenderer;
 import fr.xopi.mushocraft.client.render.TeacherRenderer;
@@ -21,16 +21,19 @@ import fr.xopi.mushocraft.client.render.spell.SpellPillarRenderer;
 import fr.xopi.mushocraft.client.render.spell.SpellZoneRenderer;
 import fr.xopi.mushocraft.client.render.spell.SpiritRenderers;
 import fr.xopi.mushocraft.client.render.spell.WaterSheetRenderer;
+import fr.xopi.mushocraft.client.screen.MoveIcons;
 import fr.xopi.mushocraft.core.MushoEntities;
 import fr.xopi.mushocraft.core.MushoParticles;
 import net.minecraft.client.renderer.entity.NoopRenderer;
+import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
-import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
+import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
+import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 
 /**
@@ -39,6 +42,12 @@ import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 @EventBusSubscriber(modid = MushoCraft.MODID, value = Dist.CLIENT)
 public final class MushoClientSetup {
     private MushoClientSetup() {
+    }
+
+    /** Move icons are smoothed once; a resource reload makes their textures anew, so they are smoothed again. */
+    @SubscribeEvent
+    public static void onRegisterReloadListeners(RegisterClientReloadListenersEvent event) {
+        event.registerReloadListener((ResourceManagerReloadListener) manager -> MoveIcons.reset());
     }
 
     @SubscribeEvent
