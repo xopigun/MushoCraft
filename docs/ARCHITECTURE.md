@@ -108,6 +108,15 @@ Le même schéma vaut pour les **techniques d'épée** : un objet `Technique` pa
 
 Estimation : une quinzaine de classes d'effets génériques, plus une classe pour chaque sort au comportement unique, couvrent toutes les entrées du glossaire.
 
+**Ajouts du 19/10 (sorts du wiki manquants)** :
+- `VolleyEffect` : une salve de projectiles qui se forment en arc au-dessus de la tête puis filent tous vers le point visé (*Icicle Break*).
+- `Cone` (sommet, axe, portée, demi-angle) : sait si un point est dans le cône et tire une direction au hasard à l'intérieur. Partagé par `ConeBlastEffect` et le jet de flammes.
+- `SpellFx.jet` : des particules lancées depuis le lanceur dans tout le cône, assez vite pour le traverser (souffles, lance-flammes).
+- `FreezeFieldEffect.aroundCaster()` et `.freezingWater()` : le champ centré sur le lanceur, et l'eau qui gèle en glace fragile, qui fond d'elle-même (*Absolute Zero*).
+- `ZoneBehaviors.flameJet` (*Flamethrower*, un jet d'une seconde qui suit le regard) et `ZoneBehaviors.electric` (*Electric*).
+- Type de dégâts `mushocraft:electric` : ignore l'armure, donc l'Aura de combat ; atténué par le *Magic Shield*.
+- Formes `PillarKind.ICE_LANCE` et `ICE_FORTRESS` : les modèles de la pointe et de la forteresse de terre, en glace translucide.
+
 ### 4.2 bis Baguettes et bâtons (wiki, page *Magic Tools and Magic Items* ; rappel de Xopi du 19/10)
 
 - **On lance des sorts sans baguette ni bâton.** Un focus tenu dans l'une ou l'autre main multiplie la puissance des sorts et, dans la même proportion, leur taille. Exemple : une boule d'eau 20 % plus forte est 20 % plus grosse ; le rayon d'explosion grandit aussi.
@@ -138,6 +147,10 @@ Estimation : une quinzaine de classes d'effets génériques, plus une classe pou
   - **Piliers en modèles Blockbench** (entité `SpellPillar`, GeckoLib) : *Ice Pillar* (fût de glace à facettes, cristaux à la base), *Earth Lance* (pointe de roche brune en couches), *Earth Hedgehog* (pointes de pierre sombre penchées dans tous les sens), *Icicle Field* (monticules de givre qui engloutissent les cibles, comme dans l'anime). Animations « rise » (jaillit du sol), « idle » (frémit), « crumble » (s'effrite). Les blocs de collision sont cachés (propriété `hidden` de `ConjuredBlock`). L'apparence d'une éruption est une stratégie (`EruptionVisual`).
   - **Murs de terre** (même entité `SpellPillar`) : *Earth Wall* (dalles de pierre empilées de travers, crête irrégulière, gravats au pied) et *Earth Fortress* (quatre murs et un toit de grandes pierres, qui montent l'un après l'autre). `WallEffect` et `FortressEffect` cachent leurs blocs de collision et posent le modèle (`.lookingLike(PillarKind)`). Modèles générés directement en `.geo.json`, sans `.bbmodel` pour l'instant.
   - **Ondes de choc et entailles** (`OrientedParticle`) : plans orientés dont les images viennent d'une bande à part (`SmoothSheet`, `textures/effect/`), lue en filtrage linéaire sans mipmap. L'atlas des particules, lu texel par texel avec mipmaps, donnait des bords en escalier aux grands plans vus de biais.
+  - **Lames en croissant** (`ProjectileShape.CRESCENT`, `CrescentVisual`) : une lame courbe qui vole face en avant, pointes en arrière, inclinée à sa façon ; *Icicle Edge*, *Wind Slice*, *Flame Slice*, *Sonic Boom*.
+  - **Glaçons** (`IcicleVisual`) : traits de glace à six facettes (*Icicle Break*).
+  - **Traits de vent** (`StreakParticle`) : des lignes d'air étirées dans le sens du mouvement, comme le vent dessiné dans l'anime ; elles remplacent les bouffées vanilla pixelisées des souffles de vent.
+  - **Nuage chargé** (`ZoneVisual.CHARGED_CLOUD`) : le nuage de *Lightning*, plus bas et plus vite formé, pour *Electric*.
   - **Impacts dessinés** (`FlipbookParticle`) : étincelle teintée par l'élément (`IMPACT`), explosion dessinée (`BLAST`) par-dessus la boule de feu. Même lecture lissée que les ondes de choc (`SmoothSheet`).
   - **Ice Blade** : des points de lumière glacée convergent vers la main, qui s'illumine quand l'épée se forme (`SpellFx.conjureInHand`).
   - **Heat Hand** : tant que l'effet dure, lueurs orange et étincelles montent des deux mains (`HeatedHandsEffect`, `SpellFx.heatedHands`).

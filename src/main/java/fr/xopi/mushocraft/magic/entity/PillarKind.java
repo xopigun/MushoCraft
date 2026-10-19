@@ -17,12 +17,16 @@ public enum PillarKind {
     ICE_PILLAR("ice_pillar", "ice_crystal", 3.4F, true, ParticleTypes.SNOWFLAKE, SoundEvents.GLASS_BREAK),
     /** Earth Lance: a jagged, layered spike of brown rock. */
     EARTH_LANCE("earth_spike", "earth_rock", 2.75F, false, ParticleTypes.ASH, SoundEvents.ROOTED_DIRT_BREAK),
+    /** Ice Lance: the same jagged spike, of ice. */
+    ICE_LANCE("earth_spike", "ice_crystal", 2.75F, true, ParticleTypes.SNOWFLAKE, SoundEvents.GLASS_BREAK),
     /** Earth Hedgehog: dark stone spikes, as in the anime. */
     EARTH_SPIKE("earth_spike", "dark_stone", 2.75F, false, ParticleTypes.ASH, SoundEvents.STONE_BREAK),
     /** Earth Wall: a wall of rough stone slabs, stacked unevenly, bursting up out of the ground. */
     EARTH_WALL("earth_wall", "earth_rock", 3.0F, false, ParticleTypes.ASH, SoundEvents.STONE_BREAK),
     /** Earth Fortress: four such walls and a roof of flat stones round the caster. */
     EARTH_FORTRESS("earth_fortress", "earth_rock", 3.69F, false, ParticleTypes.ASH, SoundEvents.STONE_BREAK),
+    /** Ice Fortress: the walls and roof of the earth fortress, of ice one can half see through. */
+    ICE_FORTRESS("earth_fortress", "ice_crystal", 3.69F, true, ParticleTypes.SNOWFLAKE, SoundEvents.GLASS_BREAK),
     /** Icicle Field: a billowing mound of frost that swallows what it catches, as in the anime. */
     FROST_MOUND(null, "frost", 1.0F, false, ParticleTypes.SNOWFLAKE, SoundEvents.POWDER_SNOW_BREAK);
 

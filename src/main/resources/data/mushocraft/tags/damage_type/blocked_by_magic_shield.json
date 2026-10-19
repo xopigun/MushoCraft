@@ -1,6 +1,7 @@
 {
   "values": [
     "mushocraft:spell",
+    "mushocraft:electric",
     "minecraft:magic",
     "minecraft:indirect_magic",
     "minecraft:in_fire",

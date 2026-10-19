@@ -76,6 +76,8 @@ public final class MushoParticles {
             });
     /** A drawn explosion: white-hot ball, orange ball tearing open, smoke; its size is given by the x speed. */
     public static final DeferredHolder<ParticleType<?>, SimpleParticleType> BLAST = simple("blast");
+    /** A line of rushing air, drawn along the way it moves, as wind is drawn in the anime; its speed sets its way. */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> WIND_STREAK = simple("wind_streak");
 
     /** A shock wave of air, a ring across the way it faces (a projectile's path, a blast). */
     public static final DeferredHolder<ParticleType<?>, ParticleType<OrientedParticleOptions>> SHOCK_WAVE = oriented("shock_wave");

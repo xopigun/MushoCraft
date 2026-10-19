@@ -17,6 +17,12 @@ import javax.annotation.Nullable;
 public final class MushoDamageTypes {
     public static final ResourceKey<DamageType> SPELL = ResourceKey.create(Registries.DAMAGE_TYPE, MushoCraft.id("spell"));
 
+    /**
+     * Electricity (Electric): it strikes the nerves directly and so goes through Battle Aura (wiki, Magic Spells): it
+     * bypasses armour, which the aura strengthens. Magic Shield still weakens it.
+     */
+    public static final ResourceKey<DamageType> ELECTRIC = ResourceKey.create(Registries.DAMAGE_TYPE, MushoCraft.id("electric"));
+
     /** Damage that Magic Shield weakens: magic, and the heat and cold it can isolate (wiki, Magic Spells). */
     public static final TagKey<DamageType> BLOCKED_BY_MAGIC_SHIELD =
             TagKey.create(Registries.DAMAGE_TYPE, MushoCraft.id("blocked_by_magic_shield"));
@@ -29,7 +35,14 @@ public final class MushoDamageTypes {
     }
 
     public static DamageSource spell(Level level, Entity direct, @Nullable Entity caster) {
-        return new DamageSource(level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(SPELL),
-                direct, caster);
+        return of(level, SPELL, direct, caster);
+    }
+
+    public static DamageSource electric(Level level, Entity direct, @Nullable Entity caster) {
+        return of(level, ELECTRIC, direct, caster);
+    }
+
+    private static DamageSource of(Level level, ResourceKey<DamageType> type, Entity direct, @Nullable Entity caster) {
+        return new DamageSource(level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(type), direct, caster);
     }
 }

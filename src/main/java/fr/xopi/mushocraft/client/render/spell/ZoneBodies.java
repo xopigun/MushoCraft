@@ -160,13 +160,16 @@ final class ZoneBodies {
 
     /**
      * Lightning: a dark cloud gathering over the target, tighter as the energy condenses, lit from within by flickers
-     * just before the bolt falls.
+     * just before the bolt falls. Electric draws the same cloud, lower and gathered faster.
+     *
+     * @param height      how high above the target the cloud floats
+     * @param gatherTicks how long it takes to condense
      */
-    static void thunderhead(SpellZone zone, float age, PoseStack poseStack, MultiBufferSource buffers) {
-        float gather = Mth.clamp(age / 30.0F, 0.0F, 1.0F);
+    static void thunderhead(SpellZone zone, float age, PoseStack poseStack, MultiBufferSource buffers, float height, float gatherTicks) {
+        float gather = Mth.clamp(age / gatherTicks, 0.0F, 1.0F);
         float flash = gather > 0.75F && Mth.sin(age * 3.1F) > 0.3F ? 1.0F : 0.0F;
         float shade = 0.36F + 0.5F * flash;
-        banks(zone, age, poseStack, buffers, shade, shade, shade + 0.08F, 0.03F, 0.6F, 8.5F, 4, 1.6F - 0.8F * gather);
+        banks(zone, age, poseStack, buffers, shade, shade, shade + 0.08F, 0.03F, 0.6F, height, 4, 1.6F - 0.8F * gather);
     }
 
     /** Water Splash: a crown of water leaping up from the ground, ragged at its rim, then falling back. */

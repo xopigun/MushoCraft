@@ -29,6 +29,8 @@ public final class SmoothSheet {
     public static final SmoothSheet IMPACT = new SmoothSheet("impact", 8, false);
     /** Explosions: a white-hot ball, an orange ball that tears open, smoke (textures/effect/blast.png, drawn for MushoCraft). */
     public static final SmoothSheet BLAST = new SmoothSheet("blast", 12, false);
+    /** Wind: one soft line of rushing air, bright at its head (textures/effect/wind_streak.png, drawn for MushoCraft). */
+    public static final SmoothSheet WIND_STREAK = new SmoothSheet("wind_streak", 1, true);
 
     private final ResourceLocation texture;
     private final int frames;

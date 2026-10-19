@@ -28,6 +28,8 @@ public enum ZoneVisual {
     STORM_CLOUD,
     /** Lightning: a dark cloud gathering over its target, flashing before the bolt. */
     THUNDERHEAD,
+    /** Electric: the same cloud compressed small and low over its target, gathering fast. */
+    CHARGED_CLOUD,
     /** Water Splash: a crown of water leaping up and falling back. */
     SPLASH_CROWN
 }

@@ -72,6 +72,13 @@ public final class WaterVisuals {
         renderGlint(projectile, poseStack, buffers, radius, time);
     };
 
+    /** A slim drop flying towards +Y: pointed tip ahead (top), a long tapering tail behind. */
+    static final LatheMesh.Profile BOLT = t -> {
+        float y = t * 2.0F - 1.0F;
+        float radius = t > 0.78F ? (1.0F - t) / 0.22F : (float) Math.pow(t / 0.78F, 0.6);
+        return new float[]{y, radius};
+    };
+
     public static final ProjectileVisual WATER_ARROW = (projectile, partialTicks, poseStack, buffers, light) -> {
         float time = projectile.tickCount + partialTicks;
         float thickness = projectile.visualSize() / 2.0F;
@@ -81,17 +88,11 @@ public final class WaterVisuals {
         poseStack.translate(0.0, projectile.getBbHeight() / 2.0, 0.0);
         alignWithFlight(poseStack, projectile.getDeltaMovement());
         poseStack.scale(thickness, length / 2.0F, thickness);
-        // A slim drop: pointed tip ahead (top), a long tapering tail behind.
-        LatheMesh.Profile bolt = t -> {
-            float y = t * 2.0F - 1.0F;
-            float radius = t > 0.78F ? (1.0F - t) / 0.22F : (float) Math.pow(t / 0.78F, 0.6);
-            return new float[]{y, radius};
-        };
         LatheMesh.Deform ripple = (point, t, angle) -> {
             float wave = 1.0F + 0.12F * Mth.sin(t * 18.0F + time * 1.2F);
             point.mul(wave, 1.0F, wave);
         };
-        LatheMesh.render(poseStack.last(), buffers.getBuffer(RenderType.entityTranslucentCull(WATER)), bolt, ripple, SHELL,
+        LatheMesh.render(poseStack.last(), buffers.getBuffer(RenderType.entityTranslucentCull(WATER)), BOLT, ripple, SHELL,
                 14, 12, time, light);
         poseStack.popPose();
     };

@@ -32,6 +32,7 @@ import fr.xopi.mushocraft.magic.spell.effect.ScatteredEruptionEffect;
 import fr.xopi.mushocraft.magic.spell.effect.ScorchCasterEffect;
 import fr.xopi.mushocraft.magic.spell.effect.SelfStatusEffect;
 import fr.xopi.mushocraft.magic.spell.effect.TargetedZoneEffect;
+import fr.xopi.mushocraft.magic.spell.effect.VolleyEffect;
 import fr.xopi.mushocraft.magic.spell.effect.WallEffect;
 import fr.xopi.mushocraft.magic.spell.effect.WeatherEffect;
 import fr.xopi.mushocraft.magic.spell.effect.ZoneEffect;
@@ -183,14 +184,14 @@ public final class MushoSpells {
     public static final DeferredHolder<Spell, Spell> SONIC_BOOM = SPELLS.register("sonic_boom",
             () -> Spell.builder(SpellSchool.WIND, Rank.INTERMEDIATE).manaCost(12).cooldownTicks(60)
                     .effect(new ProjectileEffect(ProjectileProfile.of(SpellElement.WIND, 5.0F)
-                            .speed(2.2F).size(0.6F).knockback(2.5F).build(), SoundEvents.BREEZE_SHOOT))
+                            .speed(2.2F).size(0.6F).knockback(2.5F).shape(ProjectileShape.CRESCENT).build(), SoundEvents.BREEZE_SHOOT))
                     .build());
 
     /** Shoots a gust of cutting wind (no source cited by the wiki). */
     public static final DeferredHolder<Spell, Spell> WIND_SLICE = SPELLS.register("wind_slice",
             () -> Spell.builder(SpellSchool.WIND, Rank.INTERMEDIATE).manaCost(12).cooldownTicks(40)
                     .effect(new ProjectileEffect(ProjectileProfile.of(SpellElement.WIND, 7.0F)
-                            .speed(2.6F).size(0.4F).build(), SoundEvents.BREEZE_SHOOT))
+                            .speed(2.6F).size(0.5F).shape(ProjectileShape.CRESCENT).build(), SoundEvents.BREEZE_SHOOT))
                     .build());
 
     /** Rudeus' signature: a bullet-shaped rock fired at high speed (LN vol. 6). */
@@ -261,7 +262,7 @@ public final class MushoSpells {
     /** A powerful, wide-reaching shockwave, improved Sonic Boom (LN vol. 16 ch. 7). */
     public static final DeferredHolder<Spell, Spell> SONIC_BLAST = SPELLS.register("sonic_blast",
             () -> Spell.builder(SpellSchool.WIND, Rank.ADVANCED).manaCost(35).cooldownTicks(160)
-                    .effect(new ConeBlastEffect(10.0, 35.0, 10.0F, 2.5, ParticleTypes.GUST, SoundEvents.BREEZE_WIND_CHARGE_BURST.value()))
+                    .effect(new ConeBlastEffect(10.0, 35.0, 10.0F, 2.5, MushoParticles.WIND_STREAK.get(), SoundEvents.BREEZE_WIND_CHARGE_BURST.value()))
                     .build());
 
     /** Wind shaped into a spinning drill that punches a hole through the target (LN vol. 16 ch. 7). */
@@ -320,7 +321,7 @@ public final class MushoSpells {
     /** Releases a strong blast of wind over a wide area, all around the caster (no source cited by the wiki). */
     public static final DeferredHolder<Spell, Spell> VIOLENT_STORM = SPELLS.register("violent_storm",
             () -> Spell.builder(SpellSchool.WIND, Rank.SAINT).manaCost(90).cooldownTicks(600)
-                    .effect(new ConeBlastEffect(12.0, 180.0, 12.0F, 4.0, ParticleTypes.GUST_EMITTER_SMALL,
+                    .effect(new ConeBlastEffect(12.0, 180.0, 12.0F, 4.0, MushoParticles.WIND_STREAK.get(),
                             SoundEvents.BREEZE_WIND_CHARGE_BURST.value()))
                     .build());
 
@@ -360,6 +361,19 @@ public final class MushoSpells {
                             48.0, false, SoundEvents.LIGHTNING_BOLT_THUNDER).followingTarget())
                     .build());
 
+    // ---- Rudeus' own development of Lightning (wiki, Magic § Lightning Magic) ----
+
+    /**
+     * Lightning compressed into a small cloud low over the target: a weaker discharge that shocks and paralyses
+     * everyone near it, and goes through Battle Aura since it strikes the nerves (LN vol. 13 ch. 6; anime S3 ep. 5).
+     * Rank chosen for the game: Saint, below the Lightning it comes from (docs/ECARTS.md, E25).
+     */
+    public static final DeferredHolder<Spell, Spell> ELECTRIC = SPELLS.register("electric",
+            () -> Spell.builder(SpellSchool.WATER, Rank.SAINT).manaCost(90).cooldownTicks(400)
+                    .effect(new TargetedZoneEffect(target -> ZoneBehaviors.electric(target, 12, 14.0F, 60), ZoneVisual.CHARGED_CLOUD,
+                            2.2, 20, 32.0, false, SoundEvents.BEEHIVE_WORK).followingTarget())
+                    .build());
+
     /**
      * Shuts the target inside a barrier it cannot leave, where magic cannot be used (LN vol. 6 ch. 4). Fizzles without
      * a creature to confine.
@@ -370,7 +384,68 @@ public final class MushoSpells {
                             SoundEvents.BEACON_POWER_SELECT))
                     .build());
 
+    // ---- Emperor rank ----
+
+    /**
+     * Freezes a very wide area instantly (WN ch. 194), all around the caster: everything in it freezes and the water
+     * ices over. The wiki places it at the Imperial (Emperor) rank.
+     */
+    public static final DeferredHolder<Spell, Spell> ABSOLUTE_ZERO = SPELLS.register("absolute_zero",
+            () -> Spell.builder(SpellSchool.WATER, Rank.EMPEROR).manaCost(600).cooldownTicks(2400)
+                    .effect(new FreezeFieldEffect(16.0, 30.0F, 300, 0.0).aroundCaster().freezingWater())
+                    .build());
+
     // ---- Spells the wiki gives no rank (ranks chosen for the game: docs/ECARTS.md, E19) ----
+
+    /** Launches a barrage of ice bolts at a target (wiki, Water; WN vol. 4 ch. 3.5). */
+    public static final DeferredHolder<Spell, Spell> ICICLE_BREAK = SPELLS.register("icicle_break",
+            () -> Spell.builder(SpellSchool.WATER, Rank.INTERMEDIATE).manaCost(16).cooldownTicks(60)
+                    .effect(new VolleyEffect(ProjectileProfile.of(SpellElement.ICE, 3.0F)
+                            .speed(2.2F).size(0.25F).slow(30).shape(ProjectileShape.BOLT).build(), 6, SoundEvents.GLASS_PLACE))
+                    .build());
+
+    /** Launches a crescent-shaped blade of ice at the enemy (LN vol. 12 ch. 6). */
+    public static final DeferredHolder<Spell, Spell> ICICLE_EDGE = SPELLS.register("icicle_edge",
+            () -> Spell.builder(SpellSchool.WATER, Rank.INTERMEDIATE).manaCost(14).cooldownTicks(50)
+                    .effect(new ProjectileEffect(ProjectileProfile.of(SpellElement.ICE, 8.0F)
+                            .speed(2.4F).size(0.7F).slow(60).shape(ProjectileShape.CRESCENT).build(), SoundEvents.GLASS_PLACE))
+                    .build());
+
+    /** An ice spike springs from the ground and impales the enemy (LN vol. 16 ch. 7). */
+    public static final DeferredHolder<Spell, Spell> ICE_LANCE = SPELLS.register("ice_lance",
+            () -> Spell.builder(SpellSchool.WATER, Rank.INTERMEDIATE).manaCost(15).cooldownTicks(80)
+                    .effect(new EruptionEffect(MushoBlocks.CONJURED_ICE, 3, 8.0F, 1.0, 0, 16.0,
+                            ParticleTypes.SNOWFLAKE, SoundEvents.GLASS_PLACE).lookingLike(EruptionVisual.pillar(PillarKind.ICE_LANCE, 6.0F)))
+                    .build());
+
+    /** Raises walls of ice around the caster (manga, Depressed Magician arc ch. 7). */
+    public static final DeferredHolder<Spell, Spell> ICE_FORTRESS = SPELLS.register("ice_fortress",
+            () -> Spell.builder(SpellSchool.WATER, Rank.ADVANCED).intent(SpellIntent.DEFEND).manaCost(40).cooldownTicks(600)
+                    .effect(new FortressEffect(MushoBlocks.CONJURED_ICE, 2, 3, 400, SoundEvents.GLASS_PLACE)
+                            .lookingLike(PillarKind.ICE_FORTRESS))
+                    .build());
+
+    /** Attacks with a jet of flames over a wide area (LN vol. 7 ch. 3): it pours for a second where the caster looks. */
+    public static final DeferredHolder<Spell, Spell> FLAMETHROWER = SPELLS.register("flamethrower",
+            () -> Spell.builder(SpellSchool.FIRE, Rank.INTERMEDIATE).manaCost(16).cooldownTicks(80)
+                    .effect(new ZoneEffect(() -> ZoneBehaviors.flameJet(8.0, 16.0, 5.0F, 5), 1.0, 20, 0.0, SoundEvents.BLAZE_SHOOT))
+                    .build());
+
+    /** A gust of strong wind that pushes everything ahead away, without harm (LN vol. 21 ch. 3). */
+    public static final DeferredHolder<Spell, Spell> WIND_BLAST = SPELLS.register("wind_blast",
+            () -> Spell.builder(SpellSchool.WIND, Rank.BEGINNER).intent(SpellIntent.DEFEND).manaCost(6).cooldownTicks(40)
+                    .effect(new ConeBlastEffect(6.0, 40.0, 0.0F, 2.2, MushoParticles.WIND_STREAK.get(), SoundEvents.BREEZE_WIND_CHARGE_BURST.value()))
+                    .build());
+
+    /**
+     * Gives the sick the strength to rise again (manga, Roxy Gets Serious vol. 11): cures the illnesses and strong
+     * poisons Detoxification cannot, as higher detoxification does (wiki, Detoxification Magic).
+     */
+    public static final DeferredHolder<Spell, Spell> ANTIDOTE = SPELLS.register("antidote",
+            () -> Spell.builder(SpellSchool.DETOXIFICATION, Rank.INTERMEDIATE).intent(SpellIntent.SUPPORT).manaCost(14).cooldownTicks(80)
+                    .effect(new CureEffect(List.of(MobEffects.POISON, MobEffects.WITHER, MobEffects.HUNGER, MobEffects.CONFUSION,
+                            MobEffects.WEAKNESS, MobEffects.BLINDNESS, MobEffects.DIG_SLOWDOWN)))
+                    .build());
 
     /** Bombards the area with countless water droplets, soaking everyone in it (wiki, Water). */
     public static final DeferredHolder<Spell, Spell> WATER_SPLASH = SPELLS.register("water_splash",
@@ -427,7 +502,7 @@ public final class MushoSpells {
     public static final DeferredHolder<Spell, Spell> FLAME_SLICE = SPELLS.register("flame_slice",
             () -> Spell.builder(SpellSchool.FIRE, Rank.INTERMEDIATE).manaCost(12).cooldownTicks(40)
                     .effect(new ProjectileEffect(ProjectileProfile.of(SpellElement.FIRE, 7.0F)
-                            .speed(2.4F).size(0.4F).ignite(3).build(), SoundEvents.BLAZE_SHOOT))
+                            .speed(2.4F).size(0.5F).ignite(3).shape(ProjectileShape.CRESCENT).build(), SoundEvents.BLAZE_SHOOT))
                     .build());
 
     /** A whip of wind that ties the foe down (wiki, Wind). */

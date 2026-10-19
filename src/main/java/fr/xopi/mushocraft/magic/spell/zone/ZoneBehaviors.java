@@ -5,6 +5,8 @@ import fr.xopi.mushocraft.core.MushoMobEffects;
 import fr.xopi.mushocraft.core.MushoParticles;
 import fr.xopi.mushocraft.magic.entity.SpellZone;
 import fr.xopi.mushocraft.magic.fx.CameraShake;
+import fr.xopi.mushocraft.magic.fx.SpellFx;
+import fr.xopi.mushocraft.magic.spell.Cone;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.particles.BlockParticleOption;
@@ -209,6 +211,39 @@ public final class ZoneBehaviors {
         };
     }
 
+    /**
+     * Flamethrower: a jet of flame pours from the caster for as long as the zone lasts, wherever they look (wiki, Fire;
+     * LN vol. 7 ch. 3). Whoever stands in the jet burns; a blow lands twice a second (a creature hurt cannot be hurt
+     * again for half a second).
+     */
+    public static SpellZone.Behavior flameJet(double range, double halfAngleDegrees, float damage, int igniteSeconds) {
+        return (zone, level, age) -> {
+            LivingEntity caster = zone.caster();
+            if (caster == null || !caster.isAlive()) {
+                zone.discard();
+                return;
+            }
+            zone.setPos(caster.position());
+            Cone cone = Cone.of(caster.getEyePosition(), caster.getLookAngle(), range, halfAngleDegrees);
+            SpellFx.jet(level, cone, MushoParticles.FLAME.get(), 14, 1.0);
+            if (age % 3 == 0) {
+                SpellFx.jet(level, cone, MushoParticles.EMBER.get(), 3, 1.0);
+            }
+            // a zone's first tick is its age 1
+            if (age % 10 == 1) {
+                for (LivingEntity target : level.getEntitiesOfClass(LivingEntity.class, caster.getBoundingBox().inflate(range),
+                        entity -> entity != caster && entity.isAlive() && cone.contains(entity.getBoundingBox().getCenter())
+                                && caster.hasLineOfSight(entity))) {
+                    target.hurt(MushoDamageTypes.spell(level, zone, caster), (float) (damage * zone.power()));
+                    target.igniteForSeconds(igniteSeconds);
+                }
+            }
+            if (age % 6 == 0) {
+                level.playSound(null, caster.blockPosition(), SoundEvents.BLAZE_BURN, SoundSource.PLAYERS, 0.8F, 0.8F);
+            }
+        };
+    }
+
     private static void soak(LivingEntity target, SpellZone zone) {
         target.addEffect(new MobEffectInstance(MushoMobEffects.SOAKED, 200, 0), zone.caster());
     }
@@ -385,6 +420,58 @@ public final class ZoneBehaviors {
                 }
                 level.playSound(null, zone.blockPosition(), SoundEvents.LIGHTNING_BOLT_IMPACT, SoundSource.PLAYERS, 3.0F, 0.8F);
                 CameraShake.around(level, zone.position(), 2.2F, 20, 40.0);
+                zone.discard();
+            }
+        };
+    }
+
+    /**
+     * Electric: Lightning compressed into a small cloud low over the target, for a weaker discharge that still shocks
+     * and paralyses everyone near it (wiki, Magic Spells; LN vol. 13 ch. 6). Electricity strikes the nerves directly,
+     * so it goes through Battle Aura ({@link MushoDamageTypes#ELECTRIC}). Then the zone ends.
+     */
+    public static SpellZone.Behavior electric(LivingEntity target, int gatherTicks, float damage, int paralysisTicks) {
+        return (zone, level, age) -> {
+            if (target != null && target.isAlive() && age < gatherTicks) {
+                zone.setPos(target.position());
+            }
+            RandomSource random = level.getRandom();
+            if (age < gatherTicks) {
+                if (age % 2 == 0) {
+                    level.sendParticles(MushoParticles.ARC.get(), zone.getX() + (random.nextDouble() - 0.5) * 1.6, zone.getY() + 3.6,
+                            zone.getZ() + (random.nextDouble() - 0.5) * 1.6, 0, 0.9, 0.0, 0.0, 1.0);
+                }
+                if (age % 4 == 0) {
+                    level.playSound(null, zone.blockPosition().above(3), SoundEvents.BEEHIVE_WORK, SoundSource.PLAYERS, 0.8F, 1.8F);
+                }
+                return;
+            }
+            if (age == gatherTicks) {
+                // the discharge: three crackling strands from the cloud down to the ground, a flash, a ring along the ground
+                for (int strand = 0; strand < 3; strand++) {
+                    double offsetX = (random.nextDouble() - 0.5) * zone.radius();
+                    double offsetZ = (random.nextDouble() - 0.5) * zone.radius();
+                    for (double y = 3.2; y > 0.0; y -= 0.9) {
+                        level.sendParticles(MushoParticles.ARC.get(), zone.getX() + offsetX * y / 3.2, zone.getY() + y,
+                                zone.getZ() + offsetZ * y / 3.2, 0, 2.0, 0.0, 0.0, 1.0);
+                    }
+                }
+                level.sendParticles(MushoParticles.FLASH.get(), zone.getX(), zone.getY() + 1.0, zone.getZ(), 0, 1.0, 0.0, 0.0, 1.0);
+                level.sendParticles(MushoParticles.SHOCK_RING.get(), zone.getX(), zone.getY() + 0.1, zone.getZ(), 0, zone.radius() * 1.4,
+                        0.0, 0.0, 1.0);
+                for (LivingEntity struck : zone.creaturesInside(3.0)) {
+                    struck.hurt(MushoDamageTypes.electric(level, zone, zone.caster()), (float) (damage * zone.power()));
+                    struck.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, paralysisTicks, 9), zone.caster());
+                    struck.addEffect(new MobEffectInstance(MobEffects.DIG_SLOWDOWN, paralysisTicks, 3), zone.caster());
+                    struck.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, paralysisTicks, 1), zone.caster());
+                    for (int i = 0; i < 3; i++) {
+                        level.sendParticles(MushoParticles.ARC.get(), struck.getX() + (random.nextDouble() - 0.5) * struck.getBbWidth(),
+                                struck.getY() + random.nextDouble() * struck.getBbHeight(),
+                                struck.getZ() + (random.nextDouble() - 0.5) * struck.getBbWidth(), 0, 0.8, 0.0, 0.0, 1.0);
+                    }
+                }
+                level.playSound(null, zone.blockPosition(), SoundEvents.LIGHTNING_BOLT_IMPACT, SoundSource.PLAYERS, 1.2F, 1.6F);
+                CameraShake.around(level, zone.position(), 0.8F, 8, 16.0);
                 zone.discard();
             }
         };

@@ -14,7 +14,9 @@ public enum ProjectileShape implements StringRepresentable {
     /** A slender, pointed bolt (Water Arrow). */
     BOLT,
     /** A cluster of jagged crystals (Ice Smash). */
-    CRYSTAL_CLUSTER;
+    CRYSTAL_CLUSTER,
+    /** A crescent blade flying face first (Icicle Edge, Wind Slice, Flame Slice, Sonic Boom). */
+    CRESCENT;
 
     public static final Codec<ProjectileShape> CODEC = StringRepresentable.fromEnum(ProjectileShape::values);
 

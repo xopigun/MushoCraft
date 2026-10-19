@@ -2,6 +2,7 @@ package fr.xopi.mushocraft.magic.spell.effect;
 
 import fr.xopi.mushocraft.core.MushoDamageTypes;
 import fr.xopi.mushocraft.magic.fx.SpellFx;
+import fr.xopi.mushocraft.magic.spell.Cone;
 import fr.xopi.mushocraft.magic.spell.SpellContext;
 import fr.xopi.mushocraft.magic.spell.SpellEffect;
 import net.minecraft.core.particles.ParticleOptions;
@@ -21,6 +22,8 @@ import java.util.List;
  */
 public final class ConeBlastEffect implements SpellEffect {
     private static final int WAVE_COLOUR = 0xEEF6FF;
+
+    private static final int MOTES_PER_BLOCK = 12;
 
     private final double range;
     private final double minCosine;
@@ -68,15 +71,18 @@ public final class ConeBlastEffect implements SpellEffect {
         ServerLevel level = context.level();
         Vec3 eyes = context.eyes();
         Vec3 look = context.look();
+        Cone cone = new Cone(eyes, look, range, minCosine);
         for (LivingEntity target : level.getEntitiesOfClass(LivingEntity.class, context.caster().getBoundingBox().inflate(range),
                 entity -> entity != context.caster() && entity.isAlive())) {
             Vec3 toTarget = target.getBoundingBox().getCenter().subtract(eyes);
             double distance = toTarget.length();
-            if (distance > range || distance < 1.0E-4 || toTarget.normalize().dot(look) < minCosine
-                    || !context.caster().hasLineOfSight(target)) {
+            if (!cone.contains(target.getBoundingBox().getCenter()) || !context.caster().hasLineOfSight(target)) {
                 continue;
             }
-            target.hurt(MushoDamageTypes.spell(level, context.caster(), context.caster()), (float) (damage * context.power()));
+            if (damage > 0.0F) {
+                // a mere gust (Wind Blast) pushes without hurting
+                target.hurt(MushoDamageTypes.spell(level, context.caster(), context.caster()), (float) (damage * context.power()));
+            }
             Vec3 push = toTarget.normalize().scale(knockback * (1.0 - distance / range * 0.5));
             target.push(push.x, 0.2 + push.y * 0.3, push.z);
             target.hurtMarked = true;
@@ -90,13 +96,9 @@ public final class ConeBlastEffect implements SpellEffect {
             afflictions.forEach(affliction -> target.addEffect(
                     new MobEffectInstance(affliction.effect(), affliction.durationTicks(), affliction.amplifier()), context.caster()));
         }
-        for (double step = 1.0; step <= range; step += 1.0) {
-            Vec3 point = eyes.add(look.scale(step));
-            double spread = step * Math.sqrt(1.0 - minCosine * minCosine) * 0.5;
-            level.sendParticles(particle, point.x, point.y, point.z, 6, spread, spread * 0.5, spread, 0.05);
-        }
+        SpellFx.jet(level, cone, particle, (int) Math.round(range * MOTES_PER_BLOCK), 1.6);
         // the wave drives a tunnel of torn air before it
-        SpellFx.shockTunnel(level, eyes, look, range, 1.5, (float) (Math.sqrt(1.0 - minCosine * minCosine) * 2.0), WAVE_COLOUR);
+        SpellFx.shockTunnel(level, eyes, look, range, 1.5, (float) (cone.opening() * 2.0), WAVE_COLOUR);
         level.playSound(null, context.caster().blockPosition(), sound, SoundSource.PLAYERS, 1.2F, 0.8F);
         return true;
     }

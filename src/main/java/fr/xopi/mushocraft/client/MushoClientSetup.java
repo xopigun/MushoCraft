@@ -9,6 +9,7 @@ import fr.xopi.mushocraft.client.particle.FireParticles;
 import fr.xopi.mushocraft.client.particle.FlipbookParticle;
 import fr.xopi.mushocraft.client.particle.ManaMote;
 import fr.xopi.mushocraft.client.particle.OrientedParticle;
+import fr.xopi.mushocraft.client.particle.StreakParticle;
 import fr.xopi.mushocraft.client.particle.RisingLight;
 import fr.xopi.mushocraft.client.render.SpellOrbModel;
 import fr.xopi.mushocraft.client.render.SpellProjectileRenderer;
@@ -75,6 +76,7 @@ public final class MushoClientSetup {
         event.registerSpriteSet(MushoParticles.RISING_LIGHT.get(), RisingLight.Provider::new);
         event.registerSpecial(MushoParticles.IMPACT.get(), new FlipbookParticle.ImpactProvider());
         event.registerSpecial(MushoParticles.BLAST.get(), new FlipbookParticle.BlastProvider());
+        event.registerSpecial(MushoParticles.WIND_STREAK.get(), new StreakParticle.Provider());
     }
 
     @SubscribeEvent

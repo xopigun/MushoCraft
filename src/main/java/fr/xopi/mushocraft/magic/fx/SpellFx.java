@@ -4,6 +4,7 @@ import fr.xopi.mushocraft.core.MushoParticles;
 import fr.xopi.mushocraft.core.OrientedParticleOptions;
 import fr.xopi.mushocraft.magic.entity.SpellZone;
 import fr.xopi.mushocraft.magic.entity.ZoneVisual;
+import fr.xopi.mushocraft.magic.spell.Cone;
 import fr.xopi.mushocraft.magic.spell.zone.ZoneBehaviors;
 import net.minecraft.core.particles.ColorParticleOption;
 import net.minecraft.core.particles.ParticleOptions;
@@ -19,6 +20,23 @@ import net.minecraft.world.phys.Vec3;
  */
 public final class SpellFx {
     private SpellFx() {
+    }
+
+    /**
+     * Motes thrown out through a cone from near its apex, each its own way, fast enough to cross the cone: a jet of
+     * flame, a blast of wind. The mod's motes slow by a tenth each tick, so they carry about ten times their speed.
+     *
+     * @param start how far from the apex the motes appear, kept clear of the caster's eyes
+     */
+    public static void jet(ServerLevel level, Cone cone, ParticleOptions mote, int count, double start) {
+        RandomSource random = level.random;
+        for (int i = 0; i < count; i++) {
+            Vec3 way = cone.randomWay(random);
+            double from = start + random.nextDouble() * 0.8;
+            Vec3 at = cone.apex().add(way.scale(from)).subtract(0.0, 0.25, 0.0);
+            double speed = Math.max(0.05, cone.range() - from) / 10.0 * (0.55 + 0.45 * random.nextDouble());
+            level.sendParticles(mote, at.x, at.y, at.z, 0, way.x, way.y, way.z, speed);
+        }
     }
 
     /** A ring of torn air across a direction, as a blast of wind or a shock leaves behind it. */

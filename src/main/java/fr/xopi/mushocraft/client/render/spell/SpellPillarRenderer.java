@@ -5,7 +5,6 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import fr.xopi.mushocraft.MushoCraft;
 import fr.xopi.mushocraft.core.MushoParticles;
-import fr.xopi.mushocraft.magic.entity.PillarKind;
 import fr.xopi.mushocraft.magic.entity.SpellPillar;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.core.particles.BlockParticleOption;
@@ -96,8 +95,17 @@ public class SpellPillarRenderer extends EntityRenderer<SpellPillar> {
     private static List<String> emitters(SpellPillar pillar) {
         return switch (pillar.kind()) {
             case ICE_PILLAR -> List.of("tip");
-            case EARTH_LANCE, EARTH_SPIKE -> List.of("shard_0", "shard_1", "shard_2");
-            case EARTH_WALL, EARTH_FORTRESS, FROST_MOUND -> List.of();
+            case EARTH_LANCE, EARTH_SPIKE, ICE_LANCE -> List.of("shard_0", "shard_1", "shard_2");
+            case EARTH_WALL, EARTH_FORTRESS, ICE_FORTRESS, FROST_MOUND -> List.of();
+        };
+    }
+
+    /** Ice gives off frost glints; rock, a trickle of dust. */
+    private static ParticleOptions emitted(SpellPillar pillar) {
+        return switch (pillar.kind()) {
+            case ICE_PILLAR, ICE_LANCE, ICE_FORTRESS, FROST_MOUND -> ColorParticleOption.create(MushoParticles.MANA_MOTE.get(), 0xFFCCEEFF);
+            case EARTH_LANCE, EARTH_SPIKE, EARTH_WALL, EARTH_FORTRESS ->
+                    new BlockParticleOption(ParticleTypes.FALLING_DUST, Blocks.COARSE_DIRT.defaultBlockState());
         };
     }
 
@@ -107,9 +115,7 @@ public class SpellPillarRenderer extends EntityRenderer<SpellPillar> {
             return;
         }
         lastEmitted.put(pillar, pillar.tickCount);
-        ParticleOptions particle = pillar.kind() == PillarKind.ICE_PILLAR
-                ? ColorParticleOption.create(MushoParticles.MANA_MOTE.get(), 0xFFCCEEFF)
-                : new BlockParticleOption(ParticleTypes.FALLING_DUST, Blocks.COARSE_DIRT.defaultBlockState());
+        ParticleOptions particle = emitted(pillar);
         for (String name : emitters(pillar)) {
             model.getBone(name).ifPresent(bone -> {
                 Vector3d at = bone.getWorldPosition();

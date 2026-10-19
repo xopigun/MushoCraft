@@ -1,9 +1,11 @@
 package fr.xopi.mushocraft.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import fr.xopi.mushocraft.client.render.spell.CrescentVisual;
 import fr.xopi.mushocraft.client.render.spell.CrystalClusterVisual;
 import fr.xopi.mushocraft.client.render.spell.FireVisuals;
 import fr.xopi.mushocraft.client.render.spell.GlowShellVisuals;
+import fr.xopi.mushocraft.client.render.spell.IcicleVisual;
 import fr.xopi.mushocraft.client.render.spell.ProjectileVisual;
 import fr.xopi.mushocraft.client.render.spell.RibbonTrail;
 import fr.xopi.mushocraft.client.render.spell.RockVisuals;
@@ -80,6 +82,16 @@ public class SpellProjectileRenderer extends EntityRenderer<SpellProjectile> {
     private Optional<ProjectileVisual> visualFor(SpellProjectile projectile) {
         if (projectile.shape() == ProjectileShape.CRYSTAL_CLUSTER) {
             return Optional.of(crystalCluster);
+        }
+        if (projectile.shape() == ProjectileShape.CRESCENT) {
+            return switch (projectile.element()) {
+                case ICE, WATER -> Optional.of(CrescentVisual.ICE);
+                case FIRE -> Optional.of(CrescentVisual.FIRE);
+                case WIND, LIGHT, EARTH -> Optional.of(CrescentVisual.WIND);
+            };
+        }
+        if (projectile.element() == SpellElement.ICE && projectile.shape() == ProjectileShape.BOLT) {
+            return Optional.of(IcicleVisual.ICICLE);
         }
         if (projectile.element() == SpellElement.FIRE) {
             return Optional.of(FireVisuals.FIREBALL);
