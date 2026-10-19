@@ -1,5 +1,6 @@
 package fr.xopi.mushocraft.magic.spell.effect;
 
+import fr.xopi.mushocraft.magic.fx.CameraShake;
 import fr.xopi.mushocraft.magic.spell.SpellContext;
 import fr.xopi.mushocraft.magic.spell.SpellEffect;
 import net.minecraft.util.RandomSource;
@@ -29,6 +30,7 @@ public final class ScatteredEruptionEffect implements SpellEffect {
                     (random.nextDouble() * 2.0 - 1.0) * spread);
             eruption.eruptAt(context, SpellTargeting.groundBelow(context, spot));
         }
+        CameraShake.around(context.level(), aimed, 1.0F, 14, 20.0);
         return true;
     }
 }

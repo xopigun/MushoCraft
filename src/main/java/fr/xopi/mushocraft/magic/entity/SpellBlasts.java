@@ -1,6 +1,7 @@
 package fr.xopi.mushocraft.magic.entity;
 
 import fr.xopi.mushocraft.core.MushoParticles;
+import fr.xopi.mushocraft.magic.fx.CameraShake;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageSource;
@@ -22,5 +23,6 @@ public final class SpellBlasts {
         level.explode(source, damage, null, centre.x, centre.y, centre.z, radius, false, Level.ExplosionInteraction.NONE,
                 MushoParticles.FLASH.get(), MushoParticles.FLASH.get(), SoundEvents.GENERIC_EXPLODE);
         level.addFreshEntity(SpellFire.blast(level, centre, radius));
+        CameraShake.around(level, centre, 0.6F + radius * 0.35F, 10 + Math.round(radius * 4.0F), radius * 6.0 + 8.0);
     }
 }

@@ -2,6 +2,7 @@ package fr.xopi.mushocraft.magic.spell.effect;
 
 import fr.xopi.mushocraft.core.MushoDamageTypes;
 import fr.xopi.mushocraft.magic.block.ConjuredBlock;
+import fr.xopi.mushocraft.magic.fx.CameraShake;
 import fr.xopi.mushocraft.magic.spell.SpellContext;
 import fr.xopi.mushocraft.magic.spell.SpellEffect;
 import net.minecraft.core.BlockPos;
@@ -66,7 +67,9 @@ public final class EruptionEffect implements SpellEffect {
 
     @Override
     public boolean cast(SpellContext context) {
-        eruptAt(context, SpellTargeting.groundBelow(context, SpellTargeting.aimedPoint(context, range)));
+        BlockPos base = SpellTargeting.groundBelow(context, SpellTargeting.aimedPoint(context, range));
+        eruptAt(context, base);
+        CameraShake.around(context.level(), Vec3.atCenterOf(base), 0.5F, 8, 14.0);
         return true;
     }
 

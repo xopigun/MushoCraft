@@ -1,6 +1,7 @@
 package fr.xopi.mushocraft.magic.spell.effect;
 
 import fr.xopi.mushocraft.core.MushoDamageTypes;
+import fr.xopi.mushocraft.magic.fx.CameraShake;
 import fr.xopi.mushocraft.magic.spell.SpellContext;
 import fr.xopi.mushocraft.magic.spell.SpellEffect;
 import net.minecraft.core.BlockPos;
@@ -66,6 +67,10 @@ public final class AreaBurstEffect implements SpellEffect {
         int count = (int) Math.round(reach * reach * 6);
         level.sendParticles(particle, center.x, center.y + 0.6, center.z, count, reach * 0.5, 0.4, reach * 0.5, 0.02);
         level.playSound(null, BlockPos.containing(center), sound, SoundSource.PLAYERS, 2.0F, 0.9F);
+        if (damage >= 10.0F) {
+            // only the violent ones (Flash Over) shake the ground
+            CameraShake.around(level, center, (float) (0.4 + reach * 0.1), 16, reach * 3.0);
+        }
         return true;
     }
 }

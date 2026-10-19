@@ -6,6 +6,7 @@ import fr.xopi.mushocraft.compat.epicfight.EpicFightEntities;
 import fr.xopi.mushocraft.compat.epicfight.StyleMovesets;
 import fr.xopi.mushocraft.core.MushoAttachments;
 import fr.xopi.mushocraft.core.MushoBlocks;
+import fr.xopi.mushocraft.client.MushoClientConfig;
 import fr.xopi.mushocraft.core.MushoConfig;
 import fr.xopi.mushocraft.core.MushoCreativeTabs;
 import fr.xopi.mushocraft.core.MushoDataComponents;
@@ -45,6 +46,7 @@ public final class MushoCraft {
         MushoSpells.register(modEventBus);
         MushoTechniques.register(modEventBus);
         modContainer.registerConfig(ModConfig.Type.SERVER, MushoConfig.SPEC);
+        modContainer.registerConfig(ModConfig.Type.CLIENT, MushoClientConfig.SPEC);
         EpicFightEntities.registerPatches();
         StyleMovesets.register(modEventBus);
         if (FMLEnvironment.dist == Dist.CLIENT) {

@@ -4,6 +4,7 @@ import fr.xopi.mushocraft.core.MushoDamageTypes;
 import fr.xopi.mushocraft.core.MushoMobEffects;
 import fr.xopi.mushocraft.core.MushoParticles;
 import fr.xopi.mushocraft.magic.entity.SpellZone;
+import fr.xopi.mushocraft.magic.fx.CameraShake;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
@@ -64,6 +65,7 @@ public final class ZoneBehaviors {
             bolt.moveTo(strike);
             bolt.setVisualOnly(true);
             level.addFreshEntity(bolt);
+            CameraShake.around(level, strike, 0.7F, 10, 24.0);
             for (LivingEntity target : level.getEntitiesOfClass(LivingEntity.class, bolt.getBoundingBox().inflate(2.5, 4.0, 2.5),
                     entity -> entity != zone.caster())) {
                 target.hurt(MushoDamageTypes.spell(level, zone, zone.caster()), (float) (strikeDamage * zone.power()));
@@ -113,6 +115,8 @@ public final class ZoneBehaviors {
             }
             if (age % 20 == 0) {
                 level.playSound(null, zone.blockPosition(), SoundEvents.ELYTRA_FLYING, SoundSource.PLAYERS, 1.5F, 0.5F);
+                // the ground trembles under the funnel
+                CameraShake.around(level, zone.position(), 0.35F, 22, zone.radius() * 3.0);
             }
         };
     }
@@ -361,6 +365,7 @@ public final class ZoneBehaviors {
                     struck.igniteForSeconds(4);
                 }
                 level.playSound(null, zone.blockPosition(), SoundEvents.LIGHTNING_BOLT_IMPACT, SoundSource.PLAYERS, 3.0F, 0.8F);
+                CameraShake.around(level, zone.position(), 2.2F, 20, 40.0);
                 zone.discard();
             }
         };
