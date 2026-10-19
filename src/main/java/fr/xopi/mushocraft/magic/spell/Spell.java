@@ -23,6 +23,7 @@ public final class Spell implements Move {
     private final int incantationTicks;
     private final int cooldownTicks;
     private final SpellEffect effect;
+    private final SpellIntent intent;
 
     private Spell(Builder builder) {
         this.school = Objects.requireNonNull(builder.school, "school");
@@ -31,6 +32,7 @@ public final class Spell implements Move {
         this.incantationTicks = builder.incantationTicks >= 0 ? builder.incantationTicks : Incantation.defaultTicks(rank);
         this.cooldownTicks = builder.cooldownTicks;
         this.effect = Objects.requireNonNull(builder.effect, "effect");
+        this.intent = builder.intent;
     }
 
     public static Builder builder(SpellSchool school, Rank rank) {
@@ -63,6 +65,10 @@ public final class Spell implements Move {
 
     public SpellEffect effect() {
         return effect;
+    }
+
+    public SpellIntent intent() {
+        return intent;
     }
 
     @Override
@@ -101,6 +107,7 @@ public final class Spell implements Move {
         private int incantationTicks = -1;
         private int cooldownTicks;
         private SpellEffect effect;
+        private SpellIntent intent = SpellIntent.ATTACK;
 
         private Builder(SpellSchool school, Rank rank) {
             this.school = school;
@@ -125,6 +132,12 @@ public final class Spell implements Move {
 
         public Builder effect(SpellEffect value) {
             this.effect = value;
+            return this;
+        }
+
+        /** What the spell is for (default: attack); tells spellcasting creatures when to use it. */
+        public Builder intent(SpellIntent value) {
+            this.intent = value;
             return this;
         }
 

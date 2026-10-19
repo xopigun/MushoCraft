@@ -3,40 +3,32 @@ package fr.xopi.mushocraft.npc;
 import fr.xopi.mushocraft.combat.move.MoveRef;
 import fr.xopi.mushocraft.core.MushoRegistries;
 import fr.xopi.mushocraft.core.Rank;
-import fr.xopi.mushocraft.magic.entity.SpellProjectile;
+import fr.xopi.mushocraft.magic.ai.SpellcasterGoal;
 import fr.xopi.mushocraft.magic.mana.ManaRules;
 import fr.xopi.mushocraft.magic.mana.ManaService;
 import fr.xopi.mushocraft.magic.spell.MagicProficiency;
 import fr.xopi.mushocraft.magic.spell.MagicService;
 import fr.xopi.mushocraft.magic.spell.Spell;
-import fr.xopi.mushocraft.magic.spell.SpellElement;
 import fr.xopi.mushocraft.magic.spell.SpellSchool;
-import fr.xopi.mushocraft.magic.spell.effect.ProjectileProfile;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.SpawnGroupData;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
-import net.minecraft.world.phys.Vec3;
 
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -46,10 +38,11 @@ import javax.annotation.Nullable;
  * A magic tutor, teaching one school up to their own rank, the way Roxy teaches Rudeus: one spell at a time, each to be
  * mastered by repetition before the next, a reservoir large enough before each new rank (see {@link TeacherEntity#teach}). Barrier and divine strike
  * tutors are Holy Knights of Milis: only the Holy Knight orders may teach those schools above Beginner (WN ch. 69).
- * When attacked, a tutor answers with bolts of their element.
+ * When attacked, a tutor fights back with the very spells they teach (see {@link SpellcasterGoal}).
  */
 public class MagicTutorEntity extends TeacherEntity {
     private static final EntityDataAccessor<Integer> SCHOOL = SynchedEntityData.defineId(MagicTutorEntity.class, EntityDataSerializers.INT);
+    private static final double POWER_PER_RANK = 0.1;
     private static final List<SpellSchool> TEACHABLE = List.of(SpellSchool.WATER, SpellSchool.FIRE, SpellSchool.WIND,
             SpellSchool.EARTH, SpellSchool.HEALING, SpellSchool.DETOXIFICATION, SpellSchool.BARRIER, SpellSchool.DIVINE_STRIKE);
 
@@ -135,7 +128,7 @@ public class MagicTutorEntity extends TeacherEntity {
     @Override
     protected void registerGoals() {
         super.registerGoals();
-        goalSelector.addGoal(2, new CastAtTargetGoal(this));
+        goalSelector.addGoal(2, new SpellcasterGoal(this, this::repertoire, this::power));
     }
 
     @Override
@@ -148,14 +141,16 @@ public class MagicTutorEntity extends TeacherEntity {
         return super.finalizeSpawn(level, difficulty, spawnType, data);
     }
 
-    private SpellElement element() {
-        return switch (school()) {
-            case FIRE -> SpellElement.FIRE;
-            case EARTH -> SpellElement.EARTH;
-            case WIND -> SpellElement.WIND;
-            case DIVINE_STRIKE, BARRIER, HEALING, DETOXIFICATION -> SpellElement.LIGHT;
-            default -> SpellElement.WATER;
-        };
+    /** The spells this tutor casts: those of their school, up to their rank. */
+    private List<Spell> repertoire() {
+        return MushoRegistries.SPELL.stream()
+                .filter(spell -> spell.school() == school() && rank().isAtLeast(spell.rank()))
+                .toList();
+    }
+
+    /** Like a player, a tutor casts a spell harder the further their rank is above it. */
+    private double power(Spell spell) {
+        return 1.0 + POWER_PER_RANK * (rank().ordinal() - spell.rank().ordinal());
     }
 
     @Override
@@ -176,47 +171,5 @@ public class MagicTutorEntity extends TeacherEntity {
         String name = tag.getString("school");
         Arrays.stream(SpellSchool.values()).filter(school -> school.getSerializedName().equals(name)).findFirst()
                 .ifPresent(this::setSchool);
-    }
-
-    /** Keeps some distance and hurls a bolt of the tutor's element every few seconds. */
-    private static final class CastAtTargetGoal extends Goal {
-        private static final int CAST_INTERVAL_TICKS = 40;
-        private static final double CAST_RANGE = 16.0;
-
-        private final MagicTutorEntity tutor;
-        private int cooldown;
-
-        private CastAtTargetGoal(MagicTutorEntity tutor) {
-            this.tutor = tutor;
-            setFlags(EnumSet.of(Flag.LOOK));
-        }
-
-        @Override
-        public boolean canUse() {
-            LivingEntity target = tutor.getTarget();
-            return target != null && target.isAlive() && tutor.distanceTo(target) < CAST_RANGE;
-        }
-
-        @Override
-        public void tick() {
-            LivingEntity target = tutor.getTarget();
-            if (target == null) {
-                return;
-            }
-            tutor.getLookControl().setLookAt(target);
-            if (--cooldown > 0 || !tutor.hasLineOfSight(target)) {
-                return;
-            }
-            cooldown = CAST_INTERVAL_TICKS;
-            float damage = 3.0F + 1.5F * tutor.rank().ordinal();
-            SpellProjectile bolt = SpellProjectile.create(tutor.level(), tutor,
-                    ProjectileProfile.of(tutor.element(), damage).speed(1.4F).size(0.5F).knockback(0.4F).build());
-            Vec3 start = tutor.getEyePosition().add(tutor.getLookAngle().scale(0.8));
-            Vec3 aim = target.getEyePosition().subtract(start);
-            bolt.setPos(start);
-            bolt.shoot(aim.x, aim.y, aim.z, 1.4F, 2.0F);
-            tutor.level().addFreshEntity(bolt);
-            tutor.level().playSound(null, tutor.blockPosition(), SoundEvents.EVOKER_CAST_SPELL, SoundSource.HOSTILE, 0.8F, 1.2F);
-        }
     }
 }

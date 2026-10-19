@@ -52,7 +52,7 @@ public final class MushoSpells {
 
     /** Creates a spout of water from the ground forming a defensive wall. */
     public static final DeferredHolder<Spell, Spell> WATER_SHIELD = SPELLS.register("water_shield",
-            () -> Spell.builder(SpellSchool.WATER, Rank.BEGINNER).manaCost(8).cooldownTicks(100)
+            () -> Spell.builder(SpellSchool.WATER, Rank.BEGINNER).intent(SpellIntent.DEFEND).manaCost(8).cooldownTicks(100)
                     .effect(new WallEffect(MushoBlocks.WATER_WALL, 1, 3, 2, 200, SoundEvents.BUCKET_EMPTY))
                     .build());
 
@@ -73,7 +73,7 @@ public final class MushoSpells {
 
     /** Creates a sword made out of ice. */
     public static final DeferredHolder<Spell, Spell> ICE_BLADE = SPELLS.register("ice_blade",
-            () -> Spell.builder(SpellSchool.WATER, Rank.BEGINNER).manaCost(10).cooldownTicks(200)
+            () -> Spell.builder(SpellSchool.WATER, Rank.BEGINNER).intent(SpellIntent.UTILITY).manaCost(10).cooldownTicks(200)
                     .effect(new ConjureItemEffect(MushoItems.ICE_BLADE, 1200, SoundEvents.GLASS_PLACE))
                     .build());
 
@@ -99,7 +99,7 @@ public final class MushoSpells {
 
     /** Heals minor cuts (Beginner, anime S1 ep. 1 per the wiki). */
     public static final DeferredHolder<Spell, Spell> HEALING = SPELLS.register("healing",
-            () -> Spell.builder(SpellSchool.HEALING, Rank.BEGINNER).manaCost(8).cooldownTicks(40)
+            () -> Spell.builder(SpellSchool.HEALING, Rank.BEGINNER).intent(SpellIntent.SUPPORT).manaCost(8).cooldownTicks(40)
                     .effect(new HealEffect(4.0F, 5.0))
                     .build());
 
@@ -108,7 +108,7 @@ public final class MushoSpells {
      * at the lowest rank: classed Beginner (docs/ECARTS.md, choice to validate).
      */
     public static final DeferredHolder<Spell, Spell> DETOXIFICATION = SPELLS.register("detoxification",
-            () -> Spell.builder(SpellSchool.DETOXIFICATION, Rank.BEGINNER).manaCost(8).cooldownTicks(60)
+            () -> Spell.builder(SpellSchool.DETOXIFICATION, Rank.BEGINNER).intent(SpellIntent.SUPPORT).manaCost(8).cooldownTicks(60)
                     .effect(new CureEffect(List.of(MobEffects.POISON, MobEffects.HUNGER, MobEffects.CONFUSION,
                             MobEffects.WEAKNESS)))
                     .build());
@@ -117,7 +117,7 @@ public final class MushoSpells {
 
     /** Semi-transparent barrier that blocks magical attacks and isolates heat and cold (LN vol. 8 ch. 4). */
     public static final DeferredHolder<Spell, Spell> MAGIC_SHIELD = SPELLS.register("magic_shield",
-            () -> Spell.builder(SpellSchool.BARRIER, Rank.BEGINNER).manaCost(10).cooldownTicks(300)
+            () -> Spell.builder(SpellSchool.BARRIER, Rank.BEGINNER).intent(SpellIntent.DEFEND).manaCost(10).cooldownTicks(300)
                     .effect(new SelfStatusEffect(MushoMobEffects.MAGIC_SHIELD, 300, 0, SoundEvents.BEACON_ACTIVATE))
                     .build());
 
@@ -201,7 +201,7 @@ public final class MushoSpells {
 
     /** Heals wounds as severe as broken bones (LN vol. 2 ch. 2). */
     public static final DeferredHolder<Spell, Spell> X_HEALING = SPELLS.register("x_healing",
-            () -> Spell.builder(SpellSchool.HEALING, Rank.INTERMEDIATE).manaCost(18).cooldownTicks(100)
+            () -> Spell.builder(SpellSchool.HEALING, Rank.INTERMEDIATE).intent(SpellIntent.SUPPORT).manaCost(18).cooldownTicks(100)
                     .effect(new HealEffect(10.0F, 5.0))
                     .build());
 
@@ -210,7 +210,7 @@ public final class MushoSpells {
      * teach barrier magic (WN ch. 69): no book teaches it, a teacher will.
      */
     public static final DeferredHolder<Spell, Spell> PHYSICAL_SHIELD = SPELLS.register("physical_shield",
-            () -> Spell.builder(SpellSchool.BARRIER, Rank.INTERMEDIATE).manaCost(20).cooldownTicks(400)
+            () -> Spell.builder(SpellSchool.BARRIER, Rank.INTERMEDIATE).intent(SpellIntent.DEFEND).manaCost(20).cooldownTicks(400)
                     .effect(new SelfStatusEffect(MushoMobEffects.PHYSICAL_SHIELD, 300, 0, SoundEvents.ANVIL_PLACE))
                     .build());
 
@@ -225,7 +225,7 @@ public final class MushoSpells {
 
     /** Manipulates clouds to bring down rain (anime, season 1; the wiki cites no volume). */
     public static final DeferredHolder<Spell, Spell> SQUALL = SPELLS.register("squall",
-            () -> Spell.builder(SpellSchool.WATER, Rank.ADVANCED).manaCost(60).cooldownTicks(2400)
+            () -> Spell.builder(SpellSchool.WATER, Rank.ADVANCED).intent(SpellIntent.UTILITY).manaCost(60).cooldownTicks(2400)
                     .effect(new WeatherEffect(6000))
                     .build());
 
@@ -255,7 +255,7 @@ public final class MushoSpells {
 
     /** Raises a fortress of earth around the caster (LN vol. 1 ch. 6). */
     public static final DeferredHolder<Spell, Spell> EARTH_FORTRESS = SPELLS.register("earth_fortress",
-            () -> Spell.builder(SpellSchool.EARTH, Rank.ADVANCED).manaCost(40).cooldownTicks(600)
+            () -> Spell.builder(SpellSchool.EARTH, Rank.ADVANCED).intent(SpellIntent.DEFEND).manaCost(40).cooldownTicks(600)
                     .effect(new FortressEffect(MushoBlocks.CONJURED_EARTH, 2, 3, 400, SoundEvents.ROOTED_DIRT_PLACE))
                     .build());
 
@@ -277,7 +277,7 @@ public final class MushoSpells {
 
     /** Heals major open wounds and reattaches freshly severed limbs (LN vol. 12 ch. 9). */
     public static final DeferredHolder<Spell, Spell> SHINE_HEALING = SPELLS.register("shine_healing",
-            () -> Spell.builder(SpellSchool.HEALING, Rank.ADVANCED).manaCost(35).cooldownTicks(160)
+            () -> Spell.builder(SpellSchool.HEALING, Rank.ADVANCED).intent(SpellIntent.SUPPORT).manaCost(35).cooldownTicks(160)
                     .effect(new HealEffect(20.0F, 5.0))
                     .build());
 

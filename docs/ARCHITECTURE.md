@@ -134,12 +134,20 @@ Chaque stat vaut : base humaine commune × (1 + tirage autour de 0, influencé p
 
 Les stats s'appliquent en `AttributeModifier` permanents (ids `mushocraft:stat/<nom>`). Epic Fight cumule bien les modificateurs du joueur avec ceux de l'arme (`PlayerPatch.getWeaponAttribute`).
 
-| Stat | Attributs visés **[À VALIDER]** | S'entraîne par |
+Répartition demandée par Xopi le 19/10 :
+
+| Stat | Effet (au maximum, adulte entraîné, talent moyen) | S'entraîne par |
 |---|---|---|
-| Force | `attack_damage`, `epicfight:impact` | coups portés, dégâts infligés |
-| Vitalité | `max_health`, `epicfight:stamina` | dégâts encaissés, endurance dépensée |
-| Vitesse | `movement_speed`, `attack_speed`, `epicfight:stamina_regen` | sprint, esquives |
-| Résistance | `armor`, `epicfight:stun_armor`, `knockback_resistance` | coups encaissés, gardes réussies |
+| Force | `attack_damage` +6, `epicfight:impact` | coups portés, dégâts infligés |
+| Vitalité | `max_health` +20 (dix cœurs), `epicfight:stamina` | dégâts encaissés, course |
+| Résistance | `armor` +10, `armor_toughness` +6, `epicfight:stun_armor`, `knockback_resistance` | coups encaissés, gardes réussies |
+| Vitesse | `attack_speed` et `epicfight:offhand_attack_speed` ×1,35 (Epic Fight joue ses animations d'attaque à cette vitesse : coups plus rapides), élan de course et de saut | sprint, esquives |
+
+**Élan de course et de saut** (`SprintMomentum`, même principe que la `PlayerPhysicalAbilityProcedure` de JujutsuCraft) :
+- sans entraînement, aucune vitesse en plus ;
+- un coureur entraîné gagne Vitesse I, puis un niveau de plus à chaque renouvellement, tant qu'il court, jusqu'à un plafond fixé par la stat (Vitesse VII au maximum) ;
+- accroupi, on charge un saut (Saut amélioré IV au maximum) ; la vitesse acquise porte aussi le saut ;
+- les effets sont courts et cachés ; une potion n'est jamais écrasée.
 
 Les stats suivent aussi l'âge : un bébé est faible, et l'échelle de taille vanilla `minecraft:generic.scale` sert à la croissance physique.
 
@@ -190,6 +198,24 @@ Mise en œuvre proposée :
 Le refus de naître sans aptitude est un écart (voir `ECARTS.md`).
 
 ### 5.4 Maîtres
+
+**Maîtrise par move (demande de Xopi du 19/10)** : chaque sort et chaque technique a un compteur de répétitions (`MoveMastery`).
+- Un move tout juste appris rate une fois sur deux. Il n'a que 60 % de sa puissance et il est un tiers plus lent : incantation plus longue, ou animation d'Epic Fight ralentie par un modificateur temporaire de vitesse d'attaque.
+- Le risque baisse vite avec la pratique. Après 50 répétitions, le move est maîtrisé : pleine puissance, pleine vitesse, plus d'échec.
+- Un échec coûte la moitié de la recharge (et le mana d'un sort) et compte pour une demi-répétition.
+
+**Leçon (patron Template Method, `TeacherEntity.teach`)**, la même pour tous les maîtres :
+1. Palier par palier jusqu'au rang du maître, le maître commence par une exigence : un corps entraîné pour l'épée (`BodyRules.requiredBodyLevel`), une capacité de mana pour la magie (`ManaRules.capacityToStudy`).
+2. Il montre un seul move du palier à la fois.
+3. Il attend qu'il soit maîtrisé avant de montrer le suivant.
+4. Quand tous les moves du palier sont maîtrisés, il accorde le rang. L'aura de combat exigée par le wiki reste nécessaire pour l'épée.
+
+L'expérience de style ne donne plus de rang : seul un maître en donne.
+
+**Règle pour tous les mobs du mod** : ils sont des entités Epic Fight (patch, squelette, rendu animé). Ceux qui connaissent la magie lancent les vrais sorts du mod comme un joueur (`SpellcasterGoal`) :
+- ils incantent et peuvent être interrompus par un coup ;
+- ils choisissent selon la situation : un soin s'ils sont blessés, une défense si l'ennemi est proche, sinon une attaque visée sur la cible ;
+- chaque sort indique à quoi il sert (`SpellIntent`).
 
 - PNJ humanoïdes avec un patch Epic Fight (`HumanoidMobPatch`), enregistré via `EpicFightEventHooks.Registry.ENTITY_PATCH`. Ce n'est pas le bus NeoForge : la doc d'Epic Fight est périmée sur ce point.
 - `HumanoidMobPatch` choisit l'IA de combat d'après la catégorie et le style de l'arme tenue. Chaque maître reçoit donc l'arme de son style :
