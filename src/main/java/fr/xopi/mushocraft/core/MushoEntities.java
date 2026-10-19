@@ -11,6 +11,7 @@ import fr.xopi.mushocraft.magic.summon.LamplightSpirit;
 import fr.xopi.mushocraft.magic.summon.SummonedSpirit;
 import fr.xopi.mushocraft.monster.AssaultDog;
 import fr.xopi.mushocraft.monster.MushoMonster;
+import fr.xopi.mushocraft.monster.Goblin;
 import fr.xopi.mushocraft.monster.LusterGrizzly;
 import fr.xopi.mushocraft.monster.PaxCoyote;
 import fr.xopi.mushocraft.monster.TerminateBoar;
@@ -169,6 +170,14 @@ public final class MushoEntities {
                     .clientTrackingRange(10)
                     .build(MushoCraft.id("luster_grizzly").toString()));
 
+    /** Goblin, a humanoid monster with a crude club, cowardly alone, raiding villages in gangs (rank E). */
+    public static final DeferredHolder<EntityType<?>, EntityType<Goblin>> GOBLIN =
+            ENTITY_TYPES.register("goblin", () -> EntityType.Builder
+                    .<Goblin>of(Goblin::new, MobCategory.MONSTER)
+                    .sized(0.6F, 1.75F)
+                    .clientTrackingRange(10)
+                    .build(MushoCraft.id("goblin").toString()));
+
     private MushoEntities() {
     }
 
@@ -197,5 +206,6 @@ public final class MushoEntities {
         event.put(PAX_COYOTE.get(), PaxCoyote.createAttributes().build());
         event.put(TERMINATE_BOAR.get(), TerminateBoar.createAttributes().build());
         event.put(LUSTER_GRIZZLY.get(), LusterGrizzly.createAttributes().build());
+        event.put(GOBLIN.get(), Goblin.createAttributes().build());
     }
 }

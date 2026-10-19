@@ -4,6 +4,7 @@ import fr.xopi.mushocraft.compat.epicfight.BearAnimations;
 import fr.xopi.mushocraft.compat.epicfight.BoarAnimations;
 import fr.xopi.mushocraft.compat.epicfight.CanineAnimations;
 import fr.xopi.mushocraft.compat.epicfight.EpicFightAnimations;
+import fr.xopi.mushocraft.compat.epicfight.GoblinAnimations;
 import fr.xopi.mushocraft.compat.epicfight.MonsterAnimations;
 import fr.xopi.mushocraft.core.MushoEntities;
 import fr.xopi.mushocraft.gametest.showcase.GalleryDirector.Exhibit;
@@ -58,6 +59,16 @@ final class MonsterExhibits {
         bearClips.put("death", () -> bear.get().death());
         species(all, "luster_grizzly", MushoEntities.LUSTER_GRIZZLY.get(), bearClips, 5.0,
                 player -> packHunt(player, MushoEntities.LUSTER_GRIZZLY.get()));
+        Supplier<GoblinAnimations> goblin = () -> MonsterAnimations.GOBLIN;
+        Map<String, Supplier<AnimationAccessor<? extends StaticAnimation>>> goblinClips = new LinkedHashMap<>();
+        goblinClips.put("walk", () -> goblin.get().walk());
+        goblinClips.put("run", () -> goblin.get().run());
+        goblinClips.put("swing", () -> goblin.get().swing());
+        goblinClips.put("overhead", () -> goblin.get().overhead());
+        goblinClips.put("shout", () -> goblin.get().shout());
+        goblinClips.put("hit", () -> goblin.get().hit());
+        goblinClips.put("death", () -> goblin.get().death());
+        species(all, "goblin", MushoEntities.GOBLIN.get(), goblinClips, 3.2, player -> packHunt(player, MushoEntities.GOBLIN.get()));
     }
 
     private static <T extends MushoMonster> void canine(List<Exhibit> all, String name, EntityType<T> type,

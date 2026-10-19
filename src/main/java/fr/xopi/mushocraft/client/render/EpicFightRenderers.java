@@ -37,6 +37,8 @@ public final class EpicFightRenderers {
                     type -> new PCustomEntityRenderer(monsterMesh("terminate_boar"), event.getContext()));
             event.addPatchedEntityRenderer(MushoEntities.LUSTER_GRIZZLY.get(),
                     type -> new PCustomEntityRenderer(monsterMesh("luster_grizzly"), event.getContext()));
+            event.addPatchedEntityRenderer(MushoEntities.GOBLIN.get(),
+                    type -> new PCustomEntityRenderer(monsterMesh("goblin"), event.getContext()));
         });
     }
 }

@@ -6,7 +6,6 @@ import fr.xopi.mushocraft.monster.ai.PackHuntGoal;
 import fr.xopi.mushocraft.monster.ai.RetreatWhenWoundedGoal;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageSource;
@@ -37,9 +36,7 @@ public class PaxCoyote extends MushoMonster {
     /** A leader divides about once every few in-game days while its group is small (the novel: every few months). */
     public static final long DIVISION_TICKS = 3 * 24000L;
     public static final int GROUP_CAP = 10;
-    private static final String LAST_DIVISION = "LastDivision";
-
-    private long lastDivision;
+    private final PackGrowth division = new PackGrowth(DIVISION_TICKS, GROUP_CAP);
 
     public PaxCoyote(EntityType<? extends PaxCoyote> type, Level level) {
         super(type, level);
@@ -84,38 +81,26 @@ public class PaxCoyote extends MushoMonster {
     @Override
     public void aiStep() {
         super.aiStep();
-        if (level() instanceof ServerLevel && tickCount % 200 == 0 && isPackLeader() && getTarget() == null
-                && level().getGameTime() - lastDivision >= DIVISION_TICKS) {
-            divide();
+        if (tickCount % 200 == 0) {
+            division.tick(this);
         }
     }
 
     /** The leader divides: a new coyote, fully grown, joins the group under its control. */
-    public Optional<PaxCoyote> divide() {
-        if (!(level() instanceof ServerLevel level) || MonsterPack.mates(this).size() + 1 >= GROUP_CAP) {
-            return Optional.empty();
-        }
-        lastDivision = level.getGameTime();
-        PaxCoyote offspring = (PaxCoyote) getType().create(level);
-        if (offspring == null) {
-            return Optional.empty();
-        }
-        offspring.moveTo(getX(), getY(), getZ(), getYRot(), 0.0F);
-        offspring.joinPack(pack().orElseThrow(), false);
-        level.addFreshEntity(offspring);
-        return Optional.of(offspring);
+    public Optional<MushoMonster> divide() {
+        return division.grow(this);
     }
 
     @Override
     public void addAdditionalSaveData(CompoundTag tag) {
         super.addAdditionalSaveData(tag);
-        tag.putLong(LAST_DIVISION, lastDivision);
+        division.save(tag);
     }
 
     @Override
     public void readAdditionalSaveData(CompoundTag tag) {
         super.readAdditionalSaveData(tag);
-        lastDivision = tag.getLong(LAST_DIVISION);
+        division.load(tag);
     }
 
     @Override

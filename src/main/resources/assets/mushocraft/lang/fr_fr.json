@@ -241,6 +241,8 @@
   "entity.mushocraft.magic_tutor.title.milis": "Chevalier de Milis · %2$s (%1$s)",
   "item.mushocraft.sword_master_spawn_egg": "Œuf d'apparition de maître d'épée",
   "item.mushocraft.magic_tutor_spawn_egg": "Œuf d'apparition de précepteur de magie",
+  "entity.mushocraft.goblin": "Gobelin",
+  "item.mushocraft.goblin_spawn_egg": "Œuf d'apparition de gobelin",
   "entity.mushocraft.luster_grizzly": "Grizzly lustré",
   "item.mushocraft.luster_grizzly_spawn_egg": "Œuf d'apparition de grizzly lustré",
   "entity.mushocraft.assault_dog": "Chien d'assaut",

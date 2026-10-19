@@ -27,6 +27,7 @@ public final class EpicFightEntities {
             event.registerEntityPatch(MushoEntities.PAX_COYOTE.get(), coyote -> new CaninePatch<>(coyote, () -> MonsterAnimations.PAX_COYOTE));
             event.registerEntityPatch(MushoEntities.TERMINATE_BOAR.get(), boar -> new BoarPatch<>(boar, () -> MonsterAnimations.TERMINATE_BOAR));
             event.registerEntityPatch(MushoEntities.LUSTER_GRIZZLY.get(), monster -> new BearPatch<>(monster, () -> MonsterAnimations.LUSTER_GRIZZLY));
+            event.registerEntityPatch(MushoEntities.GOBLIN.get(), monster -> new GoblinPatch<>(monster, () -> MonsterAnimations.GOBLIN));
         });
     }
 
@@ -39,6 +40,7 @@ public final class EpicFightEntities {
             Armatures.registerEntityTypeArmature(MushoEntities.PAX_COYOTE.get(), MonsterAnimations.PAX_COYOTE_ARMATURE);
             Armatures.registerEntityTypeArmature(MushoEntities.TERMINATE_BOAR.get(), MonsterAnimations.TERMINATE_BOAR_ARMATURE);
             Armatures.registerEntityTypeArmature(MushoEntities.LUSTER_GRIZZLY.get(), MonsterAnimations.LUSTER_GRIZZLY_ARMATURE);
+            Armatures.registerEntityTypeArmature(MushoEntities.GOBLIN.get(), MonsterAnimations.GOBLIN_ARMATURE);
         });
     }
 }
