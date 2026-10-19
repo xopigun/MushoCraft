@@ -87,6 +87,24 @@ public final class StyleMovesetGameTests {
     }
 
     @GameTest(template = EMPTY)
+    public static void theNorthGodFightsWithAPairOfSwords(GameTestHelper helper) {
+        ServerPlayer player = TestPlayers.join(helper);
+        ItemStack sword = new ItemStack(Items.IRON_SWORD);
+        PlayerPatch<?> patch = armed(helper, player, sword);
+        player.setItemInHand(InteractionHand.OFF_HAND, new ItemStack(Items.IRON_SWORD));
+        SwordService.adopt(player, SwordStyle.SWORD_GOD);
+        helper.assertFalse(capability(sword).getStyle(patch) instanceof EpicFightSwordStyles, "the Sword God fights with one sword");
+        SwordService.adopt(player, SwordStyle.NORTH_GOD);
+        helper.assertValueEqual(capability(sword).getStyle(patch), EpicFightSwordStyles.MUSHO_NORTH_GOD_DUAL, "two swords, North God");
+        helper.assertValueEqual(capability(sword).getAutoAttackMotion(patch).get(1), Animations.DAGGER_DUAL_AUTO2,
+                "its own two-weapon combo");
+        player.setItemInHand(InteractionHand.OFF_HAND, ItemStack.EMPTY);
+        helper.assertValueEqual(capability(sword).getStyle(patch), EpicFightSwordStyles.MUSHO_NORTH_GOD, "one sword again");
+        TestPlayers.leave(player);
+        helper.succeed();
+    }
+
+    @GameTest(template = EMPTY)
     public static void onlyTheNorthGodFightsWithAnAxe(GameTestHelper helper) {
         ServerPlayer player = TestPlayers.join(helper);
         ItemStack axe = new ItemStack(Items.IRON_AXE);
@@ -104,14 +122,14 @@ public final class StyleMovesetGameTests {
     }
 
     @GameTest(template = EMPTY)
-    public static void dualWieldingKeepsEpicFightsMoveset(GameTestHelper helper) {
+    public static void dualWieldingKeepsEpicFightsMovesetOutsideTheNorthGod(GameTestHelper helper) {
         ServerPlayer player = TestPlayers.join(helper);
         ItemStack sword = new ItemStack(Items.IRON_SWORD);
         PlayerPatch<?> patch = armed(helper, player, sword);
         player.setItemInHand(InteractionHand.OFF_HAND, new ItemStack(Items.IRON_SWORD));
-        SwordService.adopt(player, SwordStyle.NORTH_GOD);
+        SwordService.adopt(player, SwordStyle.WATER_GOD);
 
-        helper.assertValueEqual(capability(sword).getStyle(patch), CapabilityItem.Styles.TWO_HAND, "two swords: dual style");
+        helper.assertValueEqual(capability(sword).getStyle(patch), CapabilityItem.Styles.TWO_HAND, "two swords: Epic Fight's dual style");
         TestPlayers.leave(player);
         helper.succeed();
     }

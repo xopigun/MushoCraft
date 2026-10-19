@@ -37,7 +37,9 @@ import yesman.epicfight.world.capabilities.item.WeaponCategory;
  * spears take only the North God Style, whose branches fight with axes, staves and other weapons rather than a sword
  * alone (wiki, page <i>North God Style</i>); the other two styles are styles of the sword, and leave them their own
  * moveset.
- * Dual wielding and sword-and-shield keep Epic Fight's own movesets: a style only applies with a free off hand.
+ * Sword-and-shield keeps Epic Fight's own moveset: a style applies with a free off hand. The one exception is the North
+ * God Style with a weapon in each hand (its branches use two swords, wiki): swords and daggers held in pairs get its own
+ * two-weapon combo, built on Epic Fight's dual movesets.
  */
 public final class StyleMovesets {
     public static final ModifierRegister REGISTRY = ModifierRegister.create(MushoCraft.MODID);
@@ -60,7 +62,18 @@ public final class StyleMovesets {
 
     /** The styles' combos on one weapon type; a style without a combo leaves the weapon its own moveset. */
     private record WeaponCombos(DeferredWeapon weapon, WeaponCategory category, DeferredMoveset weaponMoveset,
-                                @Nullable Combo swordGod, @Nullable Combo waterGod, Combo northGod) {
+                                @Nullable Combo swordGod, @Nullable Combo waterGod, Combo northGod,
+                                @Nullable Combo northGodDual, @Nullable DeferredMoveset dualMoveset) {
+        WeaponCombos(DeferredWeapon weapon, WeaponCategory category, DeferredMoveset weaponMoveset,
+                     @Nullable Combo swordGod, @Nullable Combo waterGod, Combo northGod) {
+            this(weapon, category, weaponMoveset, swordGod, waterGod, northGod, null, null);
+        }
+
+        /** The same weapon, also fought with in pairs by the North God Style. */
+        WeaponCombos inPairs(Combo combo, DeferredMoveset pairMoveset) {
+            return new WeaponCombos(weapon, category, weaponMoveset, swordGod, waterGod, northGod, combo, pairMoveset);
+        }
+
         /** A weapon only the North God Style fights with. */
         static WeaponCombos northGodOnly(DeferredWeapon weapon, WeaponCategory category, DeferredMoveset weaponMoveset, Combo northGod) {
             return new WeaponCombos(weapon, category, weaponMoveset, null, null, northGod);
@@ -71,6 +84,7 @@ public final class StyleMovesets {
                 case MUSHO_SWORD_GOD -> swordGod;
                 case MUSHO_WATER_GOD -> waterGod;
                 case MUSHO_NORTH_GOD -> northGod;
+                case MUSHO_NORTH_GOD_DUAL -> northGodDual;
             });
         }
 
@@ -78,9 +92,10 @@ public final class StyleMovesets {
             WeaponModifier.Builder modifier = WeaponModifier.builder().target(weapon);
             for (EpicFightSwordStyles style : EpicFightSwordStyles.values()) {
                 of(style).ifPresent(combo -> {
+                    boolean pair = style == EpicFightSwordStyles.MUSHO_NORTH_GOD_DUAL;
                     modifier.addConditionalModifier(ProviderConditional.createCustom(style, patch -> fightsIn(patch, style),
-                            !isTwoHanded(category)));
-                    modifier.addMovesetModifier(style, combo.over(weaponMoveset));
+                            pair || !isTwoHanded(category)));
+                    modifier.addMovesetModifier(style, combo.over(pair ? dualMoveset : weaponMoveset));
                 });
             }
             return modifier;
@@ -95,7 +110,10 @@ public final class StyleMovesets {
                 new Combo(List.of(Animations.SWORD_AUTO1, Animations.SWORD_AUTO2),
                         Animations.SWORD_DASH, Animations.SWORD_AIR_SLASH),
                 new Combo(List.of(Animations.SWORD_AUTO1, Animations.DAGGER_AUTO3, Animations.LONGSWORD_AUTO2, Animations.SWORD_AUTO3),
-                        Animations.DAGGER_DASH, Animations.SWORD_AIR_SLASH));
+                        Animations.DAGGER_DASH, Animations.SWORD_AIR_SLASH))
+                .inPairs(new Combo(List.of(Animations.SWORD_DUAL_AUTO1, Animations.DAGGER_DUAL_AUTO2, Animations.SWORD_DUAL_AUTO2,
+                        Animations.DAGGER_DUAL_AUTO4, Animations.SWORD_DUAL_AUTO3), Animations.SWORD_DUAL_DASH, Animations.SWORD_DUAL_AIR_SLASH),
+                        EpicFightMovesets.SWORD_DUAL);
     }
 
     private static WeaponCombos tachi() {
@@ -149,7 +167,10 @@ public final class StyleMovesets {
                 new Combo(List.of(Animations.DAGGER_AUTO1, Animations.DAGGER_AUTO3),
                         Animations.DAGGER_DASH, Animations.DAGGER_AIR_SLASH),
                 new Combo(List.of(Animations.DAGGER_AUTO1, Animations.AXE_AUTO1, Animations.DAGGER_AUTO3, Animations.SWORD_AUTO3),
-                        Animations.DAGGER_DASH, Animations.DAGGER_AIR_SLASH));
+                        Animations.DAGGER_DASH, Animations.DAGGER_AIR_SLASH))
+                .inPairs(new Combo(List.of(Animations.DAGGER_DUAL_AUTO1, Animations.SWORD_DUAL_AUTO1, Animations.DAGGER_DUAL_AUTO3,
+                        Animations.DAGGER_DUAL_AUTO4), Animations.DAGGER_DUAL_DASH, Animations.DAGGER_DUAL_AIR_SLASH),
+                        EpicFightMovesets.DAGGER_DUAL);
     }
 
     private static WeaponCombos axe() {
@@ -202,10 +223,12 @@ public final class StyleMovesets {
         return TWO_HANDED.contains(category);
     }
 
-    /** A player fighting in this style, weapon alone in hand. */
+    /** A player fighting in this style: weapon alone in hand, or a weapon in each hand for the North God's pairs. */
     private static boolean fightsIn(LivingEntityPatch<?> patch, EpicFightSwordStyles style) {
-        return patch.getOriginal() instanceof Player player
-                && player.getOffhandItem().isEmpty()
-                && ActiveStyles.of(player).filter(style.style()::equals).isPresent();
+        if (!(patch.getOriginal() instanceof Player player) || ActiveStyles.of(player).filter(style.style()::equals).isEmpty()) {
+            return false;
+        }
+        boolean pair = EpicFightWeapons.holdsTwoWeapons(player);
+        return style == EpicFightSwordStyles.MUSHO_NORTH_GOD_DUAL ? pair : player.getOffhandItem().isEmpty();
     }
 }

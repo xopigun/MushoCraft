@@ -252,6 +252,7 @@ Les stats suivent aussi l'âge : un bébé est faible, et l'échelle de taille v
 - **Branchement Epic Fight :**
   - Un `Style` Epic Fight par style MushoCraft (enum extensible).
   - Un `Moveset` par style, sur les catégories d'armes existantes, via `WeaponModifier` : épée, tachi, épée longue, uchigatana, épée à deux mains et dague prennent les trois styles ; la hache et la lance seulement le Style du Dieu du Nord, dont les branches se battent avec d'autres armes que l'épée (E28).
+  - Une arme dans chaque main : le Dieu du Nord a son propre style Epic Fight (`MUSHO_NORTH_GOD_DUAL`) et son enchaînement à deux épées ou deux dagues, bâti sur les jeux doubles d'Epic Fight ; avec les autres styles, la paire garde le jeu double d'Epic Fight (20/10).
   - Sélection par `ProviderConditional.createCustom(style, joueur → style actif == X)`. C'est le conditionnel de plus haute priorité.
   - Au changement de style, appeler `changeWeaponInnateSkill` et `modifyLivingMotionByCurrentItem` (vérifié dans le code d'Epic Fight).
 - **Techniques spéciales.** Ce sont nos propres `Move`, pas des skills Epic Fight. Les slots de skills d'Epic Fight sont fixes et chaque skill a sa propre recharge, alors qu'on veut une recharge **commune au style**. L'exécution passe par `LivingEntityPatch.playAnimationSynchronized` avec une `AttackAnimation`. On commence par les animations existantes d'Epic Fight (référencées, jamais copiées) ; les nouvelles animations seront créées à partir de zéro.

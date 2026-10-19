@@ -10,7 +10,9 @@ import yesman.epicfight.world.capabilities.item.Style;
 public enum EpicFightSwordStyles implements Style {
     MUSHO_SWORD_GOD(SwordStyle.SWORD_GOD),
     MUSHO_WATER_GOD(SwordStyle.WATER_GOD),
-    MUSHO_NORTH_GOD(SwordStyle.NORTH_GOD);
+    MUSHO_NORTH_GOD(SwordStyle.NORTH_GOD),
+    /** The North God Style with a weapon in each hand (Auber's two swords, Hazy Cross). */
+    MUSHO_NORTH_GOD_DUAL(SwordStyle.NORTH_GOD);
 
     private final SwordStyle style;
     private final int id;
