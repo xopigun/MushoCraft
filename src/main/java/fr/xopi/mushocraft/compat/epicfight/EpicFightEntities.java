@@ -9,7 +9,7 @@ import yesman.epicfight.api.event.EpicFightEventHooks;
 import yesman.epicfight.gameasset.Armatures;
 
 /**
- * Makes MushoCraft's humanoids Epic Fight entities: their patch (AI and animations) and their skeleton.
+ * Makes MushoCraft's humanoids and monsters Epic Fight entities: their patch (AI and animations) and their skeleton.
  */
 @EventBusSubscriber(modid = MushoCraft.MODID)
 public final class EpicFightEntities {
@@ -23,6 +23,7 @@ public final class EpicFightEntities {
         EpicFightEventHooks.Registry.ENTITY_PATCH.registerEvent(event -> {
             event.registerEntityPatch(MushoEntities.SWORD_MASTER.get(), TeacherPatch::new);
             event.registerEntityPatch(MushoEntities.MAGIC_TUTOR.get(), TeacherPatch::new);
+            event.registerEntityPatch(MushoEntities.ASSAULT_DOG.get(), dog -> new CaninePatch<>(dog, () -> MonsterAnimations.ASSAULT_DOG));
         });
     }
 
@@ -31,6 +32,7 @@ public final class EpicFightEntities {
         event.enqueueWork(() -> {
             Armatures.registerEntityTypeArmature(MushoEntities.SWORD_MASTER.get(), Armatures.BIPED);
             Armatures.registerEntityTypeArmature(MushoEntities.MAGIC_TUTOR.get(), Armatures.BIPED);
+            Armatures.registerEntityTypeArmature(MushoEntities.ASSAULT_DOG.get(), MonsterAnimations.ASSAULT_DOG_ARMATURE);
         });
     }
 }

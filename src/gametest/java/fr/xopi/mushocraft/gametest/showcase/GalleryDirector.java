@@ -1,6 +1,7 @@
 package fr.xopi.mushocraft.gametest.showcase;
 
 import fr.xopi.mushocraft.MushoCraft;
+import fr.xopi.mushocraft.monster.MushoMonster;
 import fr.xopi.mushocraft.core.MushoRegistries;
 import fr.xopi.mushocraft.life.LifeService;
 import fr.xopi.mushocraft.magic.block.ConjuredBlock;
@@ -54,6 +55,8 @@ import java.util.function.Consumer;
 @EventBusSubscriber(modid = MushoCraft.MODID, value = Dist.CLIENT)
 public final class GalleryDirector {
     private static final boolean ENABLED = Boolean.getBoolean("mushocraft.gallery");
+    /** Only the exhibits whose name starts with this, when set (the spellbook is then skipped). */
+    private static final String ONLY = System.getProperty("mushocraft.gallery.only", "");
     private static final int START_TICK = 60;
     private static final int TICKS_PER_SPELL = 34;
     private static final int FIRST_SHOT = 3;
@@ -98,14 +101,22 @@ public final class GalleryDirector {
             exhibits = exhibits();
         }
         int elapsed = ticksInWorld - START_TICK;
-        int index = elapsed / TICKS_PER_SPELL;
-        int phase = elapsed % TICKS_PER_SPELL;
+        int index = 0;
+        while (index < exhibits.size() && elapsed >= exhibits.get(index).ticks()) {
+            elapsed -= exhibits.get(index).ticks();
+            index++;
+        }
         if (index >= exhibits.size()) {
-            showBook(minecraft, elapsed - exhibits.size() * TICKS_PER_SPELL);
+            if (ONLY.isEmpty()) {
+                showBook(minecraft, elapsed);
+            } else {
+                minecraft.stop();
+            }
             return;
         }
         Exhibit exhibit = exhibits.get(index);
         String name = String.format(Locale.ROOT, "gallery_%02d_%s", index, exhibit.name());
+        int phase = elapsed;
         if (phase == 0) {
             onServer(player -> setUp(player));
         } else if (phase == 2) {
@@ -114,11 +125,15 @@ public final class GalleryDirector {
                 ManaService.refill(player);
                 exhibit.show().accept(player);
             });
-        } else if (phase == 2 + FIRST_SHOT) {
-            logVisible(minecraft, exhibit.name());
-            shoot(minecraft, name + "_a");
-        } else if (phase == 2 + SECOND_SHOT) {
-            shoot(minecraft, name + "_b");
+        }
+        int[] shots = exhibit.shots();
+        for (int i = 0; i < shots.length; i++) {
+            if (phase == 2 + shots[i]) {
+                if (i == 0) {
+                    logVisible(minecraft, exhibit.name());
+                }
+                shoot(minecraft, name + "_" + (char) ('a' + i));
+            }
         }
     }
 
@@ -160,8 +175,11 @@ public final class GalleryDirector {
         }
     }
 
-    /** Something to show: every spell, in order, then the effects no spell shows. */
-    private record Exhibit(String name, Consumer<ServerPlayer> show) {
+    /** Something to show: every spell, in order, then the effects no spell shows, then the monsters. */
+    record Exhibit(String name, Consumer<ServerPlayer> show, int ticks, int[] shots) {
+        Exhibit(String name, Consumer<ServerPlayer> show) {
+            this(name, show, TICKS_PER_SPELL, new int[]{FIRST_SHOT, SECOND_SHOT});
+        }
     }
 
     private static List<Exhibit> exhibits() {
@@ -187,7 +205,8 @@ public final class GalleryDirector {
                     disturb.effect().cast(new SpellContext(player, disturb, 1.0));
                     ChantBroadcast.stopped(dummy);
                 })));
-        return all;
+        MonsterExhibits.add(all);
+        return all.stream().filter(exhibit -> exhibit.name().startsWith(ONLY)).toList();
     }
 
     /** A clean stage: the caster at the arena's middle facing south, slightly down, a dummy ahead. */
@@ -196,7 +215,8 @@ public final class GalleryDirector {
         level.getEntitiesOfClass(Entity.class, player.getBoundingBox().inflate(64.0),
                 entity -> entity instanceof WaterSheet || entity instanceof SpellZone || entity instanceof SpellPillar
                         || entity instanceof SpellFire || entity instanceof SpellProjectile || entity instanceof SpellBeam
-                        || entity instanceof Husk || entity instanceof AreaEffectCloud).forEach(Entity::discard);
+                        || entity instanceof Husk || entity instanceof AreaEffectCloud
+                        || entity instanceof MushoMonster).forEach(Entity::discard);
         BlockPos.betweenClosed(player.blockPosition().offset(-14, -2, -14), player.blockPosition().offset(14, 10, 14)).forEach(pos -> {
             if (level.getBlockState(pos).getBlock() instanceof ConjuredBlock) {
                 level.removeBlock(pos, false);

@@ -322,6 +322,20 @@ L'expérience de style ne donne plus de rang : seul un maître en donne.
   - `MagicTutorEntity` : une école. Il apprend les sorts de son école jusqu'à son rang, si l'élève est prêt (même règle que les livres). Les écoles de barrière et de frappe divine sont enseignées par un chevalier de Milis.
 - Chaque maître a un style et un rang. **Décidé :** il peut faire monter son élève jusqu'à un rang égal au sien, pas au-delà.
 
+## 5 bis. Monstres (wiki, page *Monsters*)
+
+- **Paquet `monster`** : `MushoMonster` (monstre de base, rang de la Guilde `MonsterRank` F à S, appartenance à une meute), `MonsterPack` (membres, chef, appel à la chasse, succession), `EngagementTokens` (places d'attaque), goals dans `monster/ai`.
+- **Meute** : les monstres apparus ensemble forment une meute (`PackSpawn`), le premier la mène. Les membres ne se blessent pas entre eux ; une meute peut mêler plusieurs espèces (des Sangliers Terminateurs menant des Chiens d'assaut).
+- **IA de meute** (goals réutilisables) :
+  - `CallThePackGoal` : le chef qui repère une proie s'arrête, lance l'appel (hurlement, rugissement) et toute la meute à portée se tourne vers elle ;
+  - `PackHuntGoal` : seuls quelques membres attaquent à la fois (places d'attaque, deux pour les chiens) ; les autres tournent autour de la proie, chacun de son côté, et prennent le relais ;
+  - `RetreatWhenWoundedGoal` : un monstre gravement blessé se replie quelques secondes et cède sa place, sauf s'il est seul ;
+  - `FollowPackLeaderGoal` : hors combat, la meute suit son chef ; si le chef tombe, le membre le plus fort lui succède aussitôt.
+- **Epic Fight** : chaque espèce a son propre squelette, son maillage et ses animations, faits pour le mod (rien n'est copié d'Epic Fight). `MonsterPatch` ajoute l'attaque animée d'Epic Fight, qui ne frappe que si le monstre tient une place d'attaque ; les déplacements de combat restent ceux de l'IA ci-dessus.
+- **Outil `tools/bestiary`** (Python) : un monstre se décrit en os et en blocs (`rig.py`), ses animations en fonctions du temps (`anim.py`) ; l'outil écrit le squelette, le maillage et les animations au format d'Epic Fight, peint la texture point par point d'après la position 3D de chaque texel (`paint.py`, pour que taches et rayures passent d'un bloc à l'autre) et rend des aperçus. `compare.py` met le modèle à côté de ses images de référence. Les rigs restent simples (une vingtaine d'os) pour bien s'animer.
+- **Chien d'assaut** (rang E, plaines et forêts) : d'après la case du manga du wiki ; robe noire, marques feu de dobermann, oreilles dressées, crête osseuse, yeux rouges. Morsure, double morsure, bond sur une proie à 3-6 blocs, hurlement d'appel ; groupes de 3 à 5.
+- **Galerie** : `-Dmushocraft.gallery.only=monster_` montre chaque monstre de profil, chacune de ses animations, puis une meute qui chasse.
+
 ## 6. Mode combat et barre de move
 
 - **Activation.** On suit l'état d'Epic Fight (`PlayerPatch.isEpicFightMode()`, événement `TOGGLE_MODE`).

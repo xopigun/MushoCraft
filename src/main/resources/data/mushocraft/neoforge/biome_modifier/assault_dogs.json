@@ -1,0 +1,7 @@
+{
+  "type": "neoforge:add_spawns",
+  "biomes": "#mushocraft:has_assault_dogs",
+  "spawners": [
+    { "type": "mushocraft:assault_dog", "weight": 6, "minCount": 3, "maxCount": 5 }
+  ]
+}

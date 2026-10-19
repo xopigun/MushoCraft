@@ -31,6 +31,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import fr.xopi.mushocraft.client.render.MonsterRenderer;
 import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
@@ -70,6 +71,7 @@ public final class MushoClientSetup {
         event.registerEntityRenderer(MushoEntities.SUMMONED_SPIRIT.get(), SpiritRenderers.Fighting::new);
         event.registerEntityRenderer(MushoEntities.SWORD_MASTER.get(), TeacherRenderer::new);
         event.registerEntityRenderer(MushoEntities.MAGIC_TUTOR.get(), TeacherRenderer::new);
+        event.registerEntityRenderer(MushoEntities.ASSAULT_DOG.get(), context -> new MonsterRenderer<>(context, 0.5F));
     }
 
     @SubscribeEvent

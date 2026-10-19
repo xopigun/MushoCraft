@@ -1,16 +1,26 @@
 package fr.xopi.mushocraft.client.render;
 
+import fr.xopi.mushocraft.MushoCraft;
 import fr.xopi.mushocraft.core.MushoEntities;
+import yesman.epicfight.api.asset.AssetAccessor;
 import yesman.epicfight.api.client.event.EpicFightClientEventHooks;
 import yesman.epicfight.api.client.model.Meshes;
+import yesman.epicfight.api.client.model.SkinnedMesh;
+import yesman.epicfight.client.renderer.patched.entity.PCustomEntityRenderer;
 import yesman.epicfight.client.renderer.patched.entity.PHumanoidRenderer;
 
 /**
- * Client side of the Epic Fight integration: teachers are drawn with Epic Fight's animated biped mesh.
+ * Client side of the Epic Fight integration: teachers are drawn with Epic Fight's animated biped mesh, monsters with
+ * their own meshes.
  * Must be initialised from the mod constructor, on the client only.
  */
 public final class EpicFightRenderers {
     private EpicFightRenderers() {
+    }
+
+    /** A monster's own skinned mesh, made for MushoCraft (tools/bestiary). */
+    private static AssetAccessor<SkinnedMesh> monsterMesh(String species) {
+        return Meshes.getOrCreate(MushoCraft.id("entity/" + species), loader -> loader.loadSkinnedMesh(SkinnedMesh::new));
     }
 
     public static void register() {
@@ -19,6 +29,8 @@ public final class EpicFightRenderers {
                     type -> new PHumanoidRenderer<>(Meshes.BIPED, event.getContext(), type).initLayerLast(event.getContext(), type));
             event.addPatchedEntityRenderer(MushoEntities.MAGIC_TUTOR.get(),
                     type -> new PHumanoidRenderer<>(Meshes.BIPED, event.getContext(), type).initLayerLast(event.getContext(), type));
+            event.addPatchedEntityRenderer(MushoEntities.ASSAULT_DOG.get(),
+                    type -> new PCustomEntityRenderer(monsterMesh("assault_dog"), event.getContext()));
         });
     }
 }

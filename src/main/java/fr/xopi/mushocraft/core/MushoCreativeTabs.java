@@ -32,6 +32,7 @@ public final class MushoCreativeTabs {
                         output.accept(MushoItems.BEAST_SUMMONING_PAPER.get());
                         output.accept(MushoItems.SWORD_MASTER_SPAWN_EGG.get());
                         output.accept(MushoItems.MAGIC_TUTOR_SPAWN_EGG.get());
+                        output.accept(MushoItems.ASSAULT_DOG_SPAWN_EGG.get());
                     })
                     .build());
 

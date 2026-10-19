@@ -9,6 +9,8 @@ import fr.xopi.mushocraft.magic.entity.SpellZone;
 import fr.xopi.mushocraft.magic.entity.WaterSheet;
 import fr.xopi.mushocraft.magic.summon.LamplightSpirit;
 import fr.xopi.mushocraft.magic.summon.SummonedSpirit;
+import fr.xopi.mushocraft.monster.AssaultDog;
+import fr.xopi.mushocraft.monster.MushoMonster;
 import fr.xopi.mushocraft.npc.MagicTutorEntity;
 import fr.xopi.mushocraft.npc.SwordMasterEntity;
 import fr.xopi.mushocraft.npc.TeacherEntity;
@@ -132,6 +134,14 @@ public final class MushoEntities {
                     .clientTrackingRange(10)
                     .build(MushoCraft.id("magic_tutor").toString()));
 
+    /** Assault Dog, a pack-hunting canine monster (rank E). */
+    public static final DeferredHolder<EntityType<?>, EntityType<AssaultDog>> ASSAULT_DOG =
+            ENTITY_TYPES.register("assault_dog", () -> EntityType.Builder
+                    .<AssaultDog>of(AssaultDog::new, MobCategory.MONSTER)
+                    .sized(0.85F, 1.4F)
+                    .clientTrackingRange(10)
+                    .build(MushoCraft.id("assault_dog").toString()));
+
     private MushoEntities() {
     }
 
@@ -146,11 +156,14 @@ public final class MushoEntities {
             event.register(teacher, SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
                     TeacherEntity::checkTeacherSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
         }
+        event.register(ASSAULT_DOG.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                MushoMonster::checkMonsterSpawn, RegisterSpawnPlacementsEvent.Operation.REPLACE);
     }
 
     private static void onCreateAttributes(EntityAttributeCreationEvent event) {
         event.put(SWORD_MASTER.get(), SwordMasterEntity.createAttributes().build());
         event.put(MAGIC_TUTOR.get(), MagicTutorEntity.createAttributes().build());
         event.put(SUMMONED_SPIRIT.get(), SummonedSpirit.createAttributes().build());
+        event.put(ASSAULT_DOG.get(), AssaultDog.createAttributes().build());
     }
 }

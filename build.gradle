@@ -90,6 +90,8 @@ neoForge {
             sourceSet = sourceSets.gametest
             programArguments.addAll '--quickPlaySingleplayer', 'mushotest'
             systemProperty 'mushocraft.gallery', 'true'
+            // -Dmushocraft.gallery.only=monster_ shows only the exhibits whose name starts with it
+            systemProperty 'mushocraft.gallery.only', providers.systemProperty('mushocraft.gallery.only').orElse('').get()
         }
 
         server {
