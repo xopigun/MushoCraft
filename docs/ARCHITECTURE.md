@@ -260,6 +260,15 @@ Les stats suivent aussi l'âge : un bébé est faible, et l'échelle de taille v
   - Dieu de l'Épée : *Longsword of Light*, *Light Reversal*, *Longsword of Silence*, *Arm Chop*, *Lake Surface Longsword*, *Crescent Moon Longsword*.
   - Dieu de l'Eau : *Flow*, les *Five Secret Arts*, *Deprivation Sword Kingdom*.
   - Dieu du Nord : lancer d'épée, *Four Legged Form*, *Hazy Cross*, *Teardrop Bullet*, *Crimson Ink*, *Pecking*, *Moonlight Cleave*, *Gravity Fracture*.
+- **Techniques en jeu (14)** — en plus des 7 premières, celles que le wiki décrit assez (20/10, écart E34) :
+  - *Light Reversal* (Dieu de l'Épée, Roi, épée à deux mains) : garde très brève ; le prochain coup reçu est annulé et le poignet qui le porte tranché (dégâts, désarmement, faiblesse).
+  - *Deprivation Sword Kingdom* (Dieu de l'Eau, Dieu) : un champ de 7 blocs pendant 10 s (`SwordDomains`) ; quiconque y attaque, ou y commence une incantation, est abattu aussitôt et son sort coupé ; il ne frappe pas qui ne fait rien.
+  - *Teardrop Bullet* (Dieu du Nord, Intermédiaire) : un sachet d'épices lancé, qui éclate en nuage (cécité, nausée, lenteur). *Crimson Ink* (Avancé) : une boule rouge qui éclate en glu (immobilisé 4 s). Les deux ruses sont un projectile commun (`ThrownTrick` + `TrickKind`) et existent aussi en objets lançables à la main.
+  - Déplacement d'aura (Dieu du Nord, Avancé) : bascule l'Aura de combat levée vers la vitesse (+18 % de vitesse, +25 % de vitesse d'attaque, -20 % de dégâts) ; s'efface si l'aura retombe.
+  - *Hazy Cross* (Dieu du Nord, Saint, une arme dans chaque main) : coup de haut des deux armes, puis l'arme de la main gauche lancée et une taille horizontale plus forte.
+  - *Pecking* (Dieu du Nord, Roi, mains nues possibles) : contre qui encaisse un tiers du coup et broie le poing de l'attaquant (désarmement, faiblesse, lenteur de minage).
+  - Les trois contres (*Flow*, *Light Reversal*, *Pecking*) partagent la même posture ; leur réponse est une stratégie (`CounterKind`).
+  - Non faites, faute de description dans le wiki : *Lake Surface Longsword*, *Crescent Moon Longsword*, chacun des *Five Secret Arts*. *Gravity Fracture* exige l'épée du Roi Dragon Kajakut, qui n'existe pas encore dans le mod.
 
 #### Enchaînements de base par style (API ExCap d'Epic Fight)
 
@@ -379,5 +388,5 @@ Limite à connaître : je n'ai accès qu'au wiki et à ses références. Je ne p
 4. ✅ Abstraction `Move`, `Cooldowns`, barre de move branchée sur le mode Epic Fight, écran des moves (nuit du 19/10).
 5. 🟡 Moteur de sorts + 58 sorts (Débutant à Roi, les 11 sans rang du wiki, les 7 sorts de magie mixte) + maîtrise par école + incantation abrégée et silencieuse (19/10). Au-delà du rang Saint, le wiki ne nomme que *Lightning* et *Confinement Barrier* (E23). Invocation par papiers (§4.3 ter). Les sorts Saint, Roi et Empereur s'apprennent auprès de tuteurs de ce rang, rarissimes (E27).
 6. ✅ Stats physiques + entraînement + aura de combat (nuit du 19/10).
-7. 🟡 Styles + 7 techniques + recharge partagée + règles de rang + enchaînements de base propres à chaque style sur toutes les épées, plus la hache et la lance pour le Dieu du Nord (nuit du 19/10) ; restent les autres techniques.
+7. 🟡 Styles + 7 techniques + recharge partagée + règles de rang + enchaînements de base propres à chaque style sur toutes les épées, plus la hache et la lance pour le Dieu du Nord (nuit du 19/10) ; 14 techniques depuis le 20/10 ; restent celles que le wiki ne décrit pas et *Gravity Fracture* (épée Kajakut).
 8. 🟡 Maîtres PNJ : maîtres d'épée et précepteurs de magie, avec patch Epic Fight, skins originaux, œufs d'apparition et apparition naturelle rare (nuit du 19/10). Restent des lieux dédiés (dojos, église de Milis).

@@ -28,6 +28,8 @@ public class TechniqueGoal extends Goal {
     private final Map<Technique, Long> readyAt = new HashMap<>();
     private long nextTechniqueAt;
     private Technique chosen;
+    /** A technique that could not be performed (wrong stance, nothing in hand) is left aside this long. */
+    private static final int RETRY_AFTER_FAILURE = 60;
 
     public TechniqueGoal(PathfinderMob fighter, Supplier<List<Technique>> repertoire, Supplier<Rank> rank) {
         this.fighter = fighter;
@@ -62,6 +64,8 @@ public class TechniqueGoal extends Goal {
         fighter.lookAt(target, 360.0F, 360.0F);
         if (chosen.performAs(fighter, rank.get(), target.getEyePosition())) {
             readyAt.put(chosen, now() + Math.round(chosen.cooldownTicks() * StyleRules.cooldownFactor(rank.get())));
+        } else {
+            readyAt.put(chosen, now() + RETRY_AFTER_FAILURE);
         }
         nextTechniqueAt = now() + PAUSE_BETWEEN_TECHNIQUES;
         chosen = null;
@@ -70,6 +74,7 @@ public class TechniqueGoal extends Goal {
     private Optional<Technique> fitting(double distance) {
         List<Technique> candidates = repertoire.get().stream()
                 .filter(technique -> readyAt.getOrDefault(technique, 0L) <= now())
+                .filter(technique -> technique.action().usableBy(fighter))
                 .filter(technique -> distance >= technique.action().minRange() && distance <= technique.action().maxRange())
                 .toList();
         return candidates.isEmpty() ? Optional.empty()

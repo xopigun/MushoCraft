@@ -15,7 +15,11 @@ public enum WeaponRequirement {
     /** A sword held with both hands: the Longsword of Light demands it (wiki, Sword God Style). */
     TWO_HANDED_BLADE(player -> EpicFightWeapons.holdsBlade(player) && EpicFightWeapons.holdsWithBothHands(player)),
     /** Any weapon: « there is no need to stick to the sword » (Kalman II, North God Style). */
-    ANY_WEAPON(EpicFightWeapons::holdsWeapon);
+    ANY_WEAPON(EpicFightWeapons::holdsWeapon),
+    /** A weapon in each hand (Hazy Cross). */
+    TWO_WEAPONS(EpicFightWeapons::holdsTwoWeapons),
+    /** Nothing at all: a thrown trick, a bare-handed counter, the aura itself. */
+    NONE(fighter -> true);
 
     private final Predicate<LivingEntity> check;
 

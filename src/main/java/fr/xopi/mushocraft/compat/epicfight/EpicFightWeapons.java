@@ -43,6 +43,12 @@ public final class EpicFightWeapons {
         return !NOT_WEAPONS.contains(mainHand(fighter).getWeaponCategory());
     }
 
+    /** A real weapon in each hand, as the North God's two-sword techniques need. */
+    public static boolean holdsTwoWeapons(LivingEntity fighter) {
+        CapabilityItem offhand = EpicFightCapabilities.getItemStackCapability(fighter.getItemInHand(InteractionHand.OFF_HAND));
+        return holdsWeapon(fighter) && !NOT_WEAPONS.contains(offhand.getWeaponCategory());
+    }
+
     /** Whether the weapon is held with both hands, as the Longsword of Light requires. */
     public static boolean holdsWithBothHands(LivingEntity fighter) {
         LivingEntityPatch<?> patch = EpicFightCapabilities.getEntityPatch(fighter, LivingEntityPatch.class);

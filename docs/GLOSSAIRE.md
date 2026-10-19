@@ -237,6 +237,7 @@ Rangs supérieurs de soin (page *Healing Magic*) : le wiki décrit des effets sa
 | `teardrop_bullet` | Teardrop Bullet | Balle en larme |
 | `crimson_ink` | Crimson Ink | Encre écarlate |
 | `pecking` | Pecking | Becquetage |
+| `aura_shifting` | Battle Aura shifting | Déplacement d'aura |
 | `moonlight_cleave` | Moonlight Cleave | Fendoir de lune |
 | `gravity_fracture` | Gravity Fracture | Fracture gravitationnelle |
 

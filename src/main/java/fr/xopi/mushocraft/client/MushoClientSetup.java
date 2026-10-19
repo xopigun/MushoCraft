@@ -31,6 +31,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import fr.xopi.mushocraft.client.render.MonsterRenderer;
 import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
@@ -62,6 +63,7 @@ public final class MushoClientSetup {
     public static void onRegisterRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(MushoEntities.SPELL_PROJECTILE.get(), SpellProjectileRenderer::new);
         event.registerEntityRenderer(MushoEntities.THROWN_WEAPON.get(), ThrownWeaponRenderer::new);
+        event.registerEntityRenderer(MushoEntities.THROWN_TRICK.get(), ThrownItemRenderer::new);
         event.registerEntityRenderer(MushoEntities.SPELL_ZONE.get(), SpellZoneRenderer::new);
         event.registerEntityRenderer(MushoEntities.WATER_SHEET.get(), WaterSheetRenderer::new);
         event.registerEntityRenderer(MushoEntities.SPELL_PILLAR.get(), SpellPillarRenderer::new);

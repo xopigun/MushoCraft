@@ -7,6 +7,7 @@ import fr.xopi.mushocraft.magic.spell.SpellSchool;
 import fr.xopi.mushocraft.npc.MagicTutorEntity;
 import fr.xopi.mushocraft.npc.SwordMasterEntity;
 import fr.xopi.mushocraft.sword.SwordStyle;
+import fr.xopi.mushocraft.sword.entity.ThrownTrick;
 import fr.xopi.mushocraft.sword.entity.ThrownWeapon;
 import fr.xopi.mushocraft.sword.technique.CounterStances;
 import net.minecraft.core.BlockPos;
@@ -79,13 +80,15 @@ public final class CreatureCombatGameTests {
     }
 
     @GameTest(template = EMPTY, timeoutTicks = 100)
-    public static void aNorthGodMasterThrowsTheirSwordAtADistantFoe(GameTestHelper helper) {
+    public static void aNorthGodMasterThrowsAtADistantFoe(GameTestHelper helper) {
         SwordMasterEntity master = master(helper, SwordStyle.NORTH_GOD, Rank.KING, new BlockPos(0, 1, 0));
         Husk husk = dummy(helper, new BlockPos(6, 1, 6));
         master.setTarget(husk);
         helper.succeedWhen(() -> {
-            helper.assertFalse(helper.getLevel().getEntitiesOfClass(ThrownWeapon.class, master.getBoundingBox().inflate(16.0)).isEmpty(),
-                    "Sword Throwing at a foe out of reach");
+            // out of reach, a North God master throws something: the sword, or one of the style's tricks
+            helper.assertFalse(helper.getLevel().getEntitiesOfClass(ThrownWeapon.class, master.getBoundingBox().inflate(16.0)).isEmpty()
+                    && helper.getLevel().getEntitiesOfClass(ThrownTrick.class, master.getBoundingBox().inflate(16.0)).isEmpty(),
+                    "a throw at a foe out of reach");
             master.discard();
             husk.discard();
         });

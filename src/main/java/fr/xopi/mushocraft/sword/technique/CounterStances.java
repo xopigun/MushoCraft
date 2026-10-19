@@ -9,8 +9,8 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Players waiting to receive an attack and turn it back (Water God Style, Flow). The counter itself is resolved
- * when damage comes in (see {@code SwordEvents}).
+ * Fighters waiting to receive an attack and turn it back (Flow, Light Reversal, Pecking). The counter itself is
+ * resolved when damage comes in (see {@code SwordEvents}), the way its {@link CounterKind} says.
  */
 public final class CounterStances {
     private static final Map<UUID, Stance> WAITING = new ConcurrentHashMap<>();
@@ -18,9 +18,10 @@ public final class CounterStances {
     private CounterStances() {
     }
 
-    public static void enter(LivingEntity fighter, int windowTicks, float counterMultiplier, boolean deflectsProjectiles) {
+    public static void enter(LivingEntity fighter, int windowTicks, float counterMultiplier, boolean deflectsProjectiles,
+                             CounterKind kind) {
         WAITING.put(fighter.getUUID(), new Stance(CooldownService.now(fighter) + windowTicks, counterMultiplier,
-                deflectsProjectiles));
+                deflectsProjectiles, kind));
     }
 
     /** The stance the player is in, if it has not expired yet. One stance turns back one attack: clear it after use. */
@@ -37,6 +38,6 @@ public final class CounterStances {
         WAITING.remove(fighter.getUUID());
     }
 
-    public record Stance(long expiresAt, float counterMultiplier, boolean deflectsProjectiles) {
+    public record Stance(long expiresAt, float counterMultiplier, boolean deflectsProjectiles, CounterKind kind) {
     }
 }

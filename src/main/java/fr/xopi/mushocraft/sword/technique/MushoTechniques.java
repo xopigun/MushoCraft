@@ -4,6 +4,7 @@ import fr.xopi.mushocraft.MushoCraft;
 import fr.xopi.mushocraft.core.MushoRegistries;
 import fr.xopi.mushocraft.core.Rank;
 import fr.xopi.mushocraft.sword.SwordStyle;
+import fr.xopi.mushocraft.sword.entity.TrickKind;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -33,7 +34,7 @@ public final class MushoTechniques {
      */
     public static final DeferredHolder<Technique, Technique> ARM_CHOP = TECHNIQUES.register("arm_chop",
             () -> Technique.builder(SwordStyle.SWORD_GOD, Rank.BEGINNER).cooldownTicks(60)
-                    .action(StrikeAction.of(() -> Animations.SWORD_AUTO1, 1.3F).onHit(MushoTechniques::disarm).build())
+                    .action(StrikeAction.of(() -> Animations.SWORD_AUTO1, 1.3F).onHit(target -> Disarm.apply(target, DISARM_WEAKNESS_TICKS, 1)).build())
                     .build());
 
     /** An advanced, slower variant of the Longsword of Light, beyond the speed of sound: it leaves no sound behind. */
@@ -52,6 +53,16 @@ public final class MushoTechniques {
                     .action(StrikeAction.of(() -> Animations.BATTOJUTSU_DASH, 4.0F).lunge(0.8).build())
                     .build());
 
+    /**
+     * The only known answer to the Longsword of Light: before the enemy's stroke reaches full speed, one's own Longsword
+     * of Light cuts off the wrist that swings it. Asks for an exceeding speed of reaction: the stance is brief.
+     */
+    public static final DeferredHolder<Technique, Technique> LIGHT_REVERSAL = TECHNIQUES.register("light_reversal",
+            () -> Technique.builder(SwordStyle.SWORD_GOD, Rank.KING).cooldownTicks(300)
+                    .weapon(WeaponRequirement.TWO_HANDED_BLADE)
+                    .action(new CounterStanceAction(10, 3.0F, null, CounterKind.LIGHT_REVERSAL))
+                    .build());
+
     // ---- Water God Style: defence and counter-attack ----
 
     /**
@@ -61,6 +72,15 @@ public final class MushoTechniques {
     public static final DeferredHolder<Technique, Technique> FLOW = TECHNIQUES.register("flow",
             () -> Technique.builder(SwordStyle.WATER_GOD, Rank.BEGINNER).cooldownTicks(80)
                     .action(new CounterStanceAction(15, 1.5F, Rank.SAINT))
+                    .build());
+
+    /**
+     * A phantom sixth Secret Art (Reida Reia): a field as large as a hall in which any movement against the user, and any
+     * working of mana, is answered at once. It strikes no one who does nothing.
+     */
+    public static final DeferredHolder<Technique, Technique> DEPRIVATION_SWORD_KINGDOM = TECHNIQUES.register("deprivation_sword_kingdom",
+            () -> Technique.builder(SwordStyle.WATER_GOD, Rank.GOD).cooldownTicks(1200)
+                    .action(new DomainAction(7.0, 200, 1.6F))
                     .build());
 
     // ---- North God Style: survive, adapt, use anything ----
@@ -79,6 +99,44 @@ public final class MushoTechniques {
                     .action(StrikeAction.of(() -> Animations.SWORD_DASH, 1.6F).lunge(1.2).build())
                     .build());
 
+    /** Throw a bag full of powdered spices at the enemy (Auber): it bursts into a cloud that blinds and dizzies. */
+    public static final DeferredHolder<Technique, Technique> TEARDROP_BULLET = TECHNIQUES.register("teardrop_bullet",
+            () -> Technique.builder(SwordStyle.NORTH_GOD, Rank.INTERMEDIATE).cooldownTicks(200)
+                    .weapon(WeaponRequirement.NONE)
+                    .action(new ThrowTrickAction(TrickKind.SPICE, 1.4F))
+                    .build());
+
+    /** A trap of red balls bursting on contact into a strong instant adhesive (Auber): the foe is stuck in place. */
+    public static final DeferredHolder<Technique, Technique> CRIMSON_INK = TECHNIQUES.register("crimson_ink",
+            () -> Technique.builder(SwordStyle.NORTH_GOD, Rank.ADVANCED).cooldownTicks(300)
+                    .weapon(WeaponRequirement.NONE)
+                    .action(new ThrowTrickAction(TrickKind.CRIMSON_INK, 1.3F))
+                    .build());
+
+    /** Shift the Battle Aura towards speed at the cost of power, or back (taught by Auber to Eris). Needs a raised aura. */
+    public static final DeferredHolder<Technique, Technique> AURA_SHIFTING = TECHNIQUES.register("aura_shifting",
+            () -> Technique.builder(SwordStyle.NORTH_GOD, Rank.ADVANCED).cooldownTicks(40)
+                    .weapon(WeaponRequirement.NONE)
+                    .action(new AuraShiftAction())
+                    .build());
+
+    /**
+     * Two swords brought down overhead to be blocked; then one is thrown and the other cuts across the undefended
+     * torso, the two blows drawing a cross (Auber).
+     */
+    public static final DeferredHolder<Technique, Technique> HAZY_CROSS = TECHNIQUES.register("hazy_cross",
+            () -> Technique.builder(SwordStyle.NORTH_GOD, Rank.SAINT).cooldownTicks(240)
+                    .weapon(WeaponRequirement.TWO_WEAPONS)
+                    .action(new HazyCrossAction(1.4F, 2.4F))
+                    .build());
+
+    /** A secret counter that crushes the opponent's fist at the cost of one's own fingers. */
+    public static final DeferredHolder<Technique, Technique> PECKING = TECHNIQUES.register("pecking",
+            () -> Technique.builder(SwordStyle.NORTH_GOD, Rank.KING).cooldownTicks(300)
+                    .weapon(WeaponRequirement.NONE)
+                    .action(new CounterStanceAction(15, 2.5F, null, CounterKind.PECKING))
+                    .build());
+
     /** A secret technique: an upward swing so violent that its shockwave sweeps away everyone around. */
     public static final DeferredHolder<Technique, Technique> MOONLIGHT_CLEAVE = TECHNIQUES.register("moonlight_cleave",
             () -> Technique.builder(SwordStyle.NORTH_GOD, Rank.KING).cooldownTicks(600)
@@ -93,12 +151,4 @@ public final class MushoTechniques {
         TECHNIQUES.register(modEventBus);
     }
 
-    /** The struck arm can no longer hold a weapon: creatures drop what they hold, everyone is weakened for a while. */
-    private static void disarm(LivingEntity target) {
-        if (target instanceof Mob mob && !mob.getMainHandItem().isEmpty()) {
-            mob.spawnAtLocation(mob.getMainHandItem().copy());
-            mob.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
-        }
-        target.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, DISARM_WEAKNESS_TICKS, 1));
-    }
 }

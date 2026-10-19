@@ -13,6 +13,8 @@ import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.Tiers;
 import net.neoforged.bus.api.IEventBus;
+import fr.xopi.mushocraft.sword.entity.TrickItem;
+import fr.xopi.mushocraft.sword.entity.TrickKind;
 import net.neoforged.neoforge.common.DeferredSpawnEggItem;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -89,6 +91,14 @@ public final class MushoItems {
 
     public static final DeferredItem<SummoningPaperItem> BEAST_SUMMONING_PAPER = ITEMS.register("beast_summoning_paper",
             () -> new SummoningPaperItem(new Item.Properties().stacksTo(16).rarity(Rarity.UNCOMMON), SummonRituals.BEAST));
+
+    /** Teardrop Bullet's bag of powdered spices (North God Style); can also be thrown by hand. */
+    public static final DeferredItem<TrickItem> SPICE_POUCH = ITEMS.register("spice_pouch",
+            () -> new TrickItem(TrickKind.SPICE, new Item.Properties().stacksTo(16)));
+
+    /** Crimson Ink's red ball of instant adhesive (North God Style); can also be thrown by hand. */
+    public static final DeferredItem<TrickItem> CRIMSON_BALL = ITEMS.register("crimson_ball",
+            () -> new TrickItem(TrickKind.CRIMSON_INK, new Item.Properties().stacksTo(16)));
 
     public static final DeferredItem<DeferredSpawnEggItem> SWORD_MASTER_SPAWN_EGG = ITEMS.register("sword_master_spawn_egg",
             () -> new DeferredSpawnEggItem(MushoEntities.SWORD_MASTER, 0x2B2B33, 0xC9C9D6, new Item.Properties()));

@@ -1,6 +1,12 @@
 package fr.xopi.mushocraft.gametest.showcase;
 
 import fr.xopi.mushocraft.MushoCraft;
+import fr.xopi.mushocraft.sword.entity.ThrownTrick;
+import net.minecraft.world.phys.Vec3;
+import fr.xopi.mushocraft.core.Rank;
+import fr.xopi.mushocraft.sword.technique.TechniqueContext;
+import fr.xopi.mushocraft.sword.technique.Technique;
+import fr.xopi.mushocraft.sword.technique.MushoTechniques;
 import fr.xopi.mushocraft.monster.MushoMonster;
 import fr.xopi.mushocraft.core.MushoRegistries;
 import fr.xopi.mushocraft.life.LifeService;
@@ -205,8 +211,26 @@ public final class GalleryDirector {
                     disturb.effect().cast(new SpellContext(player, disturb, 1.0));
                     ChantBroadcast.stopped(dummy);
                 })));
+        // the North God's thrown tricks and the Water God's field, aimed at the dummy
+        all.add(new Exhibit("fx_tech_teardrop_bullet", player -> technique(player, MushoTechniques.TEARDROP_BULLET.get())));
+        all.add(new Exhibit("fx_tech_crimson_ink", player -> technique(player, MushoTechniques.CRIMSON_INK.get())));
+        all.add(new Exhibit("fx_tech_sword_kingdom", player -> {
+            technique(player, MushoTechniques.DEPRIVATION_SWORD_KINGDOM.get());
+            player.serverLevel().getEntitiesOfClass(Husk.class, player.getBoundingBox().inflate(16.0)).stream().findFirst()
+                    .ifPresent(dummy -> {
+                        dummy.moveTo(player.getX(), player.getY(), player.getZ() + 4.0, 180.0F, 0.0F);
+                        ChantBroadcast.started(dummy, MushoSpells.WATER_CANNON.get(), 40);
+                    });
+        }, 34, new int[]{2, 8, 14}));
         MonsterExhibits.add(all);
         return all.stream().filter(exhibit -> exhibit.name().startsWith(ONLY)).toList();
+    }
+
+    /** A sword technique performed by the player towards the dummy, at the God rank. */
+    private static void technique(ServerPlayer player, Technique technique) {
+        Vec3 aim = player.serverLevel().getEntitiesOfClass(Husk.class, player.getBoundingBox().inflate(16.0)).stream().findFirst()
+                .map(dummy -> dummy.getEyePosition().subtract(player.getEyePosition()).normalize()).orElse(player.getLookAngle());
+        technique.action().perform(new TechniqueContext(player, technique, Rank.GOD, 1.0, aim));
     }
 
     /** A clean stage: the caster at the arena's middle facing south, slightly down, a dummy ahead. */
@@ -216,7 +240,7 @@ public final class GalleryDirector {
                 entity -> entity instanceof WaterSheet || entity instanceof SpellZone || entity instanceof SpellPillar
                         || entity instanceof SpellFire || entity instanceof SpellProjectile || entity instanceof SpellBeam
                         || entity instanceof Husk || entity instanceof AreaEffectCloud
-                        || entity instanceof MushoMonster).forEach(Entity::discard);
+                        || entity instanceof MushoMonster || entity instanceof ThrownTrick).forEach(Entity::discard);
         BlockPos.betweenClosed(player.blockPosition().offset(-14, -2, -14), player.blockPosition().offset(14, 10, 14)).forEach(pos -> {
             if (level.getBlockState(pos).getBlock() instanceof ConjuredBlock) {
                 level.removeBlock(pos, false);

@@ -1,21 +1,20 @@
 package fr.xopi.mushocraft.sword;
 
 import fr.xopi.mushocraft.MushoCraft;
-import fr.xopi.mushocraft.compat.epicfight.EpicFightAnimations;
 import fr.xopi.mushocraft.compat.epicfight.EpicFightModes;
 import fr.xopi.mushocraft.compat.epicfight.EpicFightWeapons;
 import fr.xopi.mushocraft.core.MushoAttachments;
 import fr.xopi.mushocraft.life.event.PlayerBornEvent;
+import fr.xopi.mushocraft.sword.technique.AuraShiftAction;
 import fr.xopi.mushocraft.sword.technique.CounterStances;
 import fr.xopi.mushocraft.sword.technique.TechniqueStrikes;
+import fr.xopi.mushocraft.sword.technique.SwordDomains;
 import fr.xopi.mushocraft.sword.technique.TechniqueTempo;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -26,7 +25,6 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import yesman.epicfight.api.event.EpicFightEventHooks;
 import yesman.epicfight.api.event.types.entity.DealDamageEvent;
-import yesman.epicfight.gameasset.Animations;
 
 /**
  * Server-side glue between Epic Fight's combat and the sword styles: stronger hits during techniques, style practice
@@ -64,7 +62,7 @@ public final class SwordEvents {
         }
     }
 
-    /** Water God Style, Flow: the awaited attack is redirected and answered. */
+    /** A receiving stance (Flow, Light Reversal, Pecking): the awaited attack is answered. */
     @SubscribeEvent
     public static void onIncomingDamage(LivingIncomingDamageEvent event) {
         LivingEntity player = event.getEntity();
@@ -76,13 +74,8 @@ public final class SwordEvents {
             boolean melee = source.getEntity() instanceof LivingEntity && source.getDirectEntity() == source.getEntity();
             boolean missile = source.getDirectEntity() instanceof Projectile;
             if (melee && source.getEntity() instanceof LivingEntity attacker) {
-                event.setCanceled(true);
                 CounterStances.clear(player);
-                EpicFightAnimations.play(player, Animations.LONGSWORD_GUARD_ACTIVE_HIT1);
-                float counter = (float) (player.getAttributeValue(Attributes.ATTACK_DAMAGE) * stance.counterMultiplier());
-                attacker.hurt(player instanceof Player p ? player.damageSources().playerAttack(p) : player.damageSources().mobAttack(player),
-                        counter);
-                player.level().playSound(null, player.blockPosition(), SoundEvents.ANVIL_LAND, SoundSource.PLAYERS, 0.6F, 1.6F);
+                stance.kind().answer(player, attacker, event, stance.counterMultiplier());
             } else if (missile && stance.deflectsProjectiles()) {
                 event.setCanceled(true);
                 CounterStances.clear(player);
@@ -117,6 +110,7 @@ public final class SwordEvents {
     public static void onTick(PlayerTickEvent.Post event) {
         if (event.getEntity() instanceof ServerPlayer player) {
             TechniqueTempo.tick(player);
+            AuraShiftAction.tick(player);
         }
     }
 
@@ -124,5 +118,7 @@ public final class SwordEvents {
         TechniqueStrikes.clear(player);
         CounterStances.clear(player);
         TechniqueTempo.clear(player);
+        AuraShiftAction.settle(player);
+        SwordDomains.close(player);
     }
 }

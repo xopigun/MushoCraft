@@ -14,11 +14,18 @@ public final class CounterStanceAction implements TechniqueAction {
     private final int windowTicks;
     private final float counterMultiplier;
     private final Rank deflectsProjectilesFrom;
+    private final CounterKind kind;
 
     public CounterStanceAction(int windowTicks, float counterMultiplier, Rank deflectsProjectilesFrom) {
+        this(windowTicks, counterMultiplier, deflectsProjectilesFrom, CounterKind.FLOW);
+    }
+
+    /** A stance answered another way than Flow's; `deflectsProjectilesFrom` null: it never turns missiles away. */
+    public CounterStanceAction(int windowTicks, float counterMultiplier, Rank deflectsProjectilesFrom, CounterKind kind) {
         this.windowTicks = windowTicks;
         this.counterMultiplier = counterMultiplier;
         this.deflectsProjectilesFrom = deflectsProjectilesFrom;
+        this.kind = kind;
     }
 
     /** Taken when the enemy is about to strike. */
@@ -30,7 +37,7 @@ public final class CounterStanceAction implements TechniqueAction {
     @Override
     public boolean perform(TechniqueContext context) {
         CounterStances.enter(context.user(), windowTicks, (float) (counterMultiplier * context.power()),
-                context.styleRank().isAtLeast(deflectsProjectilesFrom));
+                deflectsProjectilesFrom != null && context.styleRank().isAtLeast(deflectsProjectilesFrom), kind);
         context.level().sendParticles(ParticleTypes.BUBBLE_POP, context.user().getX(), context.user().getY() + 1.0,
                 context.user().getZ(), 12, 0.4, 0.4, 0.4, 0.02);
         context.level().playSound(null, context.user().blockPosition(), SoundEvents.ARMOR_EQUIP_IRON.value(),

@@ -18,6 +18,7 @@ import fr.xopi.mushocraft.monster.TerminateBoar;
 import fr.xopi.mushocraft.npc.MagicTutorEntity;
 import fr.xopi.mushocraft.npc.SwordMasterEntity;
 import fr.xopi.mushocraft.npc.TeacherEntity;
+import fr.xopi.mushocraft.sword.entity.ThrownTrick;
 import fr.xopi.mushocraft.sword.entity.ThrownWeapon;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.EntityType;
@@ -54,6 +55,15 @@ public final class MushoEntities {
                     .clientTrackingRange(6)
                     .updateInterval(5)
                     .build(MushoCraft.id("thrown_weapon").toString()));
+
+    /** A North God trick in flight: Teardrop Bullet's spice bag, Crimson Ink's red ball. */
+    public static final DeferredHolder<EntityType<?>, EntityType<ThrownTrick>> THROWN_TRICK =
+            ENTITY_TYPES.register("thrown_trick", () -> EntityType.Builder
+                    .<ThrownTrick>of(ThrownTrick::new, MobCategory.MISC)
+                    .sized(0.25F, 0.25F)
+                    .clientTrackingRange(4)
+                    .updateInterval(10)
+                    .build(MushoCraft.id("thrown_trick").toString()));
 
     /** Invisible place of a lasting spell (storm, tornado, sealing barrier). */
     public static final DeferredHolder<EntityType<?>, EntityType<SpellZone>> SPELL_ZONE =
