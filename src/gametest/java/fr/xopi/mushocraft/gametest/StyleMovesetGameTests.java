@@ -71,6 +71,39 @@ public final class StyleMovesetGameTests {
     }
 
     @GameTest(template = EMPTY)
+    public static void swordStylesReachEverySword(GameTestHelper helper) {
+        ServerPlayer player = TestPlayers.join(helper);
+        SwordService.adopt(player, SwordStyle.SWORD_GOD);
+        ItemStack longsword = new ItemStack(EpicFightItems.IRON_LONGSWORD.get());
+        PlayerPatch<?> patch = armed(helper, player, longsword);
+        helper.assertValueEqual(capability(longsword).getAutoAttackMotion(patch).getFirst(), Animations.UCHIGATANA_AUTO1,
+                "Sword God on a longsword");
+        helper.assertTrue(EpicFightWeapons.holdsWithBothHands(player), "a longsword is held with both hands");
+        ItemStack dagger = new ItemStack(EpicFightItems.IRON_DAGGER.get());
+        armed(helper, player, dagger);
+        helper.assertValueEqual(capability(dagger).getStyle(patch), EpicFightSwordStyles.MUSHO_SWORD_GOD, "and on a dagger");
+        TestPlayers.leave(player);
+        helper.succeed();
+    }
+
+    @GameTest(template = EMPTY)
+    public static void onlyTheNorthGodFightsWithAnAxe(GameTestHelper helper) {
+        ServerPlayer player = TestPlayers.join(helper);
+        ItemStack axe = new ItemStack(Items.IRON_AXE);
+        PlayerPatch<?> patch = armed(helper, player, axe);
+        SwordService.adopt(player, SwordStyle.SWORD_GOD);
+        helper.assertValueEqual(capability(axe).getAutoAttackMotion(patch).getFirst(), Animations.AXE_AUTO1,
+                "a style of the sword leaves the axe its own combo");
+        helper.assertFalse(capability(axe).getStyle(patch) == EpicFightSwordStyles.MUSHO_SWORD_GOD, "no Sword God axe");
+        SwordService.adopt(player, SwordStyle.NORTH_GOD);
+        helper.assertValueEqual(capability(axe).getStyle(patch), EpicFightSwordStyles.MUSHO_NORTH_GOD, "the North God fights with it");
+        helper.assertValueEqual(capability(axe).getAutoAttackMotion(patch).get(1), Animations.SWORD_AUTO2,
+                "mixing in other weapons' cuts");
+        TestPlayers.leave(player);
+        helper.succeed();
+    }
+
+    @GameTest(template = EMPTY)
     public static void dualWieldingKeepsEpicFightsMoveset(GameTestHelper helper) {
         ServerPlayer player = TestPlayers.join(helper);
         ItemStack sword = new ItemStack(Items.IRON_SWORD);
