@@ -17,8 +17,10 @@ import yesman.epicfight.gameasset.Armatures;
 @EventBusSubscriber(modid = MushoCraft.MODID)
 public final class MonsterAnimations {
     public static final AssetAccessor<Armature> ASSAULT_DOG_ARMATURE = armature("assault_dog");
+    public static final AssetAccessor<Armature> PAX_COYOTE_ARMATURE = armature("pax_coyote");
 
     public static CanineAnimations ASSAULT_DOG;
+    public static CanineAnimations PAX_COYOTE;
 
     private MonsterAnimations() {
     }
@@ -34,5 +36,6 @@ public final class MonsterAnimations {
 
     private static void build(AnimationBuilder builder) {
         ASSAULT_DOG = CanineAnimations.register(builder, "assault_dog", ASSAULT_DOG_ARMATURE);
+        PAX_COYOTE = CanineAnimations.register(builder, "pax_coyote", PAX_COYOTE_ARMATURE);
     }
 }

@@ -11,7 +11,7 @@ from PIL import Image
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ASSETS = os.path.join(HERE, '..', '..', 'src', 'main', 'resources', 'assets', 'mushocraft')
-CREATURES = ['assault_dog']
+CREATURES = ['assault_dog', 'pax_coyote']
 
 
 def build(name, previews):

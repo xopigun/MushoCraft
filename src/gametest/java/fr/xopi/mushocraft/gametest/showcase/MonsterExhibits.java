@@ -34,6 +34,7 @@ final class MonsterExhibits {
 
     static void add(List<Exhibit> all) {
         canine(all, "assault_dog", MushoEntities.ASSAULT_DOG.get(), () -> MonsterAnimations.ASSAULT_DOG);
+        canine(all, "pax_coyote", MushoEntities.PAX_COYOTE.get(), () -> MonsterAnimations.PAX_COYOTE);
     }
 
     private static <T extends MushoMonster> void canine(List<Exhibit> all, String species, EntityType<T> type,

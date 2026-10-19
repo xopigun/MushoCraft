@@ -32,6 +32,8 @@ class CanineShape:
         self.fangs = 1.6
         self.neck_height = 5.5
         self.claw = 0.8
+        self.mane = 0.0          # a ragged ruff over the neck and shoulders, this much thicker than them
+        self.spike_size = 1.0
         for k, v in kw.items():
             setattr(self, k, v)
 
@@ -64,6 +66,10 @@ def build(name, s, density=2):
     # neck slanting up and forwards
     m.cube(neck, (-hw * 0.6, neck_y - s.neck_height / 2, s.body_front - s.neck_length + 2), (hw * 1.2, s.neck_height, s.neck_length),
            'neck', tilt=(38, 0, 0), tilt_pivot=(0, neck_y, s.body_front + 1.5))
+    if s.mane > 0:
+        m.cube(neck, (-hw * 0.6, neck_y - s.neck_height / 2, s.body_front - s.neck_length + 2), (hw * 1.2, s.neck_height, s.neck_length),
+               'mane', tilt=(38, 0, 0), tilt_pivot=(0, neck_y, s.body_front + 1.5), inflate=s.mane)
+        m.cube(chest, (-hw, s.withers - 4, s.body_front), (2 * hw, 4, 7), 'mane', inflate=s.mane)
     # head
     m.cube(head, (-hw_s / 2, head_y - hh_s * 0.42, skull_front), (hw_s, hh_s, hd_s), 'skull')
     m.cube(head, (-hw_s / 2 - 0.25, head_y + hh_s * 0.33, skull_front - 0.5), (hw_s + 0.5, 1.5, 2.5), 'brow')
@@ -94,8 +100,9 @@ def build(name, s, density=2):
         z = s.body_front + 2 + k * (s.body_back - s.body_front - 4)
         bone = chest if z < -1 else root
         top = s.withers if z < -1 else s.hip_y + 4
-        h = 2.6 - 1.2 * abs(k - 0.3)
-        m.cube(bone, (-0.5, top - 0.3, z), (1.0, h, 1.4), 'spike', tilt=(40, 0, 0), tilt_pivot=(0, top, z + 0.7))
+        h = (2.6 - 1.2 * abs(k - 0.3)) * s.spike_size
+        m.cube(bone, (-0.5 * s.spike_size, top - 0.3, z), (s.spike_size, h, 1.4 * s.spike_size), 'spike', tilt=(40, 0, 0),
+               tilt_pivot=(0, top, z + 0.7))
     # legs
     lw = s.leg_width
     for side, suffix in ((-1, 'L'), (1, 'R')):

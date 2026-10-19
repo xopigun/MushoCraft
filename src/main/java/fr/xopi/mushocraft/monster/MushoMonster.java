@@ -74,6 +74,17 @@ public abstract class MushoMonster extends Monster {
         super.setTarget(target);
     }
 
+    /** A pack defends each of its members: whoever wounds one has the whole pack upon them. */
+    @Override
+    public boolean hurt(DamageSource source, float amount) {
+        boolean hurt = super.hurt(source, amount);
+        if (hurt && isAlive() && source.getEntity() instanceof LivingEntity attacker && !inSamePack(attacker)
+                && level() instanceof ServerLevel) {
+            MonsterPack.callToHunt(this, attacker);
+        }
+        return hurt;
+    }
+
     @Override
     public boolean isAlliedTo(Entity other) {
         return inSamePack(other) || super.isAlliedTo(other);

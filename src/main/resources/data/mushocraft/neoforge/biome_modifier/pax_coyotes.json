@@ -1,0 +1,12 @@
+{
+  "type": "neoforge:add_spawns",
+  "biomes": "#mushocraft:has_pax_coyotes",
+  "spawners": [
+    {
+      "type": "mushocraft:pax_coyote",
+      "weight": 8,
+      "minCount": 5,
+      "maxCount": 8
+    }
+  ]
+}

@@ -11,6 +11,7 @@ import fr.xopi.mushocraft.magic.summon.LamplightSpirit;
 import fr.xopi.mushocraft.magic.summon.SummonedSpirit;
 import fr.xopi.mushocraft.monster.AssaultDog;
 import fr.xopi.mushocraft.monster.MushoMonster;
+import fr.xopi.mushocraft.monster.PaxCoyote;
 import fr.xopi.mushocraft.npc.MagicTutorEntity;
 import fr.xopi.mushocraft.npc.SwordMasterEntity;
 import fr.xopi.mushocraft.npc.TeacherEntity;
@@ -142,6 +143,14 @@ public final class MushoEntities {
                     .clientTrackingRange(10)
                     .build(MushoCraft.id("assault_dog").toString()));
 
+    /** Pax Coyote, canine monsters that come by the dozen under one leader (rank C). */
+    public static final DeferredHolder<EntityType<?>, EntityType<PaxCoyote>> PAX_COYOTE =
+            ENTITY_TYPES.register("pax_coyote", () -> EntityType.Builder
+                    .<PaxCoyote>of(PaxCoyote::new, MobCategory.MONSTER)
+                    .sized(0.8F, 1.5F)
+                    .clientTrackingRange(10)
+                    .build(MushoCraft.id("pax_coyote").toString()));
+
     private MushoEntities() {
     }
 
@@ -156,8 +165,10 @@ public final class MushoEntities {
             event.register(teacher, SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
                     TeacherEntity::checkTeacherSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
         }
-        event.register(ASSAULT_DOG.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
-                MushoMonster::checkMonsterSpawn, RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        for (EntityType<? extends MushoMonster> monster : List.of(ASSAULT_DOG.get(), PAX_COYOTE.get())) {
+            event.register(monster, SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                    MushoMonster::checkMonsterSpawn, RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        }
     }
 
     private static void onCreateAttributes(EntityAttributeCreationEvent event) {
@@ -165,5 +176,6 @@ public final class MushoEntities {
         event.put(MAGIC_TUTOR.get(), MagicTutorEntity.createAttributes().build());
         event.put(SUMMONED_SPIRIT.get(), SummonedSpirit.createAttributes().build());
         event.put(ASSAULT_DOG.get(), AssaultDog.createAttributes().build());
+        event.put(PAX_COYOTE.get(), PaxCoyote.createAttributes().build());
     }
 }

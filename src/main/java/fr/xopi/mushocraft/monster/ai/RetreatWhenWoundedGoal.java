@@ -70,8 +70,11 @@ public class RetreatWhenWoundedGoal extends Goal {
             return;
         }
         Vec3 away = DefaultRandomPos.getPosAway(beast, 10, 4, threat.position());
-        if (away != null) {
-            beast.getNavigation().moveTo(away.x, away.y, away.z, speed);
+        if (away == null) {
+            // no open ground found at random: straight back, away from the threat
+            Vec3 back = beast.position().subtract(threat.position()).multiply(1.0, 0.0, 1.0);
+            away = beast.position().add(back.lengthSqr() < 1.0E-4 ? new Vec3(8.0, 0.0, 0.0) : back.normalize().scale(8.0));
         }
+        beast.getNavigation().moveTo(away.x, away.y, away.z, speed);
     }
 }

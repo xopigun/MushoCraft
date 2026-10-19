@@ -96,6 +96,9 @@ public final class MushoItems {
     public static final DeferredItem<DeferredSpawnEggItem> ASSAULT_DOG_SPAWN_EGG = ITEMS.register("assault_dog_spawn_egg",
             () -> new DeferredSpawnEggItem(MushoEntities.ASSAULT_DOG, 0x1E1F28, 0xA8623A, new Item.Properties()));
 
+    public static final DeferredItem<DeferredSpawnEggItem> PAX_COYOTE_SPAWN_EGG = ITEMS.register("pax_coyote_spawn_egg",
+            () -> new DeferredSpawnEggItem(MushoEntities.PAX_COYOTE, 0x5E5A7C, 0xB2ACCC, new Item.Properties()));
+
     public static final DeferredItem<DeferredSpawnEggItem> MAGIC_TUTOR_SPAWN_EGG = ITEMS.register("magic_tutor_spawn_egg",
             () -> new DeferredSpawnEggItem(MushoEntities.MAGIC_TUTOR, 0x22407A, 0x8FC7FF, new Item.Properties()));
 

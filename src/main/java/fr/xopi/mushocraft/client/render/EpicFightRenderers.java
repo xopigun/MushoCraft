@@ -31,6 +31,8 @@ public final class EpicFightRenderers {
                     type -> new PHumanoidRenderer<>(Meshes.BIPED, event.getContext(), type).initLayerLast(event.getContext(), type));
             event.addPatchedEntityRenderer(MushoEntities.ASSAULT_DOG.get(),
                     type -> new PCustomEntityRenderer(monsterMesh("assault_dog"), event.getContext()));
+            event.addPatchedEntityRenderer(MushoEntities.PAX_COYOTE.get(),
+                    type -> new PCustomEntityRenderer(monsterMesh("pax_coyote"), event.getContext()));
         });
     }
 }

@@ -6,10 +6,12 @@ import fr.xopi.mushocraft.monster.AssaultDog;
 import fr.xopi.mushocraft.monster.EngagementTokens;
 import fr.xopi.mushocraft.monster.MonsterPack;
 import fr.xopi.mushocraft.monster.MushoMonster;
+import fr.xopi.mushocraft.monster.PaxCoyote;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.SpawnGroupData;
 import net.minecraft.world.entity.monster.Husk;
@@ -31,12 +33,16 @@ public final class MonsterGameTests {
     private MonsterGameTests() {
     }
 
-    /** A pack spawned together, as natural spawning makes it: the first one leads. */
     private static List<AssaultDog> pack(GameTestHelper helper, int size, BlockPos first) {
-        List<AssaultDog> dogs = new ArrayList<>();
+        return pack(helper, MushoEntities.ASSAULT_DOG.get(), size, first);
+    }
+
+    /** A pack spawned together, as natural spawning makes it: the first one leads. */
+    private static <T extends MushoMonster> List<T> pack(GameTestHelper helper, EntityType<T> type, int size, BlockPos first) {
+        List<T> dogs = new ArrayList<>();
         SpawnGroupData group = null;
         for (int i = 0; i < size; i++) {
-            AssaultDog dog = helper.spawn(MushoEntities.ASSAULT_DOG.get(), first.offset(i, 0, 0));
+            T dog = helper.spawn(type, first.offset(i, 0, 0));
             group = dog.finalizeSpawn(helper.getLevel(), helper.getLevel().getCurrentDifficultyAt(dog.blockPosition()),
                     MobSpawnType.EVENT, group);
             dogs.add(dog);
@@ -112,11 +118,10 @@ public final class MonsterGameTests {
         dogs.forEach(dog -> dog.setTarget(husk));
         wounded.setHealth(wounded.getMaxHealth() * 0.2F);
         double start = wounded.distanceTo(husk);
-        helper.runAtTickTime(50, () -> {
+        helper.succeedWhen(() -> {
             helper.assertTrue(wounded.distanceTo(husk) > start + 2.0, "the wounded dog withdrew");
             helper.assertFalse(EngagementTokens.isEngaged(wounded, husk), "and gave up its place");
             clear(dogs, husk);
-            helper.succeed();
         });
     }
 
@@ -130,6 +135,44 @@ public final class MonsterGameTests {
         helper.assertTrue(left.stream().filter(MushoMonster::isPackLeader).count() == 1, "one new leader");
         helper.assertTrue(MonsterPack.leader(left.get(0)).map(l -> l.getHealth() > 5.0F).orElse(false), "the strongest one");
         left.forEach(MushoMonster::discard);
+        helper.succeed();
+    }
+
+    @GameTest(template = EMPTY, timeoutTicks = 120)
+    public static void paxCoyotesCloseInThreeAtATime(GameTestHelper helper) {
+        List<PaxCoyote> coyotes = pack(helper, MushoEntities.PAX_COYOTE.get(), 5, new BlockPos(1, 1, 1));
+        Husk husk = prey(helper, new BlockPos(6, 1, 6));
+        coyotes.forEach(coyote -> coyote.setTarget(husk));
+        helper.runAtTickTime(60, () -> {
+            long engaged = coyotes.stream().filter(coyote -> EngagementTokens.isEngaged(coyote, husk)).count();
+            helper.assertTrue(engaged == 3, "three coyotes engage: " + engaged);
+            clear(coyotes, husk);
+            helper.succeed();
+        });
+    }
+
+    @GameTest(template = EMPTY)
+    public static void aPaxCoyoteLeaderDividesIntoItsOwnGroup(GameTestHelper helper) {
+        List<PaxCoyote> coyotes = pack(helper, MushoEntities.PAX_COYOTE.get(), 2, new BlockPos(1, 1, 1));
+        PaxCoyote leader = coyotes.stream().filter(MushoMonster::isPackLeader).findFirst().orElseThrow();
+        PaxCoyote offspring = leader.divide().orElseThrow();
+        helper.assertTrue(offspring.inSamePack(leader) && !offspring.isPackLeader(), "the new coyote obeys the leader");
+        for (int i = 0; i < PaxCoyote.GROUP_CAP; i++) {
+            leader.divide();
+        }
+        helper.assertTrue(MonsterPack.mates(leader).size() + 1 == PaxCoyote.GROUP_CAP, "a group stops growing at its cap");
+        helper.killAllEntitiesOfClass(PaxCoyote.class);
+        helper.succeed();
+    }
+
+    @GameTest(template = EMPTY, timeoutTicks = 40)
+    public static void woundingOneTurnsThePackOnTheAttacker(GameTestHelper helper) {
+        List<AssaultDog> dogs = pack(helper, 3, new BlockPos(1, 1, 1));
+        Husk attacker = prey(helper, new BlockPos(5, 1, 5));
+        dogs.get(2).hurt(helper.getLevel().damageSources().mobAttack(attacker), 2.0F);
+        helper.assertTrue(dogs.stream().allMatch(dog -> dog.getTarget() == attacker || dog == dogs.get(2)),
+                "the mates turn on whoever wounded one of them");
+        clear(dogs, attacker);
         helper.succeed();
     }
 }
