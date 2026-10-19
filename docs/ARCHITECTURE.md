@@ -136,6 +136,10 @@ Estimation : une quinzaine de classes d'effets génériques, plus une classe pou
   - **Tornado** : entonnoir de vent de près de 16 blocs, deux couches qui tournent en sens contraires, colonne qui oscille. Physique : aspire, fait tourner et soulève créatures et objets jusqu'au sommet, d'où ils sont éjectés.
   - **Water Shield (v2)** : le mur s'arrondit autour du joueur, comme un écran courbe, plus grand (6 × 4).
   - **Piliers en modèles Blockbench** (entité `SpellPillar`, GeckoLib) : *Ice Pillar* (fût de glace à facettes, cristaux à la base), *Earth Lance* (pointe de roche brune en couches), *Earth Hedgehog* (pointes de pierre sombre penchées dans tous les sens), *Icicle Field* (monticules de givre qui engloutissent les cibles, comme dans l'anime). Animations « rise » (jaillit du sol), « idle » (frémit), « crumble » (s'effrite). Les blocs de collision sont cachés (propriété `hidden` de `ConjuredBlock`). L'apparence d'une éruption est une stratégie (`EruptionVisual`).
+  - **Murs de terre** (même entité `SpellPillar`) : *Earth Wall* (dalles de pierre empilées de travers, crête irrégulière, gravats au pied) et *Earth Fortress* (quatre murs et un toit de grandes pierres, qui montent l'un après l'autre). `WallEffect` et `FortressEffect` cachent leurs blocs de collision et posent le modèle (`.lookingLike(PillarKind)`). Modèles générés directement en `.geo.json`, sans `.bbmodel` pour l'instant.
+  - **Impacts dessinés** (`FlipbookParticle`) : étincelle teintée par l'élément (`IMPACT`), explosion dessinée (`BLAST`) par-dessus la boule de feu.
+  - **Ice Blade** : des points de lumière glacée convergent vers la main, qui s'illumine quand l'épée se forme (`SpellFx.conjureInHand`).
+  - **Heat Hand** : tant que l'effet dure, lueurs orange et étincelles montent des deux mains (`HeatedHandsEffect`, `SpellFx.heatedHands`).
   - **Feu** :
     - particules dessinées pour le mod, en aplats façon anime : flamme animée en 8 images, braise, fumée, éclair blanc, onde de choc couchée au sol ;
     - **boule de feu** : cœur blanc, flammes qui fuient vers l'arrière (plus longues avec la vitesse), halo rouge, braises et fumée ;

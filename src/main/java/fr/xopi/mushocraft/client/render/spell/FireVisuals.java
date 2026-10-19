@@ -37,6 +37,10 @@ public final class FireVisuals {
             3.0F, 1.0F, 0.01F, -0.12F);
     private static final LatheMesh.Material HALO = new LatheMesh.Material(0.95F, 0.36F, 0.14F, 0.55F, 0.05F, 0.0F,
             4.0F, 1.0F, -0.01F, -0.16F);
+    /** The halo is the flame layer scaled up, its tail stretched further; the ragged tongues lengthen a tail by up to this. */
+    private static final float HALO_SCALE = 1.25F;
+    private static final float HALO_TAIL = 1.3F;
+    private static final float TAIL_RAGGED = 1.45F;
 
     private FireVisuals() {
     }
@@ -45,12 +49,15 @@ public final class FireVisuals {
         float time = projectile.tickCount + partialTicks;
         float radius = projectile.visualSize() / 2.0F;
         Vec3 motion = projectile.getDeltaMovement();
-        // the tail streams back at most two blocks, whatever the fireball's size
-        float tail = Math.min(0.8F + Math.min(2.2F, (float) motion.length() * 1.4F), 2.0F / Math.max(radius, 0.1F));
         // glowing flames seen from inside would flood the view: they fade as the eye comes into them
         Vec3 eye = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
         float distance = (float) eye.distanceTo(projectile.getPosition(partialTicks).add(0.0, projectile.getBbHeight() / 2.0, 0.0));
         float nearFade = Mth.clamp((distance - radius * 0.8F) / (radius * 2.0F + 1.0F), 0.15F, 1.0F);
+        // the tail streams back up to a block and a half, longer with speed, and never reaches within a block of the
+        // eye: just cast, the fireball flies straight away from the caster, and a tail running past the camera would
+        // be drawn as rays across the whole view
+        float tailBlocks = Math.min(Math.min(1.5F, 0.5F + (float) motion.length()), Math.max(0.0F, distance - HALO_SCALE * radius - 1.0F));
+        float tail = tailBlocks / (HALO_SCALE * radius * HALO_TAIL * TAIL_RAGGED);
 
         poseStack.pushPose();
         poseStack.translate(0.0, projectile.getBbHeight() / 2.0, 0.0);
@@ -64,8 +71,8 @@ public final class FireVisuals {
         poseStack.popPose();
         LatheMesh.render(poseStack.last(), glow(buffers), LatheMesh.SPHERE, licking(time, 0.22F, tail), withAlpha(FLAME, nearFade),
                 16, 22, time, GLOW);
-        poseStack.scale(1.25F, 1.25F, 1.25F);
-        LatheMesh.render(poseStack.last(), glow(buffers), LatheMesh.SPHERE, licking(time + 7.0F, 0.3F, tail * 1.3F),
+        poseStack.scale(HALO_SCALE, HALO_SCALE, HALO_SCALE);
+        LatheMesh.render(poseStack.last(), glow(buffers), LatheMesh.SPHERE, licking(time + 7.0F, 0.3F, tail * HALO_TAIL),
                 withAlpha(HALO, nearFade), 14, 20, time, GLOW);
         poseStack.popPose();
     };
@@ -81,7 +88,7 @@ public final class FireVisuals {
             point.mul(swell, 1.0F, swell);
             if (point.y < 0.0F) {
                 float back = 1.0F - t * 2.0F;
-                float ragged = 1.0F + 0.45F * Mth.sin(angle * 4.0F + time * 1.3F);
+                float ragged = 1.0F + (TAIL_RAGGED - 1.0F) * Mth.sin(angle * 4.0F + time * 1.3F);
                 point.y *= 1.0F + tail * back * ragged;
                 // the tail narrows to points
                 float narrow = 1.0F - 0.55F * back * Math.min(1.0F, tail);

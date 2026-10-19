@@ -20,6 +20,7 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.EntityTypeTags;
+import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
@@ -203,9 +204,10 @@ public class SpellProjectile extends ThrowableProjectile implements GeoEntity {
                         radius * 0.4, radius * 0.6, 0.02);
             }
             server.sendParticles(element().trail(), getX(), getY(), getZ(), 12, 0.2, 0.2, 0.2, 0.05);
-            // a drawn hit spark, tinted by the element
+            // a drawn hit spark, tinted by the element; its size is a half-width, kept to the projectile's scale so a big
+            // fireball does not throw rays across the whole view (its drawn explosion is the show)
             server.sendParticles(ColorParticleOption.create(MushoParticles.IMPACT.get(), 0xFF000000 | impactTint()),
-                    getX(), getY() + getBbHeight() / 2.0, getZ(), 0, Math.max(0.6, visualSize() * 1.8), 0.0, 0.0, 1.0);
+                    getX(), getY() + getBbHeight() / 2.0, getZ(), 0, Mth.clamp(visualSize() * 0.6, 0.4, 1.2), 0.0, 0.0, 1.0);
             if (element() == SpellElement.WATER) {
                 // the mass bursts into a spray, as in the anime
                 double spread = visualSize();
