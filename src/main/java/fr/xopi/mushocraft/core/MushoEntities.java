@@ -11,6 +11,7 @@ import fr.xopi.mushocraft.magic.summon.LamplightSpirit;
 import fr.xopi.mushocraft.magic.summon.SummonedSpirit;
 import fr.xopi.mushocraft.monster.AssaultDog;
 import fr.xopi.mushocraft.monster.MushoMonster;
+import fr.xopi.mushocraft.monster.MadSkull;
 import fr.xopi.mushocraft.monster.ArmoredWarrior;
 import fr.xopi.mushocraft.monster.Wraith;
 import fr.xopi.mushocraft.monster.Goblin;
@@ -207,6 +208,14 @@ public final class MushoEntities {
                     .clientTrackingRange(10)
                     .build(MushoCraft.id("armored_warrior").toString()));
 
+    /** Mad Skull, a headless mud giant whose buried skull is its only weak point (rank B). */
+    public static final DeferredHolder<EntityType<?>, EntityType<MadSkull>> MAD_SKULL =
+            ENTITY_TYPES.register("mad_skull", () -> EntityType.Builder
+                    .<MadSkull>of(MadSkull::new, MobCategory.MONSTER)
+                    .sized(1.6F, 2.7F)
+                    .clientTrackingRange(10)
+                    .build(MushoCraft.id("mad_skull").toString()));
+
     private MushoEntities() {
     }
 
@@ -241,5 +250,6 @@ public final class MushoEntities {
         event.put(GOBLIN.get(), Goblin.createAttributes().build());
         event.put(WRAITH.get(), Wraith.createAttributes().build());
         event.put(ARMORED_WARRIOR.get(), ArmoredWarrior.createAttributes().build());
+        event.put(MAD_SKULL.get(), MadSkull.createAttributes().build());
     }
 }

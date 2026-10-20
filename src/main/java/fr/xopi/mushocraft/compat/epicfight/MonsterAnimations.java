@@ -23,6 +23,7 @@ public final class MonsterAnimations {
     public static final AssetAccessor<Armature> GOBLIN_ARMATURE = armature("goblin");
     public static final AssetAccessor<Armature> WRAITH_ARMATURE = armature("wraith");
     public static final AssetAccessor<Armature> ARMORED_WARRIOR_ARMATURE = armature("armored_warrior");
+    public static final AssetAccessor<Armature> MAD_SKULL_ARMATURE = armature("mad_skull");
 
     public static CanineAnimations ASSAULT_DOG;
     public static CanineAnimations PAX_COYOTE;
@@ -31,6 +32,7 @@ public final class MonsterAnimations {
     public static GoblinAnimations GOBLIN;
     public static WraithAnimations WRAITH;
     public static ArmoredWarriorAnimations ARMORED_WARRIOR;
+    public static MadSkullAnimations MAD_SKULL;
 
     private MonsterAnimations() {
     }
@@ -52,5 +54,6 @@ public final class MonsterAnimations {
         GOBLIN = GoblinAnimations.register(builder, "goblin", GOBLIN_ARMATURE);
         WRAITH = WraithAnimations.register(builder, "wraith", WRAITH_ARMATURE);
         ARMORED_WARRIOR = ArmoredWarriorAnimations.register(builder, "armored_warrior", ARMORED_WARRIOR_ARMATURE);
+        MAD_SKULL = MadSkullAnimations.register(builder, "mad_skull", MAD_SKULL_ARMATURE);
     }
 }

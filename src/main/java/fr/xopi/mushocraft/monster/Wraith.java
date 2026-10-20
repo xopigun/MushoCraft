@@ -61,7 +61,6 @@ public class Wraith extends MushoMonster {
     private static final float DEADLY_SHARE = 0.25F;
 
     private int reforming;
-    private boolean wasChanting;
 
     public Wraith(EntityType<? extends Wraith> type, Level level) {
         super(type, level);
@@ -215,11 +214,6 @@ public class Wraith extends MushoMonster {
             }
             return;
         }
-        boolean chanting = ChantBroadcast.isChanting(this);
-        if (chanting && !wasChanting) {
-            MonsterActions.play(this, MonsterAction.CAST);
-        }
-        wasChanting = chanting;
     }
 
     /** Its skeletons crumble with it. */

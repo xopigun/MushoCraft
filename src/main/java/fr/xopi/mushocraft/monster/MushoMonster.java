@@ -1,5 +1,7 @@
 package fr.xopi.mushocraft.monster;
 
+import fr.xopi.mushocraft.compat.epicfight.MonsterActions;
+import fr.xopi.mushocraft.magic.spell.ChantBroadcast;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
@@ -31,6 +33,7 @@ public abstract class MushoMonster extends Monster {
     @Nullable
     private UUID pack;
     private boolean leader;
+    private boolean wasChanting;
 
     protected MushoMonster(EntityType<? extends MushoMonster> type, Level level) {
         super(type, level);
@@ -114,6 +117,19 @@ public abstract class MushoMonster extends Monster {
             groupData = new PackSpawn(id);
         }
         return super.finalizeSpawn(level, difficulty, spawnType, groupData);
+    }
+
+    /** A monster that chants a spell shows it: its species' casting gesture plays as the chant begins. */
+    @Override
+    public void aiStep() {
+        super.aiStep();
+        if (!level().isClientSide) {
+            boolean chanting = ChantBroadcast.isChanting(this);
+            if (chanting && !wasChanting) {
+                MonsterActions.play(this, MonsterAction.CAST);
+            }
+            wasChanting = chanting;
+        }
     }
 
     @Override

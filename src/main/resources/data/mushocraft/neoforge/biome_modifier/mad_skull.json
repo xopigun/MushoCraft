@@ -1,0 +1,12 @@
+{
+  "type": "neoforge:add_spawns",
+  "biomes": "#mushocraft:has_mad_skull",
+  "spawners": [
+    {
+      "type": "mushocraft:mad_skull",
+      "weight": 3,
+      "minCount": 1,
+      "maxCount": 1
+    }
+  ]
+}

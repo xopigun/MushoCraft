@@ -14,6 +14,7 @@ import fr.xopi.mushocraft.monster.ArmoredWarrior;
 import fr.xopi.mushocraft.monster.AssaultDog;
 import fr.xopi.mushocraft.monster.EngagementTokens;
 import fr.xopi.mushocraft.monster.Goblin;
+import fr.xopi.mushocraft.monster.MadSkull;
 import fr.xopi.mushocraft.monster.LusterGrizzly;
 import fr.xopi.mushocraft.monster.MonsterPack;
 import fr.xopi.mushocraft.monster.MushoMonster;
@@ -302,6 +303,44 @@ public final class MonsterGameTests {
             warrior.hurt(warrior.damageSources().mobAttack(foe), 6.0F);
             helper.assertTrue(warrior.getHealth() == health && foe.getHealth() < foe.getMaxHealth(), "the blow is turned and answered");
             clear(List.of(warrior), foe);
+        });
+    }
+
+    @GameTest(template = EMPTY)
+    public static void onlyAMadSkullsExposedSkullTakesBlows(GameTestHelper helper) {
+        MadSkull hidden = helper.spawn(MushoEntities.MAD_SKULL.get(), new BlockPos(2, 1, 2));
+        MadSkull exposed = helper.spawn(MushoEntities.MAD_SKULL.get(), new BlockPos(7, 1, 2));
+        MadSkull behind = helper.spawn(MushoEntities.MAD_SKULL.get(), new BlockPos(2, 1, 7));
+        for (MadSkull giant : List.of(hidden, exposed, behind)) {
+            giant.setYRot(0.0F);
+            giant.setYBodyRot(0.0F);
+        }
+        // facing south (+z): a foe two blocks south is in front, two blocks north is behind
+        Husk front = prey(helper, new BlockPos(2, 1, 4));
+        Husk front2 = prey(helper, new BlockPos(7, 1, 4));
+        Husk back = prey(helper, new BlockPos(2, 1, 5));
+        exposed.expose();
+        behind.expose();
+        hidden.hurt(hidden.damageSources().mobAttack(front), 10.0F);
+        exposed.hurt(exposed.damageSources().mobAttack(front2), 10.0F);
+        behind.hurt(behind.damageSources().mobAttack(back), 10.0F);
+        helper.assertTrue(hidden.getMaxHealth() - hidden.getHealth() <= 1.0F, "the mud shrugs the blow off");
+        helper.assertTrue(exposed.getMaxHealth() - exposed.getHealth() >= 10.0F, "the skull, out of the mud, is hit hard");
+        helper.assertTrue(behind.getMaxHealth() - behind.getHealth() <= 1.0F, "but only from in front of the chest");
+        List.of(hidden, exposed, behind).forEach(MushoMonster::discard);
+        List.of(front, front2, back).forEach(Husk::discard);
+        helper.succeed();
+    }
+
+    @GameTest(template = EMPTY, timeoutTicks = 120)
+    public static void aMadSkullSlingsMudAtAFarFoe(GameTestHelper helper) {
+        MadSkull giant = helper.spawn(MushoEntities.MAD_SKULL.get(), new BlockPos(1, 1, 1));
+        Husk foe = prey(helper, new BlockPos(7, 1, 7));
+        giant.setTarget(foe);
+        helper.succeedWhen(() -> {
+            helper.assertFalse(helper.getLevel().getEntitiesOfClass(SpellProjectile.class, giant.getBoundingBox().inflate(16.0),
+                    ball -> ball.element() == SpellElement.EARTH).isEmpty(), "a ball of mud or a stone flies");
+            clear(List.of(giant), foe);
         });
     }
 }

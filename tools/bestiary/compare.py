@@ -32,10 +32,11 @@ def main():
     p.add_argument('out')
     p.add_argument('--refs', nargs='*', default=[])
     p.add_argument('--game', nargs='*', default=[])
+    p.add_argument('--pose', default='idle', help='the clip whose first frame is shown')
     a = p.parse_args()
     model, painter, clips = importlib.import_module(a.creature).build()
-    idle = next((c for c in clips if c.name == 'idle'), None)
-    pose = idle.pose(0.0) if idle else None
+    chosen = next((c for c in clips if c.name == a.pose), None)
+    pose = chosen.pose(chosen.length * 0.5 if a.pose != 'idle' else 0.0) if chosen else None
     import tempfile, os
     tex_path = os.path.join(tempfile.gettempdir(), a.creature + '_compare_tex.png')
     texture = Image.fromarray(model.paint(painter, tex_path), 'RGBA')

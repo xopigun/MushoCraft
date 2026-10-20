@@ -241,6 +241,8 @@
   "entity.mushocraft.magic_tutor.title.milis": "Chevalier de Milis · %2$s (%1$s)",
   "item.mushocraft.sword_master_spawn_egg": "Œuf d'apparition de maître d'épée",
   "item.mushocraft.magic_tutor_spawn_egg": "Œuf d'apparition de précepteur de magie",
+  "entity.mushocraft.mad_skull": "Crâne fou",
+  "item.mushocraft.mad_skull_spawn_egg": "Œuf d'apparition de crâne fou",
   "entity.mushocraft.armored_warrior": "Guerrier en armure",
   "item.mushocraft.armored_warrior_spawn_egg": "Œuf d'apparition de guerrier en armure",
   "entity.mushocraft.wraith": "Spectre",

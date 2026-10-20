@@ -9,5 +9,7 @@ public enum MonsterAction {
     /** Gathering a spell while chanting it. */
     CAST,
     /** Taking a receiving stance (the Water God Style's Flow). */
-    COUNTER
+    COUNTER,
+    /** Throwing something at a foe out of reach. */
+    THROW
 }

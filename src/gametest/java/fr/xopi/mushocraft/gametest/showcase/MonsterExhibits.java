@@ -6,6 +6,7 @@ import fr.xopi.mushocraft.compat.epicfight.BoarAnimations;
 import fr.xopi.mushocraft.compat.epicfight.CanineAnimations;
 import fr.xopi.mushocraft.compat.epicfight.EpicFightAnimations;
 import fr.xopi.mushocraft.compat.epicfight.GoblinAnimations;
+import fr.xopi.mushocraft.compat.epicfight.MadSkullAnimations;
 import fr.xopi.mushocraft.compat.epicfight.WraithAnimations;
 import fr.xopi.mushocraft.compat.epicfight.MonsterAnimations;
 import fr.xopi.mushocraft.core.MushoEntities;
@@ -89,6 +90,14 @@ final class MonsterExhibits {
         warriorClips.put("death", () -> warrior.get().death());
         species(all, "armored_warrior", MushoEntities.ARMORED_WARRIOR.get(), warriorClips, 3.8,
                 player -> packHunt(player, MushoEntities.ARMORED_WARRIOR.get()));
+        Supplier<MadSkullAnimations> skull = () -> MonsterAnimations.MAD_SKULL;
+        Map<String, Supplier<AnimationAccessor<? extends StaticAnimation>>> skullClips = new LinkedHashMap<>();
+        skullClips.put("walk", () -> skull.get().walk());
+        skullClips.put("slam", () -> skull.get().slam());
+        skullClips.put("throw", () -> skull.get().throwMud());
+        skullClips.put("cast", () -> skull.get().cast());
+        skullClips.put("death", () -> skull.get().death());
+        species(all, "mad_skull", MushoEntities.MAD_SKULL.get(), skullClips, 6.0, player -> soloHunt(player, MushoEntities.MAD_SKULL.get()));
     }
 
     private static <T extends MushoMonster> void canine(List<Exhibit> all, String name, EntityType<T> type,
@@ -159,6 +168,19 @@ final class MonsterExhibits {
             level.addFreshEntity(monster);
             monster.setTarget(prey);
         }
+    }
+
+    /** One monster sets upon the dummy from afar. */
+    private static <T extends MushoMonster> void soloHunt(ServerPlayer player, EntityType<T> type) {
+        ServerLevel level = player.serverLevel();
+        Husk prey = prey(player);
+        T monster = type.create(level);
+        if (prey == null || monster == null) {
+            return;
+        }
+        monster.moveTo(player.getX() + 2, player.getY(), player.getZ() + 18, 180.0F, 0.0F);
+        level.addFreshEntity(monster);
+        monster.setTarget(prey);
     }
 
     /** A Deadly Wraith sets upon the dummy: it raises its skeletons and casts at it. */

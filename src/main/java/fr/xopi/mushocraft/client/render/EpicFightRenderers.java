@@ -41,6 +41,8 @@ public final class EpicFightRenderers {
                     type -> new PCustomEntityRenderer(monsterMesh("goblin"), event.getContext()));
             event.addPatchedEntityRenderer(MushoEntities.ARMORED_WARRIOR.get(),
                     type -> new PCustomEntityRenderer(monsterMesh("armored_warrior"), event.getContext()));
+            event.addPatchedEntityRenderer(MushoEntities.MAD_SKULL.get(),
+                    type -> new PCustomEntityRenderer(monsterMesh("mad_skull"), event.getContext()));
             event.addPatchedEntityRenderer(MushoEntities.WRAITH.get(),
                     type -> new TranslucentMonsterRenderer(monsterMesh("wraith"), event.getContext(), 0.78F));
         });
