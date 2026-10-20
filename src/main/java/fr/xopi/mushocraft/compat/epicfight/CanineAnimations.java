@@ -29,7 +29,7 @@ public record CanineAnimations(
         AnimationAccessor<ActionAnimation> howl
 ) implements MonsterAnimationSet {
     /** The jaws, in front of the head joint. */
-    private static final Collider JAWS = MonsterColliders.box(0.4, 0.35, 0.55, 0.0, -0.1, 0.55);
+    private static final Collider JAWS = MonsterColliders.box(0.45, 0.4, 0.6, 0.0, -0.1, 0.25);
     /** The whole forequarters, in a leap. */
     private static final Collider FOREQUARTERS = MonsterColliders.box(0.55, 0.5, 0.75, 0.0, 0.0, 0.5);
 
