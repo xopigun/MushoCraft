@@ -19,7 +19,13 @@ import fr.xopi.mushocraft.monster.LusterGrizzly;
 import fr.xopi.mushocraft.monster.MonsterPack;
 import fr.xopi.mushocraft.monster.MushoMonster;
 import fr.xopi.mushocraft.monster.PaxCoyote;
+import fr.xopi.mushocraft.monster.TarantulaDeathlord;
 import fr.xopi.mushocraft.monster.TerminateBoar;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.animal.Pig;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
@@ -341,6 +347,50 @@ public final class MonsterGameTests {
             helper.assertFalse(helper.getLevel().getEntitiesOfClass(SpellProjectile.class, giant.getBoundingBox().inflate(16.0),
                     ball -> ball.element() == SpellElement.EARTH).isEmpty(), "a ball of mud or a stone flies");
             clear(List.of(giant), foe);
+        });
+    }
+
+    @GameTest(template = EMPTY, timeoutTicks = 160)
+    public static void aTarantulasWebTearsTheWeaponFromTheHand(GameTestHelper helper) {
+        TarantulaDeathlord spider = helper.spawn(MushoEntities.TARANTULA_DEATHLORD.get(), new BlockPos(1, 1, 1));
+        Husk foe = prey(helper, new BlockPos(6, 1, 6));
+        foe.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_SWORD));
+        spider.setTarget(foe);
+        helper.succeedWhen(() -> {
+            helper.assertTrue(foe.getMainHandItem().isEmpty(), "the web catches the blade");
+            helper.assertFalse(helper.getLevel().getEntitiesOfClass(ItemEntity.class, foe.getBoundingBox().inflate(3.0),
+                    item -> item.getItem().is(Items.IRON_SWORD)).isEmpty(), "and the sword falls at its feet");
+            clear(List.of(spider), foe);
+        });
+    }
+
+    @GameTest(template = EMPTY)
+    public static void aTarantulasBitePoisonsButNotItself(GameTestHelper helper) {
+        TarantulaDeathlord spider = helper.spawn(MushoEntities.TARANTULA_DEATHLORD.get(), new BlockPos(1, 1, 1));
+        Pig prey = helper.spawn(EntityType.PIG, new BlockPos(2, 1, 2));
+        prey.setNoAi(true);
+        spider.doHurtTarget(prey);
+        helper.assertTrue(prey.hasEffect(MobEffects.POISON), "the bite carries venom");
+        spider.addEffect(new MobEffectInstance(MobEffects.POISON, 100, 0));
+        helper.assertFalse(spider.hasEffect(MobEffects.POISON), "its own venom does nothing to it");
+        spider.discard();
+        prey.discard();
+        helper.succeed();
+    }
+
+    @GameTest(template = EMPTY, timeoutTicks = 120)
+    public static void aTarantulaClimbsWalls(GameTestHelper helper) {
+        for (int x = 0; x < 8; x++) {
+            for (int y = 1; y < 6; y++) {
+                helper.setBlock(new BlockPos(x, y, 5), Blocks.STONE);
+            }
+        }
+        TarantulaDeathlord spider = helper.spawn(MushoEntities.TARANTULA_DEATHLORD.get(), new BlockPos(3, 1, 3));
+        double ground = spider.getY();
+        helper.onEachTick(() -> spider.getMoveControl().setWantedPosition(spider.getX(), spider.getY(), spider.getZ() + 3.0, 1.0));
+        helper.succeedWhen(() -> {
+            helper.assertTrue(spider.getY() > ground + 2.0, "it goes up the wall");
+            spider.discard();
         });
     }
 }

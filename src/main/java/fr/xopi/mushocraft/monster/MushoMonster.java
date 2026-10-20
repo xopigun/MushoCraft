@@ -88,6 +88,10 @@ public abstract class MushoMonster extends Monster {
         return hurt;
     }
 
+    /** A blow of its own has just wounded `victim` (see {@link MonsterStrikes}): venom, a grip, a curse... */
+    public void onStrike(LivingEntity victim) {
+    }
+
     @Override
     public boolean isAlliedTo(Entity other) {
         return inSamePack(other) || super.isAlliedTo(other);

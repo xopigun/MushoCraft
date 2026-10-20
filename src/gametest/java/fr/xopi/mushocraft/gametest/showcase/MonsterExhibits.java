@@ -7,6 +7,7 @@ import fr.xopi.mushocraft.compat.epicfight.CanineAnimations;
 import fr.xopi.mushocraft.compat.epicfight.EpicFightAnimations;
 import fr.xopi.mushocraft.compat.epicfight.GoblinAnimations;
 import fr.xopi.mushocraft.compat.epicfight.MadSkullAnimations;
+import fr.xopi.mushocraft.compat.epicfight.TarantulaAnimations;
 import fr.xopi.mushocraft.compat.epicfight.WraithAnimations;
 import fr.xopi.mushocraft.compat.epicfight.MonsterAnimations;
 import fr.xopi.mushocraft.core.MushoEntities;
@@ -98,6 +99,14 @@ final class MonsterExhibits {
         skullClips.put("cast", () -> skull.get().cast());
         skullClips.put("death", () -> skull.get().death());
         species(all, "mad_skull", MushoEntities.MAD_SKULL.get(), skullClips, 6.0, player -> soloHunt(player, MushoEntities.MAD_SKULL.get()));
+        Supplier<TarantulaAnimations> spider = () -> MonsterAnimations.TARANTULA_DEATHLORD;
+        Map<String, Supplier<AnimationAccessor<? extends StaticAnimation>>> spiderClips = new LinkedHashMap<>();
+        spiderClips.put("walk", () -> spider.get().walk());
+        spiderClips.put("bite", () -> spider.get().bite());
+        spiderClips.put("spit", () -> spider.get().spit());
+        spiderClips.put("death", () -> spider.get().death());
+        species(all, "tarantula_deathlord", MushoEntities.TARANTULA_DEATHLORD.get(), spiderClips, 4.5,
+                player -> soloHunt(player, MushoEntities.TARANTULA_DEATHLORD.get()));
     }
 
     private static <T extends MushoMonster> void canine(List<Exhibit> all, String name, EntityType<T> type,

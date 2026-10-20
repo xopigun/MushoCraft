@@ -24,6 +24,7 @@ public final class MonsterAnimations {
     public static final AssetAccessor<Armature> WRAITH_ARMATURE = armature("wraith");
     public static final AssetAccessor<Armature> ARMORED_WARRIOR_ARMATURE = armature("armored_warrior");
     public static final AssetAccessor<Armature> MAD_SKULL_ARMATURE = armature("mad_skull");
+    public static final AssetAccessor<Armature> TARANTULA_DEATHLORD_ARMATURE = armature("tarantula_deathlord");
 
     public static CanineAnimations ASSAULT_DOG;
     public static CanineAnimations PAX_COYOTE;
@@ -33,6 +34,7 @@ public final class MonsterAnimations {
     public static WraithAnimations WRAITH;
     public static ArmoredWarriorAnimations ARMORED_WARRIOR;
     public static MadSkullAnimations MAD_SKULL;
+    public static TarantulaAnimations TARANTULA_DEATHLORD;
 
     private MonsterAnimations() {
     }
@@ -55,5 +57,6 @@ public final class MonsterAnimations {
         WRAITH = WraithAnimations.register(builder, "wraith", WRAITH_ARMATURE);
         ARMORED_WARRIOR = ArmoredWarriorAnimations.register(builder, "armored_warrior", ARMORED_WARRIOR_ARMATURE);
         MAD_SKULL = MadSkullAnimations.register(builder, "mad_skull", MAD_SKULL_ARMATURE);
+        TARANTULA_DEATHLORD = TarantulaAnimations.register(builder, "tarantula_deathlord", TARANTULA_DEATHLORD_ARMATURE);
     }
 }

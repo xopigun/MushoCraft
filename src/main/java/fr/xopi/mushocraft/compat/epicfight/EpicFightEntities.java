@@ -31,6 +31,7 @@ public final class EpicFightEntities {
             event.registerEntityPatch(MushoEntities.WRAITH.get(), monster -> new WraithPatch<>(monster, () -> MonsterAnimations.WRAITH));
             event.registerEntityPatch(MushoEntities.ARMORED_WARRIOR.get(), monster -> new ArmoredWarriorPatch<>(monster, () -> MonsterAnimations.ARMORED_WARRIOR));
             event.registerEntityPatch(MushoEntities.MAD_SKULL.get(), monster -> new MadSkullPatch<>(monster, () -> MonsterAnimations.MAD_SKULL));
+            event.registerEntityPatch(MushoEntities.TARANTULA_DEATHLORD.get(), monster -> new TarantulaPatch<>(monster, () -> MonsterAnimations.TARANTULA_DEATHLORD));
         });
     }
 
@@ -47,6 +48,7 @@ public final class EpicFightEntities {
             Armatures.registerEntityTypeArmature(MushoEntities.WRAITH.get(), MonsterAnimations.WRAITH_ARMATURE);
             Armatures.registerEntityTypeArmature(MushoEntities.ARMORED_WARRIOR.get(), MonsterAnimations.ARMORED_WARRIOR_ARMATURE);
             Armatures.registerEntityTypeArmature(MushoEntities.MAD_SKULL.get(), MonsterAnimations.MAD_SKULL_ARMATURE);
+            Armatures.registerEntityTypeArmature(MushoEntities.TARANTULA_DEATHLORD.get(), MonsterAnimations.TARANTULA_DEATHLORD_ARMATURE);
         });
     }
 }

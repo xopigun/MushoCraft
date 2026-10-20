@@ -42,6 +42,7 @@ public final class MushoCreativeTabs {
                         output.accept(MushoItems.WRAITH_SPAWN_EGG.get());
                         output.accept(MushoItems.ARMORED_WARRIOR_SPAWN_EGG.get());
                         output.accept(MushoItems.MAD_SKULL_SPAWN_EGG.get());
+                        output.accept(MushoItems.TARANTULA_DEATHLORD_SPAWN_EGG.get());
                     })
                     .build());
 

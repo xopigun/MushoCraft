@@ -1,6 +1,7 @@
 package fr.xopi.mushocraft.sword.entity;
 
 import fr.xopi.mushocraft.core.MushoItems;
+import fr.xopi.mushocraft.sword.technique.Disarm;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -10,6 +11,7 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
@@ -17,7 +19,8 @@ import org.joml.Vector3f;
 import java.util.function.Supplier;
 
 /**
- * The North God Style's thrown tricks (wiki): what each one is and what it does where it bursts.
+ * The North God Style's thrown tricks (wiki), and the webs some monsters spit: what each one is and what it does where
+ * it bursts.
  */
 public enum TrickKind {
     /**
@@ -58,6 +61,23 @@ public enum TrickKind {
             level.sendParticles(new DustParticleOptions(new Vector3f(0.5F, 0.02F, 0.06F), 1.3F), at.x, at.y + 0.1, at.z, 30, 0.7, 0.1, 0.7, 0.0);
             level.playSound(null, at.x, at.y, at.z, SoundEvents.SLIME_BLOCK_BREAK, SoundSource.PLAYERS, 1.2F, 0.7F);
             level.playSound(null, at.x, at.y, at.z, SoundEvents.HONEY_BLOCK_SLIDE, SoundSource.PLAYERS, 1.0F, 0.6F);
+        }
+    },
+    /**
+     * A Tarantula Deathlord's web, spat so accurately that it catches the weapon and tears it from the hand (wiki, page
+     * <i>Monsters</i>); its threads also hold the victim back for a moment.
+     */
+    WEB(() -> Items.COBWEB, 1.1) {
+        @Override
+        void affect(LivingEntity victim) {
+            Disarm.tearAway(victim, 50);
+            victim.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 60, 2));
+        }
+
+        @Override
+        void burst(ServerLevel level, Vec3 at) {
+            level.sendParticles(new DustParticleOptions(new Vector3f(0.92F, 0.92F, 0.95F), 1.1F), at.x, at.y + 0.3, at.z, 40, 0.5, 0.4, 0.5, 0.0);
+            level.playSound(null, at.x, at.y, at.z, SoundEvents.WOOL_BREAK, SoundSource.HOSTILE, 1.0F, 0.6F);
         }
     };
 

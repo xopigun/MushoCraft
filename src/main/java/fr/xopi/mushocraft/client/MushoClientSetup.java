@@ -81,6 +81,7 @@ public final class MushoClientSetup {
         event.registerEntityRenderer(MushoEntities.WRAITH.get(), context -> new MonsterRenderer<>(context, 0.0F));
         event.registerEntityRenderer(MushoEntities.ARMORED_WARRIOR.get(), context -> new MonsterRenderer<>(context, 0.6F));
         event.registerEntityRenderer(MushoEntities.MAD_SKULL.get(), context -> new MonsterRenderer<>(context, 1.0F));
+        event.registerEntityRenderer(MushoEntities.TARANTULA_DEATHLORD.get(), context -> new MonsterRenderer<>(context, 1.1F));
     }
 
     @SubscribeEvent
