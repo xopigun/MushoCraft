@@ -38,7 +38,7 @@ public class SnowDrakePatch<T extends MushoMonster> extends MonsterPatch<T> {
         return CombatBehaviors.<MonsterPatch<?>>builder()
                 .newBehaviorSeries(BehaviorSeries.<MonsterPatch<?>>builder().weight(60.0F).canBeInterrupted(false).looping(false)
                         .nextBehavior(Behavior.<MonsterPatch<?>>builder().animationBehavior(a.bite())
-                                .withinEyeHeight().withinDistance(0.0, 3.0).custom(MonsterPatch::mayStrike)))
+                                .withinDistance(0.0, 2.6).custom(MonsterPatch::mayStrike)))
                 .newBehaviorSeries(BehaviorSeries.<MonsterPatch<?>>builder().weight(40.0F).canBeInterrupted(false).looping(false)
                         .nextBehavior(Behavior.<MonsterPatch<?>>builder().animationBehavior(a.tailSweep())
                                 .withinEyeHeight().withinDistance(0.0, 3.4).custom(MonsterPatch::mayStrike)));

@@ -42,10 +42,10 @@ public class DevouringDevilPatch<T extends MushoMonster> extends MonsterPatch<T>
                                 .withinDistance(3.2, 6.5).custom(DevouringDevilPatch::maySpring)))
                 .newBehaviorSeries(BehaviorSeries.<MonsterPatch<?>>builder().weight(50.0F).canBeInterrupted(false).looping(false)
                         .nextBehavior(Behavior.<MonsterPatch<?>>builder().animationBehavior(a.claw())
-                                .withinEyeHeight().withinDistance(0.0, 2.6).custom(MonsterPatch::mayStrike)))
+                                .withinDistance(0.0, 2.6).custom(MonsterPatch::mayStrike)))
                 .newBehaviorSeries(BehaviorSeries.<MonsterPatch<?>>builder().weight(30.0F).canBeInterrupted(false).looping(false)
                         .nextBehavior(Behavior.<MonsterPatch<?>>builder().animationBehavior(a.bite())
-                                .withinEyeHeight().withinDistance(0.0, 2.4).custom(MonsterPatch::mayStrike)));
+                                .withinDistance(0.0, 2.4).custom(MonsterPatch::mayStrike)));
     }
 
     private static boolean maySpring(MonsterPatch<?> patch) {

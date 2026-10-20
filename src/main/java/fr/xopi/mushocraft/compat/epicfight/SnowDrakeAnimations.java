@@ -11,7 +11,6 @@ import yesman.epicfight.api.animation.types.MovementAnimation;
 import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.asset.AssetAccessor;
 import yesman.epicfight.api.collider.Collider;
-import yesman.epicfight.api.collider.OBBCollider;
 import yesman.epicfight.api.model.Armature;
 
 /**
@@ -30,9 +29,9 @@ public record SnowDrakeAnimations(
         AnimationAccessor<LongHitAnimation> death
 ) implements MonsterAnimationSet {
     /** The jaws, in front of the head. */
-    private static final Collider JAWS = new OBBCollider(0.6, 0.45, 0.7, 0.0, -0.1, -0.6);
+    private static final Collider JAWS = MonsterColliders.box(0.6, 0.45, 0.7, 0.0, -0.1, 0.6);
     /** The tail lashing round: wide, to catch whoever stands beside or behind. */
-    private static final Collider TAIL = new OBBCollider(1.4, 0.6, 1.4, 0.0, 0.0, 0.6);
+    private static final Collider TAIL = MonsterColliders.box(1.4, 0.6, 1.4, 0.0, 0.0, -0.6);
 
     public static SnowDrakeAnimations register(AnimationBuilder builder, String species, AssetAccessor<? extends Armature> armature) {
         String path = species + "/";

@@ -11,7 +11,6 @@ import yesman.epicfight.api.animation.types.MovementAnimation;
 import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.asset.AssetAccessor;
 import yesman.epicfight.api.collider.Collider;
-import yesman.epicfight.api.collider.OBBCollider;
 import yesman.epicfight.api.model.Armature;
 
 /**
@@ -30,7 +29,7 @@ public record MadSkullAnimations(
         AnimationAccessor<LongHitAnimation> death
 ) implements MonsterAnimationSet {
     /** Both fists coming down. */
-    private static final Collider FISTS = new OBBCollider(1.2, 0.9, 1.0, 0.0, -1.0, -0.4);
+    private static final Collider FISTS = MonsterColliders.box(1.2, 0.9, 1.0, 0.0, -1.0, 0.4);
 
     public static MadSkullAnimations register(AnimationBuilder builder, String species, AssetAccessor<? extends Armature> armature) {
         String path = species + "/";

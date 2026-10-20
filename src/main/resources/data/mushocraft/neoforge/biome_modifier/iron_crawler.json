@@ -1,0 +1,12 @@
+{
+  "type": "neoforge:add_spawns",
+  "biomes": "#mushocraft:has_iron_crawler",
+  "spawners": [
+    {
+      "type": "mushocraft:iron_crawler",
+      "weight": 4,
+      "minCount": 4,
+      "maxCount": 7
+    }
+  ]
+}

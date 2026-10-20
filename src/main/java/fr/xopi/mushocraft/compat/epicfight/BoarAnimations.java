@@ -13,7 +13,6 @@ import yesman.epicfight.api.animation.types.MovementAnimation;
 import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.asset.AssetAccessor;
 import yesman.epicfight.api.collider.Collider;
-import yesman.epicfight.api.collider.OBBCollider;
 import yesman.epicfight.api.model.Armature;
 import yesman.epicfight.world.damagesource.StunType;
 
@@ -35,11 +34,11 @@ public record BoarAnimations(
         AnimationAccessor<LongHitAnimation> death
 ) implements MonsterAnimationSet {
     /** Claws at the end of a forearm. */
-    private static final Collider CLAWS = new OBBCollider(0.6, 0.8, 0.6, 0.0, -0.9, -0.2);
+    private static final Collider CLAWS = MonsterColliders.box(0.6, 0.8, 0.6, 0.0, -0.9, 0.2);
     /** Both fists coming down. */
-    private static final Collider SMASH = new OBBCollider(0.9, 0.9, 0.9, 0.0, -1.0, -0.3);
+    private static final Collider SMASH = MonsterColliders.box(0.9, 0.9, 0.9, 0.0, -1.0, 0.3);
     /** The tusks, in front of the head. */
-    private static final Collider TUSKS = new OBBCollider(1.3, 0.7, 0.8, 0.0, -0.2, -0.9);
+    private static final Collider TUSKS = MonsterColliders.box(1.3, 0.7, 0.8, 0.0, -0.2, 0.9);
 
     public static BoarAnimations register(AnimationBuilder builder, String species, AssetAccessor<? extends Armature> armature) {
         String path = species + "/";

@@ -10,7 +10,6 @@ import yesman.epicfight.api.animation.types.MovementAnimation;
 import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.asset.AssetAccessor;
 import yesman.epicfight.api.collider.Collider;
-import yesman.epicfight.api.collider.OBBCollider;
 import yesman.epicfight.api.model.Armature;
 
 /**
@@ -29,11 +28,11 @@ public record DevouringDevilAnimations(
         AnimationAccessor<LongHitAnimation> death
 ) implements MonsterAnimationSet {
     /** The raking hand. */
-    private static final Collider HAND = new OBBCollider(0.5, 0.7, 0.6, 0.0, -0.6, -0.3);
+    private static final Collider HAND = MonsterColliders.box(0.5, 0.7, 0.6, 0.0, -0.6, 0.3);
     /** Both hands thrust ahead as it lands. */
-    private static final Collider LANDING = new OBBCollider(0.9, 0.6, 0.9, 0.0, 0.0, -0.8);
+    private static final Collider LANDING = MonsterColliders.box(0.9, 0.6, 0.9, 0.0, 0.0, 0.8);
     /** The tusks at the end of its long head. */
-    private static final Collider TUSKS = new OBBCollider(0.5, 0.5, 0.6, 0.0, -0.1, -0.9);
+    private static final Collider TUSKS = MonsterColliders.box(0.5, 0.5, 0.6, 0.0, -0.1, 0.9);
 
     public static DevouringDevilAnimations register(AnimationBuilder builder, String species, AssetAccessor<? extends Armature> armature) {
         String path = species + "/";

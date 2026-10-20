@@ -12,7 +12,6 @@ import yesman.epicfight.api.animation.types.MovementAnimation;
 import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.asset.AssetAccessor;
 import yesman.epicfight.api.collider.Collider;
-import yesman.epicfight.api.collider.OBBCollider;
 import yesman.epicfight.api.model.Armature;
 
 /**
@@ -30,7 +29,7 @@ public record GoblinAnimations(
         AnimationAccessor<LongHitAnimation> death
 ) implements MonsterAnimationSet {
     /** The club's head, held forwards from the right fist. */
-    private static final Collider CLUB = new OBBCollider(0.3, 0.3, 0.6, 0.0, -0.4, -0.55);
+    private static final Collider CLUB = MonsterColliders.box(0.3, 0.3, 0.6, 0.0, -0.4, 0.55);
 
     public static GoblinAnimations register(AnimationBuilder builder, String species, AssetAccessor<? extends Armature> armature) {
         String path = species + "/";

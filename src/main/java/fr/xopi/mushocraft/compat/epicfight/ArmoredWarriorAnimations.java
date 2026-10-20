@@ -11,7 +11,6 @@ import yesman.epicfight.api.animation.types.MovementAnimation;
 import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.asset.AssetAccessor;
 import yesman.epicfight.api.collider.Collider;
-import yesman.epicfight.api.collider.OBBCollider;
 import yesman.epicfight.api.model.Armature;
 
 /**
@@ -30,7 +29,7 @@ public record ArmoredWarriorAnimations(
         AnimationAccessor<LongHitAnimation> death
 ) implements MonsterAnimationSet {
     /** A long blade, down the line of the forearm. */
-    private static final Collider BLADE = new OBBCollider(0.3, 0.9, 0.3, 0.0, -1.35, 0.0);
+    private static final Collider BLADE = MonsterColliders.box(0.3, 0.9, 0.3, 0.0, -1.35, 0.0);
 
     public static ArmoredWarriorAnimations register(AnimationBuilder builder, String species, AssetAccessor<? extends Armature> armature) {
         String path = species + "/";

@@ -65,7 +65,7 @@ public class DevouringDevil extends ClimbingMonster {
     @Override
     protected void registerGoals() {
         goalSelector.addGoal(0, new FloatGoal(this));
-        goalSelector.addGoal(4, new PackHuntGoal(this, 1.3, 1.1, 5.0, 2.4));
+        goalSelector.addGoal(4, new PackHuntGoal(this, 1.3, 1.1, 5.0, 1.8));
         goalSelector.addGoal(6, new WaterAvoidingRandomStrollGoal(this, 0.7));
         goalSelector.addGoal(7, new LookAtPlayerGoal(this, Player.class, 10.0F));
         goalSelector.addGoal(8, new RandomLookAroundGoal(this));

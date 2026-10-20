@@ -27,6 +27,7 @@ public final class MonsterAnimations {
     public static final AssetAccessor<Armature> TARANTULA_DEATHLORD_ARMATURE = armature("tarantula_deathlord");
     public static final AssetAccessor<Armature> SNOW_DRAKE_ARMATURE = armature("snow_drake");
     public static final AssetAccessor<Armature> DEVOURING_DEVIL_ARMATURE = armature("devouring_devil");
+    public static final AssetAccessor<Armature> IRON_CRAWLER_ARMATURE = armature("iron_crawler");
 
     public static CanineAnimations ASSAULT_DOG;
     public static CanineAnimations PAX_COYOTE;
@@ -39,6 +40,7 @@ public final class MonsterAnimations {
     public static TarantulaAnimations TARANTULA_DEATHLORD;
     public static SnowDrakeAnimations SNOW_DRAKE;
     public static DevouringDevilAnimations DEVOURING_DEVIL;
+    public static IronCrawlerAnimations IRON_CRAWLER;
 
     private MonsterAnimations() {
     }
@@ -64,5 +66,6 @@ public final class MonsterAnimations {
         TARANTULA_DEATHLORD = TarantulaAnimations.register(builder, "tarantula_deathlord", TARANTULA_DEATHLORD_ARMATURE);
         SNOW_DRAKE = SnowDrakeAnimations.register(builder, "snow_drake", SNOW_DRAKE_ARMATURE);
         DEVOURING_DEVIL = DevouringDevilAnimations.register(builder, "devouring_devil", DEVOURING_DEVIL_ARMATURE);
+        IRON_CRAWLER = IronCrawlerAnimations.register(builder, "iron_crawler", IRON_CRAWLER_ARMATURE);
     }
 }

@@ -35,6 +35,7 @@ public final class EpicFightEntities {
             event.registerEntityPatch(MushoEntities.SNOW_DRAKE.get(), monster -> new SnowDrakePatch<>(monster, () -> MonsterAnimations.SNOW_DRAKE));
             event.registerEntityPatch(MushoEntities.DEVOURING_DEVIL.get(), monster -> new DevouringDevilPatch<>(monster, () -> MonsterAnimations.DEVOURING_DEVIL));
             event.registerEntityPatch(MushoEntities.EXECUTIONER.get(), ExecutionerPatch::new);
+            event.registerEntityPatch(MushoEntities.IRON_CRAWLER.get(), monster -> new IronCrawlerPatch<>(monster, () -> MonsterAnimations.IRON_CRAWLER));
         });
     }
 
@@ -55,6 +56,7 @@ public final class EpicFightEntities {
             Armatures.registerEntityTypeArmature(MushoEntities.SNOW_DRAKE.get(), MonsterAnimations.SNOW_DRAKE_ARMATURE);
             Armatures.registerEntityTypeArmature(MushoEntities.DEVOURING_DEVIL.get(), MonsterAnimations.DEVOURING_DEVIL_ARMATURE);
             Armatures.registerEntityTypeArmature(MushoEntities.EXECUTIONER.get(), Armatures.BIPED);
+            Armatures.registerEntityTypeArmature(MushoEntities.IRON_CRAWLER.get(), MonsterAnimations.IRON_CRAWLER_ARMATURE);
         });
     }
 }

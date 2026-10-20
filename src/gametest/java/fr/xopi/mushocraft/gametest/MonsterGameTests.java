@@ -22,6 +22,7 @@ import fr.xopi.mushocraft.monster.PaxCoyote;
 import fr.xopi.mushocraft.core.MushoItems;
 import fr.xopi.mushocraft.monster.DevouringDevil;
 import fr.xopi.mushocraft.monster.Executioner;
+import fr.xopi.mushocraft.monster.IronCrawler;
 import fr.xopi.mushocraft.monster.SnowDrake;
 import fr.xopi.mushocraft.monster.ai.BacklineTargetGoal;
 import fr.xopi.mushocraft.monster.TarantulaDeathlord;
@@ -32,6 +33,7 @@ import net.minecraft.world.entity.animal.Pig;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.level.ServerPlayer;
@@ -598,5 +600,74 @@ public final class MonsterGameTests {
             ice.discard();
             helper.succeed();
         });
+    }
+
+    @GameTest(template = EMPTY, timeoutTicks = 200)
+    public static void aSwarmOfIronCrawlersRunsItsPreyDown(GameTestHelper helper) {
+        List<IronCrawler> swarm = pack(helper, MushoEntities.IRON_CRAWLER.get(), 3, new BlockPos(1, 1, 1));
+        Husk foe = prey(helper, new BlockPos(4, 1, 7));
+        swarm.forEach(crawler -> crawler.setTarget(foe));
+        helper.succeedWhen(() -> {
+            helper.assertTrue(foe.getHealth() < foe.getMaxHealth(), "the swarm reaches its prey");
+            clear(swarm, foe);
+        });
+    }
+
+    /** Too heavy to jump: it rolls over a single block, a wall of two stops it. */
+    @GameTest(template = EMPTY, timeoutTicks = 140)
+    public static void anIronCrawlerRollsOverAStepButNotAWall(GameTestHelper helper) {
+        for (int x = 0; x < 3; x++) {
+            helper.setBlock(new BlockPos(x, 0, 4), Blocks.STONE); // a step one block high
+        }
+        for (int x = 4; x < 7; x++) {
+            helper.setBlock(new BlockPos(x, 0, 4), Blocks.STONE); // a wall two blocks high
+            helper.setBlock(new BlockPos(x, 1, 4), Blocks.STONE);
+        }
+        IronCrawler stepper = helper.spawn(MushoEntities.IRON_CRAWLER.get(), new BlockPos(1, 1, 2));
+        IronCrawler walled = helper.spawn(MushoEntities.IRON_CRAWLER.get(), new BlockPos(5, 1, 2));
+        stepper.goalSelector.removeAllGoals(goal -> true);
+        walled.goalSelector.removeAllGoals(goal -> true);
+        Vec3 stepGoal = helper.absoluteVec(new Vec3(1.5, 1.0, 7.5));
+        Vec3 wallGoal = helper.absoluteVec(new Vec3(5.5, 1.0, 7.5));
+        helper.onEachTick(() -> {
+            stepper.getMoveControl().setWantedPosition(stepGoal.x, stepper.getY(), stepGoal.z, 1.0);
+            walled.getMoveControl().setWantedPosition(wallGoal.x, walled.getY(), wallGoal.z, 1.0);
+        });
+        helper.runAfterDelay(120, () -> {
+            helper.assertTrue(helper.relativeVec(stepper.position()).z > 5.0, "over the step");
+            helper.assertTrue(helper.relativeVec(walled.position()).z < 4.0, "stopped by the wall");
+            stepper.discard();
+            walled.discard();
+            helper.succeed();
+        });
+    }
+
+    /** The attack colliders sit where they should (in front of the jaws, not under them): the hunter wounds its prey. */
+    private static void woundsItsPrey(GameTestHelper helper, EntityType<? extends MushoMonster> type) {
+        MushoMonster hunter = helper.spawn(type, new BlockPos(2, 1, 1));
+        Husk prey = prey(helper, new BlockPos(2, 1, 6));
+        hunter.setTarget(prey);
+        helper.succeedWhen(() -> {
+            helper.assertTrue(prey.getHealth() < prey.getMaxHealth(), "it wounds its prey (d=" + hunter.distanceTo(prey)
+                    + " goals=" + hunter.goalSelector.getAvailableGoals().stream().filter(g -> g.isRunning())
+                    .map(g -> g.getGoal().getClass().getSimpleName()).toList() + " light="
+                    + helper.getLevel().getMaxLocalRawBrightness(hunter.blockPosition()) + ")");
+            clear(List.of(hunter), prey);
+        });
+    }
+
+    @GameTest(template = EMPTY, timeoutTicks = 240)
+    public static void aSnowDrakeWoundsItsPrey(GameTestHelper helper) {
+        woundsItsPrey(helper, MushoEntities.SNOW_DRAKE.get());
+    }
+
+    @GameTest(template = EMPTY, timeoutTicks = 240)
+    public static void aDevouringDevilWoundsItsPrey(GameTestHelper helper) {
+        woundsItsPrey(helper, MushoEntities.DEVOURING_DEVIL.get());
+    }
+
+    @GameTest(template = EMPTY, timeoutTicks = 240)
+    public static void aTarantulaDeathlordWoundsItsPrey(GameTestHelper helper) {
+        woundsItsPrey(helper, MushoEntities.TARANTULA_DEATHLORD.get());
     }
 }

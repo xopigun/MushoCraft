@@ -241,6 +241,8 @@
   "entity.mushocraft.magic_tutor.title.milis": "Chevalier de Milis · %2$s (%1$s)",
   "item.mushocraft.sword_master_spawn_egg": "Œuf d'apparition de maître d'épée",
   "item.mushocraft.magic_tutor_spawn_egg": "Œuf d'apparition de précepteur de magie",
+  "entity.mushocraft.iron_crawler": "Rampant de fer",
+  "item.mushocraft.iron_crawler_spawn_egg": "Œuf d'apparition de rampant de fer",
   "entity.mushocraft.executioner": "Exécuteur",
   "item.mushocraft.executioner_spawn_egg": "Œuf d'apparition d'exécuteur",
   "entity.mushocraft.devouring_devil": "Démon dévoreur",

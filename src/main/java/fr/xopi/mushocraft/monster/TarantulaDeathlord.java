@@ -26,7 +26,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
 /**
- * Tarantula Deathlord (wiki, page <i>Monsters</i>: Teleportation Labyrinth): a huge poisonous spider. It spits webs
+ * Tarantula Deathlord (wiki, page <i>Monsters</i>: Teleportation Labyrinth, floors 1-3, rank B): a huge poisonous spider. It spits webs
  * so accurately that they tear the weapon from its prey's hand, and its bite carries a venom that elementary
  * detoxification magic cures. In the anime they come down the walls and from the ceilings of the labyrinth: here it
  * climbs walls (see {@link ClimbingMonster}), and webs do not hold it.
@@ -59,7 +59,7 @@ public class TarantulaDeathlord extends ClimbingMonster {
     protected void registerGoals() {
         goalSelector.addGoal(0, new FloatGoal(this));
         goalSelector.addGoal(2, new WebSpitGoal(this, 3.0, 14.0, 120));
-        goalSelector.addGoal(4, new PackHuntGoal(this, 1.2, 1.0, 3.5, 2.6));
+        goalSelector.addGoal(4, new PackHuntGoal(this, 1.2, 1.0, 3.5, 2.0));
         goalSelector.addGoal(6, new WaterAvoidingRandomStrollGoal(this, 0.7));
         goalSelector.addGoal(7, new LookAtPlayerGoal(this, Player.class, 10.0F));
         goalSelector.addGoal(8, new RandomLookAroundGoal(this));

@@ -34,7 +34,7 @@ import net.minecraft.world.phys.Vec3;
 import java.util.List;
 
 /**
- * Mad Skull (wiki, page <i>Monsters</i>: Teleportation Labyrinth): a headless giant of mud, slow and very sturdy, with
+ * Mad Skull (wiki, page <i>Monsters</i>: Teleportation Labyrinth, floors 3-4, rank A): a headless giant of mud, slow and very sturdy, with
  * a human skull buried in its chest, its weak point. It shrugs off blows to its mud and hides the skull inside when it
  * senses danger; it slings mud, or casts a spell like Stone Cannon. Here the skull comes out of the mud only while it
  * attacks or chants: that is the moment to strike it, from the front.
@@ -65,7 +65,7 @@ public class MadSkull extends MushoMonster {
 
     @Override
     public MonsterRank rank() {
-        return MonsterRank.B;
+        return MonsterRank.A;
     }
 
     @Override

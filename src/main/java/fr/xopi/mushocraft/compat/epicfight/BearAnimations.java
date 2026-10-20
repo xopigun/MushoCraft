@@ -13,7 +13,6 @@ import yesman.epicfight.api.animation.types.MovementAnimation;
 import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.asset.AssetAccessor;
 import yesman.epicfight.api.collider.Collider;
-import yesman.epicfight.api.collider.OBBCollider;
 import yesman.epicfight.api.model.Armature;
 import yesman.epicfight.world.damagesource.StunType;
 
@@ -31,9 +30,9 @@ public record BearAnimations(
         AnimationAccessor<HitAnimation> hit,
         AnimationAccessor<LongHitAnimation> death
 ) implements MonsterAnimationSet {
-    private static final Collider JAWS = new OBBCollider(0.55, 0.5, 0.6, 0.0, -0.1, -0.6);
+    private static final Collider JAWS = MonsterColliders.box(0.55, 0.5, 0.6, 0.0, -0.1, 0.6);
     /** Both forepaws coming down in front of the chest. */
-    private static final Collider FOREPAWS = new OBBCollider(0.95, 0.8, 0.9, 0.0, -0.6, -1.0);
+    private static final Collider FOREPAWS = MonsterColliders.box(0.95, 0.8, 0.9, 0.0, -0.6, 1.0);
 
     public static BearAnimations register(AnimationBuilder builder, String species, AssetAccessor<? extends Armature> armature) {
         String path = species + "/";

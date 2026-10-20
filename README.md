@@ -10,7 +10,7 @@ A Minecraft mod inspired by the world of *Mushoku Tensei*: be born as a baby, gr
 - **Magic**: a mana pool trained by use, 58 spells from Beginner to Emperor rank across the schools (attack, healing, detoxification, barrier, divine strike, summoning) plus mixed magic, chanted, shortened or silent casting, mastery per school, inherent magic.
 - **The sword**: body training and combat aura, the Sword God, Water God and North God styles with their own movesets on Epic Fight weapons, and their named techniques.
 - **Teachers and places**: sword masters and magic tutors who teach face to face, dojos and Milis churches generated in the world.
-- **Monsters**: twelve species from the novel, each on its own Epic Fight skeleton or on Epic Fight's biped, with pack hunting and behaviour taken from the wiki — Assault Dog, Pax Coyote, Terminate Boar, Luster Grizzly, Goblin, Wraith, Armored Warrior, Mad Skull, Tarantula Deathlord, Snow Drake, Devouring Devil, Executioner — and the armour and shield made from Snow Drake scales.
+- **Monsters**: thirteen species from the novel, each on its own Epic Fight skeleton or on Epic Fight's biped, with pack hunting and behaviour taken from the wiki — Assault Dog, Pax Coyote, Terminate Boar, Luster Grizzly, Goblin, Wraith, Armored Warrior, Mad Skull, Tarantula Deathlord, Snow Drake, Devouring Devil, Executioner, Iron Crawler — and the armour and shield made from Snow Drake scales.
 - `/mushocraft max` makes a player as strong as possible in every discipline, for testing.
 
 ## Requirements

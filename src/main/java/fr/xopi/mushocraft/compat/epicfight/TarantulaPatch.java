@@ -37,7 +37,7 @@ public class TarantulaPatch<T extends MushoMonster> extends MonsterPatch<T> {
         return CombatBehaviors.<MonsterPatch<?>>builder()
                 .newBehaviorSeries(BehaviorSeries.<MonsterPatch<?>>builder().weight(100.0F).canBeInterrupted(false).looping(false)
                         .nextBehavior(Behavior.<MonsterPatch<?>>builder().animationBehavior(a.bite())
-                                .withinEyeHeight().withinDistance(0.0, 2.8).custom(MonsterPatch::mayStrike)));
+                                .withinDistance(0.0, 2.6).custom(MonsterPatch::mayStrike)));
     }
 
     @Override

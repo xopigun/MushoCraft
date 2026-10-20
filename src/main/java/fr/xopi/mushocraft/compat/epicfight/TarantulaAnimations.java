@@ -11,7 +11,6 @@ import yesman.epicfight.api.animation.types.MovementAnimation;
 import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.asset.AssetAccessor;
 import yesman.epicfight.api.collider.Collider;
-import yesman.epicfight.api.collider.OBBCollider;
 import yesman.epicfight.api.model.Armature;
 
 /**
@@ -29,7 +28,7 @@ public record TarantulaAnimations(
         AnimationAccessor<LongHitAnimation> death
 ) implements MonsterAnimationSet {
     /** The fangs, in front of the head. */
-    private static final Collider FANGS = new OBBCollider(0.7, 0.6, 0.8, 0.0, -0.1, -0.7);
+    private static final Collider FANGS = MonsterColliders.box(0.7, 0.6, 0.8, 0.0, -0.1, 0.7);
 
     public static TarantulaAnimations register(AnimationBuilder builder, String species, AssetAccessor<? extends Armature> armature) {
         String path = species + "/";

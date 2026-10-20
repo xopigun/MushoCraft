@@ -8,6 +8,7 @@ import fr.xopi.mushocraft.compat.epicfight.EpicFightAnimations;
 import fr.xopi.mushocraft.compat.epicfight.GoblinAnimations;
 import fr.xopi.mushocraft.compat.epicfight.MadSkullAnimations;
 import fr.xopi.mushocraft.compat.epicfight.DevouringDevilAnimations;
+import fr.xopi.mushocraft.compat.epicfight.IronCrawlerAnimations;
 import fr.xopi.mushocraft.compat.epicfight.SnowDrakeAnimations;
 import fr.xopi.mushocraft.compat.epicfight.TarantulaAnimations;
 import fr.xopi.mushocraft.compat.epicfight.WraithAnimations;
@@ -130,6 +131,14 @@ final class MonsterExhibits {
         devilClips.put("death", () -> devil.get().death());
         species(all, "devouring_devil", MushoEntities.DEVOURING_DEVIL.get(), devilClips, 3.8,
                 player -> packHunt(player, MushoEntities.DEVOURING_DEVIL.get()));
+        Supplier<IronCrawlerAnimations> crawler = () -> MonsterAnimations.IRON_CRAWLER;
+        Map<String, Supplier<AnimationAccessor<? extends StaticAnimation>>> crawlerClips = new LinkedHashMap<>();
+        crawlerClips.put("run", () -> crawler.get().run());
+        crawlerClips.put("ram", () -> crawler.get().ram());
+        crawlerClips.put("bite", () -> crawler.get().bite());
+        crawlerClips.put("death", () -> crawler.get().death());
+        species(all, "iron_crawler", MushoEntities.IRON_CRAWLER.get(), crawlerClips, 4.2,
+                player -> packHunt(player, MushoEntities.IRON_CRAWLER.get()));
         all.add(new Exhibit("monster_executioner_pose", player -> executionerPose(player), 40, new int[]{30}));
         all.add(new Exhibit("monster_snow_drake_armour", MonsterExhibits::drakeArmour, 30, new int[]{20}));
         all.add(new Exhibit("monster_executioner_hunt", player -> soloHunt(player, MushoEntities.EXECUTIONER.get()), 200,

@@ -11,7 +11,6 @@ import yesman.epicfight.api.animation.types.MovementAnimation;
 import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.asset.AssetAccessor;
 import yesman.epicfight.api.collider.Collider;
-import yesman.epicfight.api.collider.OBBCollider;
 import yesman.epicfight.api.model.Armature;
 
 /**
@@ -28,7 +27,7 @@ public record WraithAnimations(
         AnimationAccessor<HitAnimation> hit,
         AnimationAccessor<LongHitAnimation> death
 ) implements MonsterAnimationSet {
-    private static final Collider CLAWS = new OBBCollider(0.5, 0.6, 0.5, 0.0, -0.75, -0.2);
+    private static final Collider CLAWS = MonsterColliders.box(0.5, 0.6, 0.5, 0.0, -0.75, 0.2);
 
     public static WraithAnimations register(AnimationBuilder builder, String species, AssetAccessor<? extends Armature> armature) {
         String path = species + "/";

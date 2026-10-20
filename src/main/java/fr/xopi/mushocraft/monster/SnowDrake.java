@@ -79,7 +79,7 @@ public class SnowDrake extends MushoMonster {
         goalSelector.addGoal(0, new FloatGoal(this));
         goalSelector.addGoal(1, new ShunTheLightGoal(this, 13, 7, 1.2));
         goalSelector.addGoal(2, new CallThePackGoal(this, SoundEvents.RAVAGER_ROAR, 32));
-        goalSelector.addGoal(4, new PackHuntGoal(this, 1.15, 1.0, 4.0, 3.0));
+        goalSelector.addGoal(4, new PackHuntGoal(this, 1.15, 1.0, 4.0, 2.2));
         goalSelector.addGoal(6, new WaterAvoidingRandomStrollGoal(this, 0.6));
         goalSelector.addGoal(7, new LookAtPlayerGoal(this, Player.class, 8.0F));
         goalSelector.addGoal(8, new RandomLookAroundGoal(this));
