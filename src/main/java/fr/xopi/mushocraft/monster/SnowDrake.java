@@ -1,7 +1,6 @@
 package fr.xopi.mushocraft.monster;
 
-import fr.xopi.mushocraft.magic.entity.SpellProjectile;
-import fr.xopi.mushocraft.magic.spell.SpellElement;
+import fr.xopi.mushocraft.magic.spell.IceDamage;
 import fr.xopi.mushocraft.monster.ai.CallThePackGoal;
 import fr.xopi.mushocraft.monster.ai.PackHuntGoal;
 import fr.xopi.mushocraft.monster.ai.ShunTheLightGoal;
@@ -12,7 +11,6 @@ import net.minecraft.nbt.NbtUtils;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.damagesource.DamageSource;
@@ -116,9 +114,7 @@ public class SnowDrake extends MushoMonster {
     /** Its scales shrug off ice magic and the cold. */
     @Override
     public boolean hurt(DamageSource source, float amount) {
-        boolean ice = source.is(DamageTypeTags.IS_FREEZING)
-                || source.getDirectEntity() instanceof SpellProjectile projectile && projectile.element() == SpellElement.ICE;
-        if (ice) {
+        if (IceDamage.isIce(source)) {
             amount *= ICE_SHARE;
             if (level() instanceof ServerLevel server) {
                 server.sendParticles(ParticleTypes.SNOWFLAKE, getX(), getY() + 0.8, getZ(), 12, 0.6, 0.3, 0.6, 0.02);

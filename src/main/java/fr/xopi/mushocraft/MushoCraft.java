@@ -4,6 +4,7 @@ import com.mojang.logging.LogUtils;
 import fr.xopi.mushocraft.client.render.EpicFightRenderers;
 import fr.xopi.mushocraft.compat.epicfight.EpicFightEntities;
 import fr.xopi.mushocraft.compat.epicfight.StyleMovesets;
+import fr.xopi.mushocraft.core.MushoArmorMaterials;
 import fr.xopi.mushocraft.core.MushoAttachments;
 import fr.xopi.mushocraft.core.MushoBlocks;
 import fr.xopi.mushocraft.client.MushoClientConfig;
@@ -38,6 +39,7 @@ public final class MushoCraft {
         MushoAttachments.register(modEventBus);
         MushoDataComponents.register(modEventBus);
         MushoBlocks.register(modEventBus);
+        MushoArmorMaterials.register(modEventBus);
         MushoItems.register(modEventBus);
         MushoEntities.register(modEventBus);
         MushoMobEffects.register(modEventBus);

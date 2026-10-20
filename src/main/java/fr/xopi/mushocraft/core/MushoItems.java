@@ -8,6 +8,7 @@ import fr.xopi.mushocraft.magic.spell.MushoSpells;
 import fr.xopi.mushocraft.magic.spell.SpellSchool;
 import fr.xopi.mushocraft.magic.summon.SummonRituals;
 import fr.xopi.mushocraft.magic.summon.SummoningPaperItem;
+import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.SwordItem;
@@ -104,6 +105,11 @@ public final class MushoItems {
     public static final DeferredItem<Item> SNOW_DRAKE_SCALE = ITEMS.register("snow_drake_scale",
             () -> new Item(new Item.Properties().rarity(Rarity.UNCOMMON)));
 
+    public static final DeferredItem<ArmorItem> SNOW_DRAKE_HELMET = drakeArmour("snow_drake_helmet", ArmorItem.Type.HELMET);
+    public static final DeferredItem<ArmorItem> SNOW_DRAKE_CHESTPLATE = drakeArmour("snow_drake_chestplate", ArmorItem.Type.CHESTPLATE);
+    public static final DeferredItem<ArmorItem> SNOW_DRAKE_LEGGINGS = drakeArmour("snow_drake_leggings", ArmorItem.Type.LEGGINGS);
+    public static final DeferredItem<ArmorItem> SNOW_DRAKE_BOOTS = drakeArmour("snow_drake_boots", ArmorItem.Type.BOOTS);
+
     public static final DeferredItem<DeferredSpawnEggItem> SWORD_MASTER_SPAWN_EGG = ITEMS.register("sword_master_spawn_egg",
             () -> new DeferredSpawnEggItem(MushoEntities.SWORD_MASTER, 0x2B2B33, 0xC9C9D6, new Item.Properties()));
 
@@ -147,6 +153,12 @@ public final class MushoItems {
             () -> new DeferredSpawnEggItem(MushoEntities.MAGIC_TUTOR, 0x22407A, 0x8FC7FF, new Item.Properties()));
 
     private MushoItems() {
+    }
+
+    /** A piece of Snow Drake scale armour: as sturdy as iron, it resists ice magic (see {@code IceDamage}). */
+    private static DeferredItem<ArmorItem> drakeArmour(String name, ArmorItem.Type type) {
+        return ITEMS.register(name, () -> new ArmorItem(MushoArmorMaterials.SNOW_DRAKE, type,
+                new Item.Properties().durability(type.getDurability(18)).rarity(Rarity.UNCOMMON)));
     }
 
     public static void register(IEventBus modEventBus) {

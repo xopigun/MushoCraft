@@ -33,6 +33,10 @@ public final class MushoCreativeTabs {
                         output.accept(MushoItems.SPICE_POUCH.get());
                         output.accept(MushoItems.CRIMSON_BALL.get());
                         output.accept(MushoItems.SNOW_DRAKE_SCALE.get());
+                        output.accept(MushoItems.SNOW_DRAKE_HELMET.get());
+                        output.accept(MushoItems.SNOW_DRAKE_CHESTPLATE.get());
+                        output.accept(MushoItems.SNOW_DRAKE_LEGGINGS.get());
+                        output.accept(MushoItems.SNOW_DRAKE_BOOTS.get());
                         output.accept(MushoItems.SWORD_MASTER_SPAWN_EGG.get());
                         output.accept(MushoItems.MAGIC_TUTOR_SPAWN_EGG.get());
                         output.accept(MushoItems.ASSAULT_DOG_SPAWN_EGG.get());

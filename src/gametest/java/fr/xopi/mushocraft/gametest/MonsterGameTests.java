@@ -19,6 +19,7 @@ import fr.xopi.mushocraft.monster.LusterGrizzly;
 import fr.xopi.mushocraft.monster.MonsterPack;
 import fr.xopi.mushocraft.monster.MushoMonster;
 import fr.xopi.mushocraft.monster.PaxCoyote;
+import fr.xopi.mushocraft.core.MushoItems;
 import fr.xopi.mushocraft.monster.DevouringDevil;
 import fr.xopi.mushocraft.monster.Executioner;
 import fr.xopi.mushocraft.monster.SnowDrake;
@@ -549,5 +550,31 @@ public final class MonsterGameTests {
                     "neither sword nor armour is left behind");
             helper.succeed();
         });
+    }
+
+    @GameTest(template = EMPTY)
+    public static void snowDrakeScaleArmourResistsIceMagic(GameTestHelper helper) {
+        Husk armoured = prey(helper, new BlockPos(1, 1, 1));
+        Husk bare = prey(helper, new BlockPos(6, 1, 6));
+        armoured.setItemSlot(EquipmentSlot.HEAD, new ItemStack(MushoItems.SNOW_DRAKE_HELMET.get()));
+        armoured.setItemSlot(EquipmentSlot.CHEST, new ItemStack(MushoItems.SNOW_DRAKE_CHESTPLATE.get()));
+        armoured.setItemSlot(EquipmentSlot.LEGS, new ItemStack(MushoItems.SNOW_DRAKE_LEGGINGS.get()));
+        armoured.setItemSlot(EquipmentSlot.FEET, new ItemStack(MushoItems.SNOW_DRAKE_BOOTS.get()));
+        // the same armour value on both, so only the scales' resistance differs
+        bare.getAttribute(Attributes.ARMOR).setBaseValue(armoured.getArmorValue());
+        bare.getAttribute(Attributes.ARMOR_TOUGHNESS).setBaseValue(armoured.getAttributeValue(Attributes.ARMOR_TOUGHNESS));
+        Husk mage = prey(helper, new BlockPos(3, 1, 3));
+        SpellProjectile ice = SpellProjectile.create(helper.getLevel(), mage, ProjectileProfile.of(SpellElement.ICE, 6.0F).build());
+        armoured.hurt(MushoDamageTypes.spell(helper.getLevel(), ice, mage), 10.0F);
+        bare.hurt(MushoDamageTypes.spell(helper.getLevel(), ice, mage), 10.0F);
+        float takenArmoured = armoured.getMaxHealth() - armoured.getHealth();
+        float takenBare = bare.getMaxHealth() - bare.getHealth();
+        helper.assertTrue(takenArmoured < takenBare * 0.6F, "the scales take most of the ice (" + takenArmoured + " vs " + takenBare + ")");
+        helper.assertFalse(armoured.canFreeze(), "and keep the cold out");
+        helper.assertTrue(helper.getLevel().getRecipeManager().byKey(MushoCraft.id("snow_drake_chestplate")).isPresent(),
+                "the armour is crafted from scales");
+        List.of(armoured, bare, mage).forEach(Husk::discard);
+        ice.discard();
+        helper.succeed();
     }
 }

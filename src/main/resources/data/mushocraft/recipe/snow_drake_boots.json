@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "S S",
+    "S S"
+  ],
+  "key": {
+    "S": {
+      "item": "mushocraft:snow_drake_scale"
+    }
+  },
+  "result": {
+    "id": "mushocraft:snow_drake_boots",
+    "count": 1
+  }
+}
