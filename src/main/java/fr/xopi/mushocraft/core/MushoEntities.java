@@ -26,6 +26,7 @@ import fr.xopi.mushocraft.monster.TerminateBoar;
 import fr.xopi.mushocraft.npc.MagicTutorEntity;
 import fr.xopi.mushocraft.npc.SwordMasterEntity;
 import fr.xopi.mushocraft.npc.TeacherEntity;
+import fr.xopi.mushocraft.village.TownsfolkEntity;
 import fr.xopi.mushocraft.sword.entity.ThrownTrick;
 import fr.xopi.mushocraft.sword.entity.ThrownWeapon;
 import net.minecraft.core.registries.Registries;
@@ -149,6 +150,14 @@ public final class MushoEntities {
                     .sized(0.6F, 1.8F)
                     .clientTrackingRange(10)
                     .build(MushoCraft.id("sword_master").toString()));
+
+    /** The common folk of the villages, of every age. */
+    public static final DeferredHolder<EntityType<?>, EntityType<TownsfolkEntity>> TOWNSFOLK =
+            ENTITY_TYPES.register("townsfolk", () -> EntityType.Builder
+                    .<TownsfolkEntity>of(TownsfolkEntity::new, MobCategory.CREATURE)
+                    .sized(0.6F, 1.8F)
+                    .clientTrackingRange(10)
+                    .build(MushoCraft.id("townsfolk").toString()));
 
     public static final DeferredHolder<EntityType<?>, EntityType<MagicTutorEntity>> MAGIC_TUTOR =
             ENTITY_TYPES.register("magic_tutor", () -> EntityType.Builder
@@ -294,6 +303,7 @@ public final class MushoEntities {
 
     private static void onCreateAttributes(EntityAttributeCreationEvent event) {
         event.put(SWORD_MASTER.get(), SwordMasterEntity.createAttributes().build());
+        event.put(TOWNSFOLK.get(), TownsfolkEntity.createAttributes().build());
         event.put(MAGIC_TUTOR.get(), MagicTutorEntity.createAttributes().build());
         event.put(SUMMONED_SPIRIT.get(), SummonedSpirit.createAttributes().build());
         event.put(ASSAULT_DOG.get(), AssaultDog.createAttributes().build());

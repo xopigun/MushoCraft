@@ -33,7 +33,9 @@ public final class LifeGameTests {
         expectStage(helper, 12.0, LifeStage.ADOLESCENT);
         expectStage(helper, 14.99, LifeStage.ADOLESCENT);
         expectStage(helper, 15.0, LifeStage.ADULT);
-        expectStage(helper, 80.0, LifeStage.ADULT);
+        expectStage(helper, 49.0, LifeStage.ADULT);
+        expectStage(helper, 50.0, LifeStage.ELDER);
+        expectStage(helper, 80.0, LifeStage.ELDER);
         helper.succeed();
     }
 

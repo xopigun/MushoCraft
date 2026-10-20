@@ -115,6 +115,9 @@ public final class MushoItems {
     public static final DeferredItem<DrakeScaleShieldItem> SNOW_DRAKE_SHIELD = ITEMS.register("snow_drake_shield",
             () -> new DrakeScaleShieldItem(new Item.Properties().durability(420).rarity(Rarity.UNCOMMON)));
 
+    public static final DeferredItem<DeferredSpawnEggItem> TOWNSFOLK_SPAWN_EGG = ITEMS.register("townsfolk_spawn_egg",
+            () -> new DeferredSpawnEggItem(MushoEntities.TOWNSFOLK, 0xC8B48C, 0x5A7A3C, new Item.Properties()));
+
     public static final DeferredItem<DeferredSpawnEggItem> SWORD_MASTER_SPAWN_EGG = ITEMS.register("sword_master_spawn_egg",
             () -> new DeferredSpawnEggItem(MushoEntities.SWORD_MASTER, 0x2B2B33, 0xC9C9D6, new Item.Properties()));
 

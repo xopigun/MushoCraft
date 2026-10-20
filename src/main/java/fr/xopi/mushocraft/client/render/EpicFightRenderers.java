@@ -27,6 +27,8 @@ public final class EpicFightRenderers {
         EpicFightClientEventHooks.Registry.ADD_PATCHED_ENTITY.registerEvent(event -> {
             event.addPatchedEntityRenderer(MushoEntities.SWORD_MASTER.get(),
                     type -> new PHumanoidRenderer<>(Meshes.BIPED, event.getContext(), type).initLayerLast(event.getContext(), type));
+            event.addPatchedEntityRenderer(MushoEntities.TOWNSFOLK.get(),
+                    type -> new PHumanoidRenderer<>(Meshes.BIPED, event.getContext(), type).initLayerLast(event.getContext(), type));
             event.addPatchedEntityRenderer(MushoEntities.MAGIC_TUTOR.get(),
                     type -> new PHumanoidRenderer<>(Meshes.BIPED, event.getContext(), type).initLayerLast(event.getContext(), type));
             event.addPatchedEntityRenderer(MushoEntities.ASSAULT_DOG.get(),

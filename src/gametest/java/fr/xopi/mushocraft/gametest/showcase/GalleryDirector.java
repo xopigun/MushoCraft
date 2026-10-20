@@ -231,6 +231,7 @@ public final class GalleryDirector {
         all.add(new Exhibit("place_church_outside", player -> place(player, "milis_church", -8, 16, Rotation.NONE), 40, new int[]{20}));
         all.add(new Exhibit("place_church_inside", player -> place(player, "milis_church", 7, 27, Rotation.CLOCKWISE_180), 40, new int[]{20}));
         MonsterExhibits.add(all);
+        VillageExhibits.add(all);
         List<Exhibit> chosen = new ArrayList<>();
         if (!ONLY.isEmpty()) {
             // the stage is only ready a moment after the first set-up: an empty exhibit first, with no picture

@@ -22,6 +22,7 @@ public final class EpicFightEntities {
     public static void registerPatches() {
         EpicFightEventHooks.Registry.ENTITY_PATCH.registerEvent(event -> {
             event.registerEntityPatch(MushoEntities.SWORD_MASTER.get(), TeacherPatch::new);
+            event.registerEntityPatch(MushoEntities.TOWNSFOLK.get(), TownsfolkPatch::new);
             event.registerEntityPatch(MushoEntities.MAGIC_TUTOR.get(), TeacherPatch::new);
             event.registerEntityPatch(MushoEntities.ASSAULT_DOG.get(), dog -> new CaninePatch<>(dog, () -> MonsterAnimations.ASSAULT_DOG));
             event.registerEntityPatch(MushoEntities.PAX_COYOTE.get(), coyote -> new CaninePatch<>(coyote, () -> MonsterAnimations.PAX_COYOTE));
@@ -43,6 +44,7 @@ public final class EpicFightEntities {
     public static void onCommonSetup(FMLCommonSetupEvent event) {
         event.enqueueWork(() -> {
             Armatures.registerEntityTypeArmature(MushoEntities.SWORD_MASTER.get(), Armatures.BIPED);
+            Armatures.registerEntityTypeArmature(MushoEntities.TOWNSFOLK.get(), Armatures.BIPED);
             Armatures.registerEntityTypeArmature(MushoEntities.MAGIC_TUTOR.get(), Armatures.BIPED);
             Armatures.registerEntityTypeArmature(MushoEntities.ASSAULT_DOG.get(), MonsterAnimations.ASSAULT_DOG_ARMATURE);
             Armatures.registerEntityTypeArmature(MushoEntities.PAX_COYOTE.get(), MonsterAnimations.PAX_COYOTE_ARMATURE);

@@ -15,6 +15,7 @@ import fr.xopi.mushocraft.client.particle.StreakParticle;
 import fr.xopi.mushocraft.client.render.SpellOrbModel;
 import fr.xopi.mushocraft.client.render.SpellProjectileRenderer;
 import fr.xopi.mushocraft.client.render.TeacherRenderer;
+import fr.xopi.mushocraft.client.render.TownsfolkRenderer;
 import fr.xopi.mushocraft.client.render.ThrownWeaponRenderer;
 import fr.xopi.mushocraft.client.render.spell.SpellBeamRenderer;
 import fr.xopi.mushocraft.client.render.spell.SpellFireRenderer;
@@ -91,6 +92,7 @@ public final class MushoClientSetup {
         event.registerEntityRenderer(MushoEntities.LAMPLIGHT_SPIRIT.get(), SpiritRenderers.Lamplight::new);
         event.registerEntityRenderer(MushoEntities.SUMMONED_SPIRIT.get(), SpiritRenderers.Fighting::new);
         event.registerEntityRenderer(MushoEntities.SWORD_MASTER.get(), TeacherRenderer::new);
+        event.registerEntityRenderer(MushoEntities.TOWNSFOLK.get(), TownsfolkRenderer::new);
         event.registerEntityRenderer(MushoEntities.MAGIC_TUTOR.get(), TeacherRenderer::new);
         event.registerEntityRenderer(MushoEntities.ASSAULT_DOG.get(), context -> new MonsterRenderer<>(context, 0.5F));
         event.registerEntityRenderer(MushoEntities.PAX_COYOTE.get(), context -> new MonsterRenderer<>(context, 0.5F));

@@ -8,13 +8,14 @@ import java.util.Locale;
 
 /**
  * Steps of a human life. Adulthood at 15 follows the Asura Kingdom custom (LN vol. 1 ch. 5);
- * the earlier thresholds are gameplay choices.
+ * the other thresholds (old age at 50 included) are gameplay choices.
  */
 public enum LifeStage implements StringRepresentable {
     BABY(0.0),
     CHILD(3.0),
     ADOLESCENT(12.0),
-    ADULT(15.0);
+    ADULT(15.0),
+    ELDER(50.0);
 
     public static final Codec<LifeStage> CODEC = StringRepresentable.fromEnum(LifeStage::values);
 

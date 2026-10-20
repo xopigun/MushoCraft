@@ -13,7 +13,8 @@ import java.util.Optional;
  * Other systems react to {@link PlayerBornEvent} and {@link LifeStageChangedEvent} instead of being called from here.
  */
 public final class LifeService {
-    private static final BodyGrowth BODY_GROWTH = new BodyGrowth(GrowthCurve.HUMAN);
+    /** Grows the body of anyone human, players and townsfolk alike. */
+    public static final BodyGrowth BODY_GROWTH = new BodyGrowth(GrowthCurve.HUMAN);
 
     private LifeService() {
     }

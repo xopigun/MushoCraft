@@ -2,7 +2,7 @@ package fr.xopi.mushocraft.life;
 
 import fr.xopi.mushocraft.MushoCraft;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -21,8 +21,8 @@ public final class BodyGrowth {
         this.curve = curve;
     }
 
-    public void apply(ServerPlayer player, double ageInYears) {
-        AttributeInstance scale = player.getAttribute(Attributes.SCALE);
+    public void apply(LivingEntity body, double ageInYears) {
+        AttributeInstance scale = body.getAttribute(Attributes.SCALE);
         if (scale == null) {
             return;
         }
