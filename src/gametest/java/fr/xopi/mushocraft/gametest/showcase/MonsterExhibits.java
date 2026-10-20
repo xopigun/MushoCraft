@@ -141,6 +141,12 @@ final class MonsterExhibits {
                 player -> packHunt(player, MushoEntities.IRON_CRAWLER.get()));
         all.add(new Exhibit("monster_executioner_pose", player -> executionerPose(player), 40, new int[]{30}));
         all.add(new Exhibit("monster_snow_drake_armour", MonsterExhibits::drakeArmour, 30, new int[]{20}));
+        // under the crosshair: Epic Fight outlines the target, the monster must stay visible inside its outline
+        for (EntityType<? extends MushoMonster> type : List.of(MushoEntities.SNOW_DRAKE.get(), MushoEntities.TARANTULA_DEATHLORD.get(),
+                MushoEntities.IRON_CRAWLER.get(), MushoEntities.ASSAULT_DOG.get())) {
+            String id = net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.getKey(type).getPath();
+            all.add(new Exhibit("monster_outline_" + id, player -> underCrosshair(player, type), 30, new int[]{20}));
+        }
         all.add(new Exhibit("monster_executioner_hunt", player -> soloHunt(player, MushoEntities.EXECUTIONER.get()), 200,
                 new int[]{20, 50, 80, 110, 140, 170}));
     }
@@ -184,6 +190,20 @@ final class MonsterExhibits {
         if (clip != null) {
             EpicFightAnimations.play(monster, clip);
         }
+    }
+
+    /** A still monster right in front of the camera, where the crosshair falls on it. */
+    private static <T extends MushoMonster> void underCrosshair(ServerPlayer player, EntityType<T> type) {
+        ServerLevel level = player.serverLevel();
+        T monster = type.create(level);
+        if (monster == null) {
+            return;
+        }
+        monster.moveTo(player.getX(), player.getY(), player.getZ() + 4.5, 160.0F, 0.0F);
+        monster.setYBodyRot(160.0F);
+        monster.setYHeadRot(160.0F);
+        monster.setNoAi(true);
+        level.addFreshEntity(monster);
     }
 
     private static Husk prey(ServerPlayer player) {
