@@ -19,7 +19,9 @@ import fr.xopi.mushocraft.monster.LusterGrizzly;
 import fr.xopi.mushocraft.monster.MonsterPack;
 import fr.xopi.mushocraft.monster.MushoMonster;
 import fr.xopi.mushocraft.monster.PaxCoyote;
+import fr.xopi.mushocraft.monster.DevouringDevil;
 import fr.xopi.mushocraft.monster.SnowDrake;
+import fr.xopi.mushocraft.monster.ai.BacklineTargetGoal;
 import fr.xopi.mushocraft.monster.TarantulaDeathlord;
 import fr.xopi.mushocraft.monster.TerminateBoar;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -382,13 +384,15 @@ public final class MonsterGameTests {
     @GameTest(template = EMPTY, timeoutTicks = 120)
     public static void aTarantulaClimbsWalls(GameTestHelper helper) {
         for (int x = 0; x < 8; x++) {
-            for (int y = 1; y < 6; y++) {
+            for (int y = 0; y < 6; y++) {
                 helper.setBlock(new BlockPos(x, y, 5), Blocks.STONE);
             }
         }
         TarantulaDeathlord spider = helper.spawn(MushoEntities.TARANTULA_DEATHLORD.get(), new BlockPos(3, 1, 3));
         double ground = spider.getY();
-        helper.onEachTick(() -> spider.getMoveControl().setWantedPosition(spider.getX(), spider.getY(), spider.getZ() + 3.0, 1.0));
+        spider.goalSelector.removeAllGoals(goal -> true); // nothing but the push towards the wall
+        Vec3 beyond = helper.absoluteVec(new Vec3(3.5, 1.0, 9.0)); // past the wall, whichever way the test is turned
+        helper.onEachTick(() -> spider.getMoveControl().setWantedPosition(beyond.x, spider.getY(), beyond.z, 1.0));
         helper.succeedWhen(() -> {
             helper.assertTrue(spider.getY() > ground + 2.0, "it goes up the wall");
             spider.discard();
@@ -470,6 +474,48 @@ public final class MonsterGameTests {
                         .map(g -> g.getGoal().getClass().getSimpleName()).toList() + ")");
             }
             clear(drakes, foe);
+        });
+    }
+
+    @GameTest(template = EMPTY)
+    public static void aDevouringDevilRanksTheUnarmedBeforeTheFighters(GameTestHelper helper) {
+        Husk fighter = prey(helper, new BlockPos(1, 1, 1));
+        Husk unarmed = prey(helper, new BlockPos(3, 1, 1));
+        fighter.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_SWORD));
+        helper.assertTrue(BacklineTargetGoal.exposure(unarmed) < BacklineTargetGoal.exposure(fighter), "the back line first");
+        fighter.discard();
+        unarmed.discard();
+        helper.succeed();
+    }
+
+    /** In a batch of its own: the smoke would reach the tests run beside it. */
+    @GameTest(template = EMPTY, timeoutTicks = 80, batch = "smoke")
+    public static void campfireSmokeBringsADevouringDevilLow(GameTestHelper helper) {
+        helper.setBlock(new BlockPos(5, 1, 5), Blocks.CAMPFIRE);
+        DevouringDevil smoked = helper.spawn(MushoEntities.DEVOURING_DEVIL.get(), new BlockPos(3, 1, 3));
+        helper.succeedWhen(() -> {
+            helper.assertTrue(smoked.isSmoked(), "the smoke reaches it");
+            helper.assertTrue(smoked.hasEffect(MobEffects.MOVEMENT_SLOWDOWN), "it crawls low and slow");
+            smoked.discard();
+            helper.setBlock(new BlockPos(5, 1, 5), Blocks.AIR);
+        });
+    }
+
+    @GameTest(template = EMPTY, timeoutTicks = 120)
+    public static void aDevouringDevilClimbsWalls(GameTestHelper helper) {
+        for (int x = 0; x < 8; x++) {
+            for (int y = 0; y < 6; y++) {
+                helper.setBlock(new BlockPos(x, y, 5), Blocks.STONE);
+            }
+        }
+        DevouringDevil devil = helper.spawn(MushoEntities.DEVOURING_DEVIL.get(), new BlockPos(3, 1, 3));
+        double ground = devil.getY();
+        devil.goalSelector.removeAllGoals(goal -> true); // nothing but the push towards the wall
+        Vec3 beyond = helper.absoluteVec(new Vec3(3.5, 1.0, 9.0)); // past the wall, whichever way the test is turned
+        helper.onEachTick(() -> devil.getMoveControl().setWantedPosition(beyond.x, devil.getY(), beyond.z, 1.0));
+        helper.succeedWhen(() -> {
+            helper.assertTrue(devil.getY() > ground + 2.0, "it goes up the wall");
+            devil.discard();
         });
     }
 }

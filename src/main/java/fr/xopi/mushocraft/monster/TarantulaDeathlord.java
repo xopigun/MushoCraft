@@ -3,9 +3,6 @@ package fr.xopi.mushocraft.monster;
 import fr.xopi.mushocraft.monster.ai.PackHuntGoal;
 import fr.xopi.mushocraft.monster.ai.WebSpitGoal;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.syncher.EntityDataAccessor;
-import net.minecraft.network.syncher.EntityDataSerializers;
-import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageSource;
@@ -21,8 +18,6 @@ import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
-import net.minecraft.world.entity.ai.navigation.PathNavigation;
-import net.minecraft.world.entity.ai.navigation.WallClimberNavigation;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -34,11 +29,9 @@ import net.minecraft.world.phys.Vec3;
  * Tarantula Deathlord (wiki, page <i>Monsters</i>: Teleportation Labyrinth): a huge poisonous spider. It spits webs
  * so accurately that they tear the weapon from its prey's hand, and its bite carries a venom that elementary
  * detoxification magic cures. In the anime they come down the walls and from the ceilings of the labyrinth: here it
- * climbs walls as spiders do, and webs do not hold it.
+ * climbs walls (see {@link ClimbingMonster}), and webs do not hold it.
  */
-public class TarantulaDeathlord extends MushoMonster {
-    private static final EntityDataAccessor<Boolean> CLIMBING = SynchedEntityData.defineId(TarantulaDeathlord.class,
-            EntityDataSerializers.BOOLEAN);
+public class TarantulaDeathlord extends ClimbingMonster {
     private static final int VENOM_TICKS = 140;
     private static final int VENOM_LEVEL = 1;
 
@@ -78,36 +71,6 @@ public class TarantulaDeathlord extends MushoMonster {
     @Override
     public void onStrike(LivingEntity victim) {
         victim.addEffect(new MobEffectInstance(MobEffects.POISON, VENOM_TICKS, VENOM_LEVEL), this);
-    }
-
-    // ---- climbing, as spiders do
-
-    @Override
-    protected PathNavigation createNavigation(Level level) {
-        return new WallClimberNavigation(this, level);
-    }
-
-    @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        super.defineSynchedData(builder);
-        builder.define(CLIMBING, false);
-    }
-
-    @Override
-    public void tick() {
-        super.tick();
-        if (!level().isClientSide) {
-            entityData.set(CLIMBING, horizontalCollision);
-        }
-    }
-
-    public boolean isClimbing() {
-        return entityData.get(CLIMBING);
-    }
-
-    @Override
-    public boolean onClimbable() {
-        return isClimbing();
     }
 
     @Override

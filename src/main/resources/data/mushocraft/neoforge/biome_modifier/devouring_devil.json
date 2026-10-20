@@ -1,0 +1,12 @@
+{
+  "type": "neoforge:add_spawns",
+  "biomes": "#mushocraft:has_devouring_devil",
+  "spawners": [
+    {
+      "type": "mushocraft:devouring_devil",
+      "weight": 3,
+      "minCount": 2,
+      "maxCount": 3
+    }
+  ]
+}

@@ -11,6 +11,7 @@ import fr.xopi.mushocraft.magic.summon.LamplightSpirit;
 import fr.xopi.mushocraft.magic.summon.SummonedSpirit;
 import fr.xopi.mushocraft.monster.AssaultDog;
 import fr.xopi.mushocraft.monster.MushoMonster;
+import fr.xopi.mushocraft.monster.DevouringDevil;
 import fr.xopi.mushocraft.monster.SnowDrake;
 import fr.xopi.mushocraft.monster.TarantulaDeathlord;
 import fr.xopi.mushocraft.monster.MadSkull;
@@ -234,6 +235,14 @@ public final class MushoEntities {
                     .clientTrackingRange(10)
                     .build(MushoCraft.id("snow_drake").toString()));
 
+    /** Devouring Devil, a quick wall-climbing labyrinth predator with a tusked maw that goes for a party's back line (rank A). */
+    public static final DeferredHolder<EntityType<?>, EntityType<DevouringDevil>> DEVOURING_DEVIL =
+            ENTITY_TYPES.register("devouring_devil", () -> EntityType.Builder
+                    .<DevouringDevil>of(DevouringDevil::new, MobCategory.MONSTER)
+                    .sized(1.1F, 1.0F)
+                    .clientTrackingRange(10)
+                    .build(MushoCraft.id("devouring_devil").toString()));
+
     private MushoEntities() {
     }
 
@@ -255,7 +264,7 @@ public final class MushoEntities {
         }
         // restless souls haunt the dark, like the undead; the labyrinth's monsters live in caves, far from the light
         for (EntityType<? extends MushoMonster> monster : List.of(WRAITH.get(), ARMORED_WARRIOR.get(), MAD_SKULL.get(),
-                TARANTULA_DEATHLORD.get())) {
+                TARANTULA_DEATHLORD.get(), DEVOURING_DEVIL.get())) {
             event.register(monster, SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
                     Monster::checkMonsterSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
         }
@@ -278,5 +287,6 @@ public final class MushoEntities {
         event.put(MAD_SKULL.get(), MadSkull.createAttributes().build());
         event.put(TARANTULA_DEATHLORD.get(), TarantulaDeathlord.createAttributes().build());
         event.put(SNOW_DRAKE.get(), SnowDrake.createAttributes().build());
+        event.put(DEVOURING_DEVIL.get(), DevouringDevil.createAttributes().build());
     }
 }

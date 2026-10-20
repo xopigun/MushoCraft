@@ -7,6 +7,7 @@ import fr.xopi.mushocraft.compat.epicfight.CanineAnimations;
 import fr.xopi.mushocraft.compat.epicfight.EpicFightAnimations;
 import fr.xopi.mushocraft.compat.epicfight.GoblinAnimations;
 import fr.xopi.mushocraft.compat.epicfight.MadSkullAnimations;
+import fr.xopi.mushocraft.compat.epicfight.DevouringDevilAnimations;
 import fr.xopi.mushocraft.compat.epicfight.SnowDrakeAnimations;
 import fr.xopi.mushocraft.compat.epicfight.TarantulaAnimations;
 import fr.xopi.mushocraft.compat.epicfight.WraithAnimations;
@@ -117,6 +118,15 @@ final class MonsterExhibits {
         drakeClips.put("rear", () -> drake.get().rear());
         drakeClips.put("death", () -> drake.get().death());
         species(all, "snow_drake", MushoEntities.SNOW_DRAKE.get(), drakeClips, 5.0, player -> packHunt(player, MushoEntities.SNOW_DRAKE.get()));
+        Supplier<DevouringDevilAnimations> devil = () -> MonsterAnimations.DEVOURING_DEVIL;
+        Map<String, Supplier<AnimationAccessor<? extends StaticAnimation>>> devilClips = new LinkedHashMap<>();
+        devilClips.put("run", () -> devil.get().run());
+        devilClips.put("claw", () -> devil.get().claw());
+        devilClips.put("pounce", () -> devil.get().pounce());
+        devilClips.put("bite", () -> devil.get().bite());
+        devilClips.put("death", () -> devil.get().death());
+        species(all, "devouring_devil", MushoEntities.DEVOURING_DEVIL.get(), devilClips, 3.8,
+                player -> packHunt(player, MushoEntities.DEVOURING_DEVIL.get()));
     }
 
     private static <T extends MushoMonster> void canine(List<Exhibit> all, String name, EntityType<T> type,
