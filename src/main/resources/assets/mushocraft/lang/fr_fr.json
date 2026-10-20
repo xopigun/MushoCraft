@@ -241,6 +241,8 @@
   "entity.mushocraft.magic_tutor.title.milis": "Chevalier de Milis · %2$s (%1$s)",
   "item.mushocraft.sword_master_spawn_egg": "Œuf d'apparition de maître d'épée",
   "item.mushocraft.magic_tutor_spawn_egg": "Œuf d'apparition de précepteur de magie",
+  "entity.mushocraft.executioner": "Exécuteur",
+  "item.mushocraft.executioner_spawn_egg": "Œuf d'apparition d'exécuteur",
   "entity.mushocraft.devouring_devil": "Démon dévoreur",
   "item.mushocraft.devouring_devil_spawn_egg": "Œuf d'apparition de démon dévoreur",
   "entity.mushocraft.snow_drake": "Drake des neiges",

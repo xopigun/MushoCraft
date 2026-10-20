@@ -32,6 +32,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
+import fr.xopi.mushocraft.client.render.ExecutionerRenderer;
 import fr.xopi.mushocraft.client.render.MonsterRenderer;
 import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
@@ -84,6 +85,7 @@ public final class MushoClientSetup {
         event.registerEntityRenderer(MushoEntities.TARANTULA_DEATHLORD.get(), context -> new MonsterRenderer<>(context, 1.1F));
         event.registerEntityRenderer(MushoEntities.SNOW_DRAKE.get(), context -> new MonsterRenderer<>(context, 1.0F));
         event.registerEntityRenderer(MushoEntities.DEVOURING_DEVIL.get(), context -> new MonsterRenderer<>(context, 0.8F));
+        event.registerEntityRenderer(MushoEntities.EXECUTIONER.get(), ExecutionerRenderer::new);
     }
 
     @SubscribeEvent

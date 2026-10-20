@@ -20,6 +20,7 @@ import fr.xopi.mushocraft.monster.MonsterPack;
 import fr.xopi.mushocraft.monster.MushoMonster;
 import fr.xopi.mushocraft.monster.PaxCoyote;
 import fr.xopi.mushocraft.monster.DevouringDevil;
+import fr.xopi.mushocraft.monster.Executioner;
 import fr.xopi.mushocraft.monster.SnowDrake;
 import fr.xopi.mushocraft.monster.ai.BacklineTargetGoal;
 import fr.xopi.mushocraft.monster.TarantulaDeathlord;
@@ -516,6 +517,37 @@ public final class MonsterGameTests {
         helper.succeedWhen(() -> {
             helper.assertTrue(devil.getY() > ground + 2.0, "it goes up the wall");
             devil.discard();
+        });
+    }
+
+    private static Executioner executioner(GameTestHelper helper, BlockPos pos) {
+        Executioner executioner = helper.spawn(MushoEntities.EXECUTIONER.get(), pos);
+        executioner.finalizeSpawn(helper.getLevel(), helper.getLevel().getCurrentDifficultyAt(executioner.blockPosition()),
+                MobSpawnType.EVENT, null);
+        return executioner;
+    }
+
+    @GameTest(template = EMPTY, timeoutTicks = 200)
+    public static void anExecutionerCutsDownItsFoeWithItsGreatsword(GameTestHelper helper) {
+        Executioner executioner = executioner(helper, new BlockPos(1, 1, 1));
+        helper.assertFalse(executioner.getMainHandItem().isEmpty(), "it holds its enormous sword");
+        Husk foe = prey(helper, new BlockPos(4, 1, 4));
+        executioner.setTarget(foe);
+        helper.succeedWhen(() -> {
+            helper.assertTrue(foe.getHealth() < foe.getMaxHealth(), "the sword finds its mark");
+            clear(List.of(executioner), foe);
+        });
+    }
+
+    @GameTest(template = EMPTY, timeoutTicks = 60)
+    public static void anExecutionersGearDissolvesWhenItFalls(GameTestHelper helper) {
+        Executioner executioner = executioner(helper, new BlockPos(2, 1, 2));
+        executioner.kill();
+        helper.runAfterDelay(30, () -> {
+            helper.assertTrue(helper.getLevel().getEntitiesOfClass(ItemEntity.class, executioner.getBoundingBox().inflate(4.0),
+                    item -> item.getItem().getItem() == executioner.getMainHandItem().getItem() || item.getItem().getMaxDamage() > 0).isEmpty(),
+                    "neither sword nor armour is left behind");
+            helper.succeed();
         });
     }
 }

@@ -140,6 +140,9 @@ public final class MushoItems {
     public static final DeferredItem<DeferredSpawnEggItem> DEVOURING_DEVIL_SPAWN_EGG = ITEMS.register("devouring_devil_spawn_egg",
             () -> new DeferredSpawnEggItem(MushoEntities.DEVOURING_DEVIL, 0x22223A, 0x76548C, new Item.Properties()));
 
+    public static final DeferredItem<DeferredSpawnEggItem> EXECUTIONER_SPAWN_EGG = ITEMS.register("executioner_spawn_egg",
+            () -> new DeferredSpawnEggItem(MushoEntities.EXECUTIONER, 0x9C9EA6, 0x423A38, new Item.Properties()));
+
     public static final DeferredItem<DeferredSpawnEggItem> MAGIC_TUTOR_SPAWN_EGG = ITEMS.register("magic_tutor_spawn_egg",
             () -> new DeferredSpawnEggItem(MushoEntities.MAGIC_TUTOR, 0x22407A, 0x8FC7FF, new Item.Properties()));
 

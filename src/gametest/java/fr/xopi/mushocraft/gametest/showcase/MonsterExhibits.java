@@ -127,6 +127,9 @@ final class MonsterExhibits {
         devilClips.put("death", () -> devil.get().death());
         species(all, "devouring_devil", MushoEntities.DEVOURING_DEVIL.get(), devilClips, 3.8,
                 player -> packHunt(player, MushoEntities.DEVOURING_DEVIL.get()));
+        all.add(new Exhibit("monster_executioner_pose", player -> executionerPose(player), 40, new int[]{30}));
+        all.add(new Exhibit("monster_executioner_hunt", player -> soloHunt(player, MushoEntities.EXECUTIONER.get()), 200,
+                new int[]{20, 50, 80, 110, 140, 170}));
     }
 
     private static <T extends MushoMonster> void canine(List<Exhibit> all, String name, EntityType<T> type,
@@ -203,6 +206,21 @@ final class MonsterExhibits {
         }
     }
 
+    /** The Executioner, armed, standing beside the camera's axis (Epic Fight's own animations, nothing to show clip by clip). */
+    private static void executionerPose(ServerPlayer player) {
+        ServerLevel level = player.serverLevel();
+        var executioner = MushoEntities.EXECUTIONER.get().create(level);
+        if (executioner == null) {
+            return;
+        }
+        executioner.moveTo(player.getX() + 1.6, player.getY(), player.getZ() + 4.0, 200.0F, 0.0F);
+        executioner.setYHeadRot(200.0F);
+        executioner.setYBodyRot(200.0F);
+        executioner.arm();
+        executioner.setNoAi(true);
+        level.addFreshEntity(executioner);
+    }
+
     /** One monster sets upon the dummy from afar. */
     private static <T extends MushoMonster> void soloHunt(ServerPlayer player, EntityType<T> type) {
         ServerLevel level = player.serverLevel();
@@ -212,6 +230,7 @@ final class MonsterExhibits {
             return;
         }
         monster.moveTo(player.getX() + 2, player.getY(), player.getZ() + 18, 180.0F, 0.0F);
+        monster.finalizeSpawn(level, level.getCurrentDifficultyAt(monster.blockPosition()), MobSpawnType.EVENT, null);
         level.addFreshEntity(monster);
         monster.setTarget(prey);
     }

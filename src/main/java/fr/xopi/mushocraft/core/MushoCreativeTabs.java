@@ -46,6 +46,7 @@ public final class MushoCreativeTabs {
                         output.accept(MushoItems.TARANTULA_DEATHLORD_SPAWN_EGG.get());
                         output.accept(MushoItems.SNOW_DRAKE_SPAWN_EGG.get());
                         output.accept(MushoItems.DEVOURING_DEVIL_SPAWN_EGG.get());
+                        output.accept(MushoItems.EXECUTIONER_SPAWN_EGG.get());
                     })
                     .build());
 

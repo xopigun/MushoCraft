@@ -49,6 +49,8 @@ public final class EpicFightRenderers {
                     type -> new PCustomEntityRenderer(monsterMesh("snow_drake"), event.getContext()));
             event.addPatchedEntityRenderer(MushoEntities.DEVOURING_DEVIL.get(),
                     type -> new PCustomEntityRenderer(monsterMesh("devouring_devil"), event.getContext()));
+            event.addPatchedEntityRenderer(MushoEntities.EXECUTIONER.get(),
+                    type -> new PHumanoidRenderer<>(Meshes.BIPED, event.getContext(), type).initLayerLast(event.getContext(), type));
             event.addPatchedEntityRenderer(MushoEntities.WRAITH.get(),
                     type -> new TranslucentMonsterRenderer(monsterMesh("wraith"), event.getContext(), 0.78F));
         });
