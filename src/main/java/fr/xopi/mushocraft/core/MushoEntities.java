@@ -11,6 +11,7 @@ import fr.xopi.mushocraft.magic.summon.LamplightSpirit;
 import fr.xopi.mushocraft.magic.summon.SummonedSpirit;
 import fr.xopi.mushocraft.monster.AssaultDog;
 import fr.xopi.mushocraft.monster.MushoMonster;
+import fr.xopi.mushocraft.monster.ArmoredWarrior;
 import fr.xopi.mushocraft.monster.Wraith;
 import fr.xopi.mushocraft.monster.Goblin;
 import fr.xopi.mushocraft.monster.LusterGrizzly;
@@ -198,6 +199,14 @@ public final class MushoEntities {
                     .clientTrackingRange(10)
                     .build(MushoCraft.id("wraith").toString()));
 
+    /** Armored Warrior, a four-armed animated suit of armour that counters with the Water God Style (rank A). */
+    public static final DeferredHolder<EntityType<?>, EntityType<ArmoredWarrior>> ARMORED_WARRIOR =
+            ENTITY_TYPES.register("armored_warrior", () -> EntityType.Builder
+                    .<ArmoredWarrior>of(ArmoredWarrior::new, MobCategory.MONSTER)
+                    .sized(0.9F, 2.2F)
+                    .clientTrackingRange(10)
+                    .build(MushoCraft.id("armored_warrior").toString()));
+
     private MushoEntities() {
     }
 
@@ -231,5 +240,6 @@ public final class MushoEntities {
         event.put(LUSTER_GRIZZLY.get(), LusterGrizzly.createAttributes().build());
         event.put(GOBLIN.get(), Goblin.createAttributes().build());
         event.put(WRAITH.get(), Wraith.createAttributes().build());
+        event.put(ARMORED_WARRIOR.get(), ArmoredWarrior.createAttributes().build());
     }
 }

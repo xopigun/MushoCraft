@@ -22,6 +22,7 @@ public final class MonsterAnimations {
     public static final AssetAccessor<Armature> LUSTER_GRIZZLY_ARMATURE = armature("luster_grizzly");
     public static final AssetAccessor<Armature> GOBLIN_ARMATURE = armature("goblin");
     public static final AssetAccessor<Armature> WRAITH_ARMATURE = armature("wraith");
+    public static final AssetAccessor<Armature> ARMORED_WARRIOR_ARMATURE = armature("armored_warrior");
 
     public static CanineAnimations ASSAULT_DOG;
     public static CanineAnimations PAX_COYOTE;
@@ -29,6 +30,7 @@ public final class MonsterAnimations {
     public static BearAnimations LUSTER_GRIZZLY;
     public static GoblinAnimations GOBLIN;
     public static WraithAnimations WRAITH;
+    public static ArmoredWarriorAnimations ARMORED_WARRIOR;
 
     private MonsterAnimations() {
     }
@@ -49,5 +51,6 @@ public final class MonsterAnimations {
         LUSTER_GRIZZLY = BearAnimations.register(builder, "luster_grizzly", LUSTER_GRIZZLY_ARMATURE);
         GOBLIN = GoblinAnimations.register(builder, "goblin", GOBLIN_ARMATURE);
         WRAITH = WraithAnimations.register(builder, "wraith", WRAITH_ARMATURE);
+        ARMORED_WARRIOR = ArmoredWarriorAnimations.register(builder, "armored_warrior", ARMORED_WARRIOR_ARMATURE);
     }
 }

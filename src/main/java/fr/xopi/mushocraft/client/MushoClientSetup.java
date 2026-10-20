@@ -79,6 +79,7 @@ public final class MushoClientSetup {
         event.registerEntityRenderer(MushoEntities.LUSTER_GRIZZLY.get(), context -> new MonsterRenderer<>(context, 1.0F));
         event.registerEntityRenderer(MushoEntities.GOBLIN.get(), context -> new MonsterRenderer<>(context, 0.4F));
         event.registerEntityRenderer(MushoEntities.WRAITH.get(), context -> new MonsterRenderer<>(context, 0.0F));
+        event.registerEntityRenderer(MushoEntities.ARMORED_WARRIOR.get(), context -> new MonsterRenderer<>(context, 0.6F));
     }
 
     @SubscribeEvent

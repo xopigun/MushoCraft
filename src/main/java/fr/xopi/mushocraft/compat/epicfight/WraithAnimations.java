@@ -49,6 +49,7 @@ public record WraithAnimations(
         return switch (action) {
             case CALL -> raiseDead;
             case CAST -> cast;
+            default -> null;
         };
     }
 }

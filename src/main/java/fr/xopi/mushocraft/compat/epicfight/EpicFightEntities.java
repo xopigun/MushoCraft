@@ -29,6 +29,7 @@ public final class EpicFightEntities {
             event.registerEntityPatch(MushoEntities.LUSTER_GRIZZLY.get(), monster -> new BearPatch<>(monster, () -> MonsterAnimations.LUSTER_GRIZZLY));
             event.registerEntityPatch(MushoEntities.GOBLIN.get(), monster -> new GoblinPatch<>(monster, () -> MonsterAnimations.GOBLIN));
             event.registerEntityPatch(MushoEntities.WRAITH.get(), monster -> new WraithPatch<>(monster, () -> MonsterAnimations.WRAITH));
+            event.registerEntityPatch(MushoEntities.ARMORED_WARRIOR.get(), monster -> new ArmoredWarriorPatch<>(monster, () -> MonsterAnimations.ARMORED_WARRIOR));
         });
     }
 
@@ -43,6 +44,7 @@ public final class EpicFightEntities {
             Armatures.registerEntityTypeArmature(MushoEntities.LUSTER_GRIZZLY.get(), MonsterAnimations.LUSTER_GRIZZLY_ARMATURE);
             Armatures.registerEntityTypeArmature(MushoEntities.GOBLIN.get(), MonsterAnimations.GOBLIN_ARMATURE);
             Armatures.registerEntityTypeArmature(MushoEntities.WRAITH.get(), MonsterAnimations.WRAITH_ARMATURE);
+            Armatures.registerEntityTypeArmature(MushoEntities.ARMORED_WARRIOR.get(), MonsterAnimations.ARMORED_WARRIOR_ARMATURE);
         });
     }
 }

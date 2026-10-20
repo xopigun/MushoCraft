@@ -1,7 +1,16 @@
 package fr.xopi.mushocraft.gametest;
 
 import fr.xopi.mushocraft.MushoCraft;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.entity.EquipmentSlot;
+import fr.xopi.mushocraft.sword.technique.CounterStances;
+import fr.xopi.mushocraft.magic.spell.effect.ProjectileProfile;
+import fr.xopi.mushocraft.magic.spell.SpellElement;
+import fr.xopi.mushocraft.magic.entity.SpellProjectile;
+import fr.xopi.mushocraft.core.MushoDamageTypes;
 import fr.xopi.mushocraft.core.MushoEntities;
+import fr.xopi.mushocraft.monster.ArmoredWarrior;
 import fr.xopi.mushocraft.monster.AssaultDog;
 import fr.xopi.mushocraft.monster.EngagementTokens;
 import fr.xopi.mushocraft.monster.Goblin;
@@ -247,5 +256,52 @@ public final class MonsterGameTests {
         helper.assertTrue(MonsterPack.mates(leader).size() + 1 == Goblin.GANG_CAP, "the gang grew to its size and stopped");
         helper.killAllEntitiesOfClass(Goblin.class);
         helper.succeed();
+    }
+
+    @GameTest(template = EMPTY)
+    public static void lightWeaponsGlanceOffAnArmoredWarrior(GameTestHelper helper) {
+        ArmoredWarrior fists = helper.spawn(MushoEntities.ARMORED_WARRIOR.get(), new BlockPos(1, 1, 1));
+        ArmoredWarrior axe = helper.spawn(MushoEntities.ARMORED_WARRIOR.get(), new BlockPos(6, 1, 6));
+        Husk brawler = prey(helper, new BlockPos(1, 1, 4));
+        Husk axeman = prey(helper, new BlockPos(6, 1, 3));
+        axeman.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_AXE));
+        fists.hurt(fists.damageSources().mobAttack(brawler), 20.0F);
+        axe.hurt(axe.damageSources().mobAttack(axeman), 20.0F);
+        float lightLoss = fists.getMaxHealth() - fists.getHealth();
+        float heavyLoss = axe.getMaxHealth() - axe.getHealth();
+        helper.assertTrue(lightLoss < heavyLoss * 0.5F, "fists barely dent the plate: " + lightLoss + " vs " + heavyLoss);
+        clear(List.of(fists, axe), brawler);
+        axeman.discard();
+        helper.succeed();
+    }
+
+    @GameTest(template = EMPTY)
+    public static void earthMagicHurtsAnArmoredWarriorTwiceAsMuch(GameTestHelper helper) {
+        ArmoredWarrior a = helper.spawn(MushoEntities.ARMORED_WARRIOR.get(), new BlockPos(1, 1, 1));
+        ArmoredWarrior b = helper.spawn(MushoEntities.ARMORED_WARRIOR.get(), new BlockPos(6, 1, 6));
+        Husk mage = prey(helper, new BlockPos(3, 1, 3));
+        SpellProjectile rock = SpellProjectile.create(helper.getLevel(), mage, ProjectileProfile.of(SpellElement.EARTH, 6.0F).build());
+        SpellProjectile water = SpellProjectile.create(helper.getLevel(), mage, ProjectileProfile.of(SpellElement.WATER, 6.0F).build());
+        a.hurt(MushoDamageTypes.spell(helper.getLevel(), rock, mage), 10.0F);
+        b.hurt(MushoDamageTypes.spell(helper.getLevel(), water, mage), 10.0F);
+        helper.assertTrue(a.getMaxHealth() - a.getHealth() > (b.getMaxHealth() - b.getHealth()) * 1.5F, "weak against earth");
+        clear(List.of(a, b), mage);
+        rock.discard();
+        water.discard();
+        helper.succeed();
+    }
+
+    @GameTest(template = EMPTY, timeoutTicks = 100)
+    public static void anArmoredWarriorCountersWithTheWaterGodStyle(GameTestHelper helper) {
+        ArmoredWarrior warrior = helper.spawn(MushoEntities.ARMORED_WARRIOR.get(), new BlockPos(2, 1, 2));
+        Husk foe = prey(helper, new BlockPos(3, 1, 3));
+        warrior.setTarget(foe);
+        helper.succeedWhen(() -> {
+            helper.assertTrue(CounterStances.active(warrior).isPresent(), "it takes Flow's stance");
+            float health = warrior.getHealth();
+            warrior.hurt(warrior.damageSources().mobAttack(foe), 6.0F);
+            helper.assertTrue(warrior.getHealth() == health && foe.getHealth() < foe.getMaxHealth(), "the blow is turned and answered");
+            clear(List.of(warrior), foe);
+        });
     }
 }

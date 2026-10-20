@@ -1,6 +1,9 @@
 package fr.xopi.mushocraft.sword.technique;
 
 import fr.xopi.mushocraft.compat.epicfight.EpicFightAnimations;
+import fr.xopi.mushocraft.compat.epicfight.MonsterActions;
+import fr.xopi.mushocraft.monster.MonsterAction;
+import fr.xopi.mushocraft.monster.MushoMonster;
 import fr.xopi.mushocraft.magic.fx.SpellFx;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -25,7 +28,11 @@ public enum CounterKind {
         @Override
         public void answer(LivingEntity defender, LivingEntity attacker, LivingIncomingDamageEvent event, float multiplier) {
             event.setCanceled(true);
-            EpicFightAnimations.play(defender, Animations.LONGSWORD_GUARD_ACTIVE_HIT1);
+            if (defender instanceof MushoMonster) {
+                MonsterActions.play(defender, MonsterAction.COUNTER);
+            } else {
+                EpicFightAnimations.play(defender, Animations.LONGSWORD_GUARD_ACTIVE_HIT1);
+            }
             attacker.hurt(blow(defender), strength(defender) * multiplier);
             defender.level().playSound(null, defender.blockPosition(), SoundEvents.ANVIL_LAND, SoundSource.PLAYERS, 0.6F, 1.6F);
         }

@@ -7,5 +7,7 @@ public enum MonsterAction {
     /** The pack's rallying call: a howl, a roar; for a wraith, raising the dead. */
     CALL,
     /** Gathering a spell while chanting it. */
-    CAST
+    CAST,
+    /** Taking a receiving stance (the Water God Style's Flow). */
+    COUNTER
 }

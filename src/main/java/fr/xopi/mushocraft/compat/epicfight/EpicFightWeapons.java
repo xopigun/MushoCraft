@@ -1,6 +1,9 @@
 package fr.xopi.mushocraft.compat.epicfight;
 
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.entity.LivingEntity;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
@@ -42,6 +45,24 @@ public final class EpicFightWeapons {
     public static boolean holdsWeapon(LivingEntity fighter) {
         return !NOT_WEAPONS.contains(mainHand(fighter).getWeaponCategory());
     }
+
+    /**
+     * Bare fists or a light blade: what glances off heavy plate. Heavy are the axes, greatswords, longswords, tachis,
+     * spears and maces, by Epic Fight's category or, for items it does not class in a creature's hand, by Minecraft's tags.
+     */
+    public static boolean holdsLightWeapon(LivingEntity fighter) {
+        ItemStack stack = fighter.getItemInHand(InteractionHand.MAIN_HAND);
+        if (stack.isEmpty()) {
+            return true;
+        }
+        boolean heavy = HEAVY.contains(mainHand(fighter).getWeaponCategory()) || stack.is(ItemTags.AXES)
+                || stack.is(Items.MACE) || stack.is(Items.TRIDENT);
+        return !heavy;
+    }
+
+    private static final Set<WeaponCategory> HEAVY = Set.of(CapabilityItem.WeaponCategories.AXE,
+            CapabilityItem.WeaponCategories.GREATSWORD, CapabilityItem.WeaponCategories.LONGSWORD,
+            CapabilityItem.WeaponCategories.TACHI, CapabilityItem.WeaponCategories.SPEAR, CapabilityItem.WeaponCategories.TRIDENT);
 
     /** A real weapon in each hand, as the North God's two-sword techniques need. */
     public static boolean holdsTwoWeapons(LivingEntity fighter) {

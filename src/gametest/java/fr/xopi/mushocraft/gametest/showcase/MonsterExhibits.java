@@ -1,5 +1,6 @@
 package fr.xopi.mushocraft.gametest.showcase;
 
+import fr.xopi.mushocraft.compat.epicfight.ArmoredWarriorAnimations;
 import fr.xopi.mushocraft.compat.epicfight.BearAnimations;
 import fr.xopi.mushocraft.compat.epicfight.BoarAnimations;
 import fr.xopi.mushocraft.compat.epicfight.CanineAnimations;
@@ -79,6 +80,15 @@ final class MonsterExhibits {
         wraithClips.put("raise_dead", () -> wraith.get().raiseDead());
         wraithClips.put("death", () -> wraith.get().death());
         species(all, "wraith", MushoEntities.WRAITH.get(), wraithClips, 3.6, MonsterExhibits::wraithHunt);
+        Supplier<ArmoredWarriorAnimations> warrior = () -> MonsterAnimations.ARMORED_WARRIOR;
+        Map<String, Supplier<AnimationAccessor<? extends StaticAnimation>>> warriorClips = new LinkedHashMap<>();
+        warriorClips.put("walk", () -> warrior.get().walk());
+        warriorClips.put("cross_slash", () -> warrior.get().crossSlash());
+        warriorClips.put("overhead", () -> warrior.get().overhead());
+        warriorClips.put("parry", () -> warrior.get().parry());
+        warriorClips.put("death", () -> warrior.get().death());
+        species(all, "armored_warrior", MushoEntities.ARMORED_WARRIOR.get(), warriorClips, 3.8,
+                player -> packHunt(player, MushoEntities.ARMORED_WARRIOR.get()));
     }
 
     private static <T extends MushoMonster> void canine(List<Exhibit> all, String name, EntityType<T> type,

@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "mushocraft:wraith"
+    "mushocraft:wraith",
+    "mushocraft:armored_warrior"
   ]
 }
