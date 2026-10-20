@@ -11,6 +11,7 @@ import fr.xopi.mushocraft.magic.summon.LamplightSpirit;
 import fr.xopi.mushocraft.magic.summon.SummonedSpirit;
 import fr.xopi.mushocraft.monster.AssaultDog;
 import fr.xopi.mushocraft.monster.MushoMonster;
+import fr.xopi.mushocraft.monster.SnowDrake;
 import fr.xopi.mushocraft.monster.TarantulaDeathlord;
 import fr.xopi.mushocraft.monster.MadSkull;
 import fr.xopi.mushocraft.monster.ArmoredWarrior;
@@ -225,6 +226,14 @@ public final class MushoEntities {
                     .clientTrackingRange(10)
                     .build(MushoCraft.id("tarantula_deathlord").toString()));
 
+    /** Snow Drake, a wingless white dragon that nests in packs in dark caves and guards its nest (rank A, S in a pack). */
+    public static final DeferredHolder<EntityType<?>, EntityType<SnowDrake>> SNOW_DRAKE =
+            ENTITY_TYPES.register("snow_drake", () -> EntityType.Builder
+                    .<SnowDrake>of(SnowDrake::new, MobCategory.MONSTER)
+                    .sized(1.6F, 1.1F)
+                    .clientTrackingRange(10)
+                    .build(MushoCraft.id("snow_drake").toString()));
+
     private MushoEntities() {
     }
 
@@ -250,6 +259,9 @@ public final class MushoEntities {
             event.register(monster, SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
                     Monster::checkMonsterSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
         }
+        // snow drakes nest deep under the rock, never under the sky
+        event.register(SNOW_DRAKE.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                SnowDrake::checkSnowDrakeSpawn, RegisterSpawnPlacementsEvent.Operation.REPLACE);
     }
 
     private static void onCreateAttributes(EntityAttributeCreationEvent event) {
@@ -265,5 +277,6 @@ public final class MushoEntities {
         event.put(ARMORED_WARRIOR.get(), ArmoredWarrior.createAttributes().build());
         event.put(MAD_SKULL.get(), MadSkull.createAttributes().build());
         event.put(TARANTULA_DEATHLORD.get(), TarantulaDeathlord.createAttributes().build());
+        event.put(SNOW_DRAKE.get(), SnowDrake.createAttributes().build());
     }
 }

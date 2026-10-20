@@ -45,6 +45,8 @@ public final class EpicFightRenderers {
                     type -> new PCustomEntityRenderer(monsterMesh("mad_skull"), event.getContext()));
             event.addPatchedEntityRenderer(MushoEntities.TARANTULA_DEATHLORD.get(),
                     type -> new PCustomEntityRenderer(monsterMesh("tarantula_deathlord"), event.getContext()));
+            event.addPatchedEntityRenderer(MushoEntities.SNOW_DRAKE.get(),
+                    type -> new PCustomEntityRenderer(monsterMesh("snow_drake"), event.getContext()));
             event.addPatchedEntityRenderer(MushoEntities.WRAITH.get(),
                     type -> new TranslucentMonsterRenderer(monsterMesh("wraith"), event.getContext(), 0.78F));
         });

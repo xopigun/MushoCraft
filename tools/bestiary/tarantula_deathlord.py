@@ -116,8 +116,8 @@ def _legs(t, period, swing, lift):
             phase = 0.5 * group
             a = wave(t, period, phase)
             up = max(0.0, wave(t, period, phase + 0.25))
-            pose['Leg_%s%s' % (side, name)] = ((0, swing * a, s * -lift * up), (0, 0, 0))
-            pose['Foot_%s%s' % (side, name)] = ((0, 0, s * lift * 0.6 * up), (0, 0, 0))
+            pose['Leg_%s%s' % (side, name)] = ((0, swing * a, s * lift * up), (0, 0, 0))
+            pose['Foot_%s%s' % (side, name)] = ((0, 0, s * lift * 0.3 * up), (0, 0, 0))
     return pose
 
 
@@ -146,8 +146,8 @@ def bite(length=0.8, lunge=12.0):
         strike = keys(t, [(0, 0), (0.3, 0), (0.45, 1), (0.6, 1), (length, 0)], ease_out)
         p = _legs(0.0, 1.0, 0.0, 0.0)
         for side, s in (('L', -1), ('R', 1)):
-            p['Leg_%s1' % side] = ((50 * rear, s * -25 * rear, s * -30 * rear), (0, 0, 0))
-            p['Leg_%s2' % side] = ((30 * rear, 0, s * -15 * rear), (0, 0, 0))
+            p['Leg_%s1' % side] = ((50 * rear, s * -25 * rear, s * 30 * rear), (0, 0, 0))
+            p['Leg_%s2' % side] = ((30 * rear, 0, s * 15 * rear), (0, 0, 0))
         p.update({'Root': ((14 * rear - 8 * strike, 0, 0), (0, 1.5 * rear, keys(t, [(0, 0), (0.32, 0), (0.48, -lunge), (length, -lunge)], ease_out))),
                   'Head': ((10 * rear - 18 * strike, 0, 0), (0, 0, 0)),
                   'Fangs': ((-35 * rear + 40 * strike, 0, 0), (0, 0, 0)), 'Abdomen': ((-10 * rear, 0, 0), (0, 0, 0))})
@@ -183,8 +183,8 @@ def death(length=1.5):
         p = {}
         for name, *_ in LEGS:
             for side, s in (('L', -1), ('R', 1)):
-                p['Leg_%s%s' % (side, name)] = ((0, 0, s * 55 * k), (0, 0, 0))
-                p['Foot_%s%s' % (side, name)] = ((0, 0, s * 70 * k), (0, 0, 0))
+                p['Leg_%s%s' % (side, name)] = ((0, 0, s * 35 * k), (0, 0, 0))
+                p['Foot_%s%s' % (side, name)] = ((0, 0, -s * 80 * k), (0, 0, 0))
         p.update({'Root': ((0, 0, 0), (0, -5 * k, 0)), 'Abdomen': ((15 * k, 0, 0), (0, -1 * k, 0)), 'Fangs': ((30 * k, 0, 0), (0, 0, 0))})
         return p
     return Clip('death', length, pose)

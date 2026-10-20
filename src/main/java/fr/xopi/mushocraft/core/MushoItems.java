@@ -100,6 +100,10 @@ public final class MushoItems {
     public static final DeferredItem<TrickItem> CRIMSON_BALL = ITEMS.register("crimson_ball",
             () -> new TrickItem(TrickKind.CRIMSON_INK, new Item.Properties().stacksTo(16)));
 
+    /** A Snow Drake's white scale: it resists ice magic and holds heat, prized for shields and armour (wiki). */
+    public static final DeferredItem<Item> SNOW_DRAKE_SCALE = ITEMS.register("snow_drake_scale",
+            () -> new Item(new Item.Properties().rarity(Rarity.UNCOMMON)));
+
     public static final DeferredItem<DeferredSpawnEggItem> SWORD_MASTER_SPAWN_EGG = ITEMS.register("sword_master_spawn_egg",
             () -> new DeferredSpawnEggItem(MushoEntities.SWORD_MASTER, 0x2B2B33, 0xC9C9D6, new Item.Properties()));
 
@@ -129,6 +133,9 @@ public final class MushoItems {
 
     public static final DeferredItem<DeferredSpawnEggItem> TARANTULA_DEATHLORD_SPAWN_EGG = ITEMS.register("tarantula_deathlord_spawn_egg",
             () -> new DeferredSpawnEggItem(MushoEntities.TARANTULA_DEATHLORD, 0x1E202A, 0xB02C28, new Item.Properties()));
+
+    public static final DeferredItem<DeferredSpawnEggItem> SNOW_DRAKE_SPAWN_EGG = ITEMS.register("snow_drake_spawn_egg",
+            () -> new DeferredSpawnEggItem(MushoEntities.SNOW_DRAKE, 0xECECF2, 0x404896, new Item.Properties()));
 
     public static final DeferredItem<DeferredSpawnEggItem> MAGIC_TUTOR_SPAWN_EGG = ITEMS.register("magic_tutor_spawn_egg",
             () -> new DeferredSpawnEggItem(MushoEntities.MAGIC_TUTOR, 0x22407A, 0x8FC7FF, new Item.Properties()));

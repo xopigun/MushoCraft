@@ -1,0 +1,12 @@
+{
+  "type": "neoforge:add_spawns",
+  "biomes": "#mushocraft:has_snow_drake",
+  "spawners": [
+    {
+      "type": "mushocraft:snow_drake",
+      "weight": 4,
+      "minCount": 3,
+      "maxCount": 5
+    }
+  ]
+}

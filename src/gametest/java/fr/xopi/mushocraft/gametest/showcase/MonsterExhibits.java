@@ -7,6 +7,7 @@ import fr.xopi.mushocraft.compat.epicfight.CanineAnimations;
 import fr.xopi.mushocraft.compat.epicfight.EpicFightAnimations;
 import fr.xopi.mushocraft.compat.epicfight.GoblinAnimations;
 import fr.xopi.mushocraft.compat.epicfight.MadSkullAnimations;
+import fr.xopi.mushocraft.compat.epicfight.SnowDrakeAnimations;
 import fr.xopi.mushocraft.compat.epicfight.TarantulaAnimations;
 import fr.xopi.mushocraft.compat.epicfight.WraithAnimations;
 import fr.xopi.mushocraft.compat.epicfight.MonsterAnimations;
@@ -19,6 +20,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.SpawnGroupData;
 import net.minecraft.world.entity.monster.Husk;
 import yesman.epicfight.api.animation.AnimationManager.AnimationAccessor;
@@ -107,6 +109,14 @@ final class MonsterExhibits {
         spiderClips.put("death", () -> spider.get().death());
         species(all, "tarantula_deathlord", MushoEntities.TARANTULA_DEATHLORD.get(), spiderClips, 4.5,
                 player -> soloHunt(player, MushoEntities.TARANTULA_DEATHLORD.get()));
+        Supplier<SnowDrakeAnimations> drake = () -> MonsterAnimations.SNOW_DRAKE;
+        Map<String, Supplier<AnimationAccessor<? extends StaticAnimation>>> drakeClips = new LinkedHashMap<>();
+        drakeClips.put("walk", () -> drake.get().walk());
+        drakeClips.put("bite", () -> drake.get().bite());
+        drakeClips.put("tail_sweep", () -> drake.get().tailSweep());
+        drakeClips.put("rear", () -> drake.get().rear());
+        drakeClips.put("death", () -> drake.get().death());
+        species(all, "snow_drake", MushoEntities.SNOW_DRAKE.get(), drakeClips, 5.0, player -> packHunt(player, MushoEntities.SNOW_DRAKE.get()));
     }
 
     private static <T extends MushoMonster> void canine(List<Exhibit> all, String name, EntityType<T> type,
@@ -155,6 +165,10 @@ final class MonsterExhibits {
                 .findFirst().orElse(null);
         if (prey != null) {
             prey.moveTo(player.getX(), player.getY(), player.getZ() + 7.0, 180.0F, 0.0F);
+            // monsters only hunt what they can hurt: the dummy stays standing thanks to a huge health pool instead
+            prey.setInvulnerable(false);
+            prey.getAttribute(Attributes.MAX_HEALTH).setBaseValue(1000.0);
+            prey.setHealth(prey.getMaxHealth());
         }
         return prey;
     }

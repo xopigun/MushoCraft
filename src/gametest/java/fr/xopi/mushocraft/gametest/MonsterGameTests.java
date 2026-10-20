@@ -19,6 +19,7 @@ import fr.xopi.mushocraft.monster.LusterGrizzly;
 import fr.xopi.mushocraft.monster.MonsterPack;
 import fr.xopi.mushocraft.monster.MushoMonster;
 import fr.xopi.mushocraft.monster.PaxCoyote;
+import fr.xopi.mushocraft.monster.SnowDrake;
 import fr.xopi.mushocraft.monster.TarantulaDeathlord;
 import fr.xopi.mushocraft.monster.TerminateBoar;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -391,6 +392,84 @@ public final class MonsterGameTests {
         helper.succeedWhen(() -> {
             helper.assertTrue(spider.getY() > ground + 2.0, "it goes up the wall");
             spider.discard();
+        });
+    }
+
+    @GameTest(template = EMPTY)
+    public static void aSnowDrakeOnlyMindsWhoeverComesIntoItsNest(GameTestHelper helper) {
+        SnowDrake drake = helper.spawn(MushoEntities.SNOW_DRAKE.get(), new BlockPos(1, 1, 1));
+        drake.settle(helper.absolutePos(new BlockPos(1, 1, 1)));
+        Husk near = prey(helper, new BlockPos(5, 1, 5));
+        Husk far = prey(helper, new BlockPos(1, 1, 1));
+        far.teleportTo(far.getX() + 20.0, far.getY(), far.getZ());
+        helper.assertTrue(drake.intrudes(near), "a foe in the nest is a threat");
+        helper.assertFalse(drake.intrudes(far), "one passing by far from it is not");
+        drake.discard();
+        near.discard();
+        far.discard();
+        helper.succeed();
+    }
+
+    @GameTest(template = EMPTY, timeoutTicks = 40)
+    public static void aSnowDrakeLetsADrivenOffIntruderGoButNotOneThatWoundedIt(GameTestHelper helper) {
+        SnowDrake calm = helper.spawn(MushoEntities.SNOW_DRAKE.get(), new BlockPos(1, 1, 1));
+        SnowDrake angry = helper.spawn(MushoEntities.SNOW_DRAKE.get(), new BlockPos(6, 1, 1));
+        BlockPos nest = helper.absolutePos(new BlockPos(1, 1, 1)).offset(-40, 0, 0);
+        calm.settle(nest);
+        angry.settle(nest);
+        Husk foe = prey(helper, new BlockPos(4, 1, 5));
+        calm.setTarget(foe);
+        angry.hurt(angry.damageSources().mobAttack(foe), 1.0F);
+        angry.setTarget(foe);
+        helper.runAfterDelay(5, () -> {
+            helper.assertTrue(calm.getTarget() == null, "far from the nest, the intruder is let go");
+            helper.assertTrue(angry.getTarget() == foe, "whoever wounded it is not");
+            clear(List.of(calm, angry), foe);
+            helper.succeed();
+        });
+    }
+
+    @GameTest(template = EMPTY)
+    public static void iceMagicBarelyScratchesASnowDrake(GameTestHelper helper) {
+        SnowDrake a = helper.spawn(MushoEntities.SNOW_DRAKE.get(), new BlockPos(1, 1, 1));
+        SnowDrake b = helper.spawn(MushoEntities.SNOW_DRAKE.get(), new BlockPos(6, 1, 6));
+        Husk mage = prey(helper, new BlockPos(3, 1, 3));
+        SpellProjectile ice = SpellProjectile.create(helper.getLevel(), mage, ProjectileProfile.of(SpellElement.ICE, 6.0F).build());
+        SpellProjectile fire = SpellProjectile.create(helper.getLevel(), mage, ProjectileProfile.of(SpellElement.FIRE, 6.0F).build());
+        a.hurt(MushoDamageTypes.spell(helper.getLevel(), ice, mage), 20.0F);
+        b.hurt(MushoDamageTypes.spell(helper.getLevel(), fire, mage), 20.0F);
+        helper.assertTrue((a.getMaxHealth() - a.getHealth()) * 2.0F < b.getMaxHealth() - b.getHealth(), "its scales resist ice magic");
+        helper.assertFalse(a.canFreeze(), "and the cold");
+        clear(List.of(a, b), mage);
+        ice.discard();
+        fire.discard();
+        helper.succeed();
+    }
+
+    @GameTest(template = EMPTY, timeoutTicks = 200)
+    public static void aSnowDrakeRunsAnIntruderDown(GameTestHelper helper) {
+        SnowDrake drake = helper.spawn(MushoEntities.SNOW_DRAKE.get(), new BlockPos(1, 1, 1));
+        drake.settle(helper.absolutePos(new BlockPos(1, 1, 1)));
+        Husk foe = prey(helper, new BlockPos(7, 1, 7));
+        drake.setTarget(foe);
+        helper.succeedWhen(() -> {
+            helper.assertTrue(drake.distanceTo(foe) < 3.5F, "it closes in on the intruder (now " + drake.distanceTo(foe) + ")");
+            clear(List.of(drake), foe);
+        });
+    }
+
+    @GameTest(template = EMPTY, timeoutTicks = 240)
+    public static void aPackOfSnowDrakesSetsUponAnIntruder(GameTestHelper helper) {
+        List<SnowDrake> drakes = pack(helper, MushoEntities.SNOW_DRAKE.get(), 3, new BlockPos(1, 1, 1));
+        Husk foe = prey(helper, new BlockPos(5, 1, 8));
+        drakes.forEach(drake -> drake.setTarget(foe));
+        helper.succeedWhen(() -> {
+            for (SnowDrake drake : drakes) {
+                helper.assertTrue(drake.distanceTo(foe) < 6.0F, "the whole pack closes in (" + drake.distanceTo(foe) + ", target "
+                        + drake.getTarget() + ", goals " + drake.goalSelector.getAvailableGoals().stream().filter(g -> g.isRunning())
+                        .map(g -> g.getGoal().getClass().getSimpleName()).toList() + ")");
+            }
+            clear(drakes, foe);
         });
     }
 }
