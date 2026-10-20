@@ -352,6 +352,13 @@ L'expérience de style ne donne plus de rang : seul un maître en donne.
 - **Défense de la meute** : quiconque blesse un membre a toute la meute sur le dos.
 - **Galerie** : `-Dmushocraft.gallery.only=monster_` montre chaque monstre de profil, chacune de ses animations, puis une meute qui chasse.
 
+## 5 ter. Lieux (structures du monde)
+
+- **Outil `tools/structures`** (Python) : un écrivain NBT minimal et un gabarit de construction écrivent les modèles de structures (`data/mushocraft/structure/*.nbt`), avec leurs entités, et des aperçus isométriques. Les vitres et barrières se raccordent à leurs voisines à l'écriture.
+- **Dojo** (`dojo`, un des trois modèles au hasard : Dieu de l'Épée, de l'Eau, du Nord) : d'après le dojo du Style du Dieu de l'Épée en Terre sainte des Épées (anime S3, manga) — halle sur socle de pierre, pans de bois sombre et murs blancs, toit de tuiles grises à pignon, autel au fond, bannières de la couleur du style, bancs et mannequins. Un maître d'épée **résident** du style du dojo y vit. Plaines, forêts, taïgas et terres enneigées (la Terre sainte est enneigée).
+- **Église de Milis** (`milis_church`) : d'après l'anime (S3 ép. 5) — pierre blanche, toit de cuivre vert-de-gris, rosace, fenêtre à la croix de Milis dans l'abside, clocher à flèche et croix ; nef à colonnes, bancs, tapis bleu, autel aux bougies, lustres. Deux précepteurs **résidents** : soin et frappe divine.
+- **Résidents** (`TeacherEntity.isResident`) : un maître placé par une structure garde le style ou l'école du lieu (seul son rang est tiré) et reste à quelques blocs de son poste ; c'est sauvegardé.
+
 ## 6. Mode combat et barre de move
 
 - **Activation.** On suit l'état d'Epic Fight (`PlayerPatch.isEpicFightMode()`, événement `TOGGLE_MODE`).
@@ -391,4 +398,4 @@ Limite à connaître : je n'ai accès qu'au wiki et à ses références. Je ne p
 5. 🟡 Moteur de sorts + 58 sorts (Débutant à Roi, les 11 sans rang du wiki, les 7 sorts de magie mixte) + maîtrise par école + incantation abrégée et silencieuse (19/10). Au-delà du rang Saint, le wiki ne nomme que *Lightning* et *Confinement Barrier* (E23). Invocation par papiers (§4.3 ter). Les sorts Saint, Roi et Empereur s'apprennent auprès de tuteurs de ce rang, rarissimes (E27).
 6. ✅ Stats physiques + entraînement + aura de combat (nuit du 19/10).
 7. 🟡 Styles + 7 techniques + recharge partagée + règles de rang + enchaînements de base propres à chaque style sur toutes les épées, plus la hache et la lance pour le Dieu du Nord (nuit du 19/10) ; 14 techniques depuis le 20/10 ; restent celles que le wiki ne décrit pas et *Gravity Fracture* (épée Kajakut).
-8. 🟡 Maîtres PNJ : maîtres d'épée et précepteurs de magie, avec patch Epic Fight, skins originaux, œufs d'apparition et apparition naturelle rare (nuit du 19/10). Restent des lieux dédiés (dojos, église de Milis).
+8. 🟡 Maîtres PNJ : maîtres d'épée et précepteurs de magie, avec patch Epic Fight, skins originaux, œufs d'apparition et apparition naturelle rare (nuit du 19/10). Lieux dédiés depuis le 20/10 : dojos des trois styles et églises de Milis, générés dans le monde (voir ci-dessous).

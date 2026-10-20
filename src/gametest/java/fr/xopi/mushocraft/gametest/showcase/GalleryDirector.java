@@ -1,6 +1,8 @@
 package fr.xopi.mushocraft.gametest.showcase;
 
 import fr.xopi.mushocraft.MushoCraft;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
+import net.minecraft.world.level.block.Rotation;
 import fr.xopi.mushocraft.sword.entity.ThrownTrick;
 import net.minecraft.world.phys.Vec3;
 import fr.xopi.mushocraft.core.Rank;
@@ -223,6 +225,11 @@ public final class GalleryDirector {
                         ChantBroadcast.started(dummy, MushoSpells.WATER_CANNON.get(), 40);
                     });
         }, 34, new int[]{2, 8, 14}));
+        // the mod's places, seen from outside, then from inside (turned round so the camera faces the back wall)
+        all.add(new Exhibit("place_dojo_outside", player -> place(player, "sword_god_dojo", -9, 9, Rotation.NONE), 40, new int[]{20}));
+        all.add(new Exhibit("place_dojo_inside", player -> place(player, "north_god_dojo", 9, 11, Rotation.CLOCKWISE_180), 40, new int[]{20}));
+        all.add(new Exhibit("place_church_outside", player -> place(player, "milis_church", -8, 16, Rotation.NONE), 40, new int[]{20}));
+        all.add(new Exhibit("place_church_inside", player -> place(player, "milis_church", 7, 27, Rotation.CLOCKWISE_180), 40, new int[]{20}));
         MonsterExhibits.add(all);
         List<Exhibit> chosen = new ArrayList<>();
         if (!ONLY.isEmpty()) {
@@ -232,6 +239,20 @@ public final class GalleryDirector {
         }
         all.stream().filter(exhibit -> exhibit.name().startsWith(ONLY)).forEach(chosen::add);
         return chosen;
+    }
+
+    /** Places one of the mod's structure templates, its corner offset from the player (blocks east, blocks south). */
+    private static void place(ServerPlayer player, String name, int east, int south, Rotation rotation) {
+        ServerLevel level = player.serverLevel();
+        // the previous place goes first, so each one is seen alone
+        BlockPos.betweenClosed(player.blockPosition().offset(-24, 0, -6), player.blockPosition().offset(24, 34, 44))
+                .forEach(pos -> level.setBlock(pos, Blocks.AIR.defaultBlockState(), 2));
+        level.getStructureManager().get(MushoCraft.id(name)).ifPresent(template -> {
+            BlockPos corner = player.blockPosition().offset(east, -1, south);
+            template.placeInWorld(level, corner, corner, new StructurePlaceSettings().setRotation(rotation).setFinalizeEntities(true),
+                    level.getRandom(), 2);
+        });
+        level.getEntitiesOfClass(Husk.class, player.getBoundingBox().inflate(16.0)).forEach(Entity::discard);
     }
 
     /** A sword technique performed by the player towards the dummy, at the God rank. */

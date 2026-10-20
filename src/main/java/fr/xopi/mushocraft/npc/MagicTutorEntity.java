@@ -173,7 +173,11 @@ public class MagicTutorEntity extends TeacherEntity {
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType spawnType,
                                         @Nullable SpawnGroupData data) {
         RandomSource random = level.getRandom();
-        if (random.nextInt(INHERENT_RARITY) == 0) {
+        if (isResident()) {
+            // a tutor of a church of Milis keeps the school it teaches there
+            setRank(randomRank(school(), random));
+            settle();
+        } else if (random.nextInt(INHERENT_RARITY) == 0) {
             setSchool(SpellSchool.INHERENT);
             setRank(Rank.INTERMEDIATE);
         } else {

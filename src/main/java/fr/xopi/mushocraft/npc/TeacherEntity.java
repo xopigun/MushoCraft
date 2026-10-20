@@ -37,6 +37,10 @@ import java.util.Optional;
  * subclasses say what and how they teach).
  */
 public abstract class TeacherEntity extends PathfinderMob {
+    /** How far a resident teacher strays from its post. */
+    private static final int RESIDENT_RANGE = 6;
+    private boolean resident;
+
     private static final EntityDataAccessor<Integer> RANK = SynchedEntityData.defineId(TeacherEntity.class, EntityDataSerializers.INT);
 
     protected TeacherEntity(EntityType<? extends TeacherEntity> type, Level level) {
@@ -184,15 +188,37 @@ public abstract class TeacherEntity extends PathfinderMob {
         return false;
     }
 
+    /**
+     * A resident teacher lives in a place of its style or school (a dojo, a church of Milis): it keeps the style or
+     * school the place gave it, and stays within a few blocks of its post.
+     */
+    public boolean isResident() {
+        return resident;
+    }
+
+    /** Settles the teacher at its post: it will not wander far from it. */
+    protected void settle() {
+        resident = true;
+        restrictTo(blockPosition(), RESIDENT_RANGE);
+    }
+
     @Override
     public void addAdditionalSaveData(CompoundTag tag) {
         super.addAdditionalSaveData(tag);
         tag.putString("rank", rank().getSerializedName());
+        tag.putBoolean("resident", resident);
+        if (resident && hasRestriction()) {
+            tag.putLong("post", getRestrictCenter().asLong());
+        }
     }
 
     @Override
     public void readAdditionalSaveData(CompoundTag tag) {
         super.readAdditionalSaveData(tag);
+        resident = tag.getBoolean("resident");
+        if (resident && tag.contains("post")) {
+            restrictTo(BlockPos.of(tag.getLong("post")), RESIDENT_RANGE);
+        }
         for (Rank rank : Rank.values()) {
             if (rank.getSerializedName().equals(tag.getString("rank"))) {
                 setRank(rank);

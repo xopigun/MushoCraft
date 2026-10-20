@@ -182,7 +182,13 @@ public class SwordMasterEntity extends TeacherEntity {
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType spawnType,
                                         @Nullable SpawnGroupData data) {
         RandomSource random = level.getRandom();
-        setStyle(SwordStyle.values()[random.nextInt(SwordStyle.values().length)]);
+        if (isResident()) {
+            // the master of a dojo keeps the dojo's style
+            setStyle(style());
+            settle();
+        } else {
+            setStyle(SwordStyle.values()[random.nextInt(SwordStyle.values().length)]);
+        }
         setRank(randomRank(random));
         return super.finalizeSpawn(level, difficulty, spawnType, data);
     }

@@ -1,0 +1,14 @@
+{
+  "structures": [
+    {
+      "structure": "mushocraft:milis_church",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "minecraft:random_spread",
+    "spacing": 52,
+    "separation": 22,
+    "salt": 905516723
+  }
+}
