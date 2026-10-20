@@ -670,4 +670,39 @@ public final class MonsterGameTests {
     public static void aTarantulaDeathlordWoundsItsPrey(GameTestHelper helper) {
         woundsItsPrey(helper, MushoEntities.TARANTULA_DEATHLORD.get());
     }
+
+    @GameTest(template = EMPTY, timeoutTicks = 240)
+    public static void aLusterGrizzlyWoundsItsPrey(GameTestHelper helper) {
+        woundsItsPrey(helper, MushoEntities.LUSTER_GRIZZLY.get());
+    }
+
+    @GameTest(template = EMPTY, timeoutTicks = 240)
+    public static void aGoblinWoundsItsPrey(GameTestHelper helper) {
+        woundsItsPrey(helper, MushoEntities.GOBLIN.get());
+    }
+
+    @GameTest(template = EMPTY, timeoutTicks = 240)
+    public static void aWraithWoundsItsPrey(GameTestHelper helper) {
+        woundsItsPrey(helper, MushoEntities.WRAITH.get());
+    }
+
+    @GameTest(template = EMPTY, timeoutTicks = 240)
+    public static void anArmoredWarriorWoundsItsPrey(GameTestHelper helper) {
+        woundsItsPrey(helper, MushoEntities.ARMORED_WARRIOR.get());
+    }
+
+    @GameTest(template = EMPTY, timeoutTicks = 240)
+    public static void aMadSkullWoundsItsPrey(GameTestHelper helper) {
+        woundsItsPrey(helper, MushoEntities.MAD_SKULL.get());
+    }
+
+    @GameTest(template = EMPTY, timeoutTicks = 240)
+    public static void aPaxCoyoteWoundsItsPrey(GameTestHelper helper) {
+        woundsItsPrey(helper, MushoEntities.PAX_COYOTE.get());
+    }
+
+    @GameTest(template = EMPTY, timeoutTicks = 240)
+    public static void anIronCrawlerWoundsItsPrey(GameTestHelper helper) {
+        woundsItsPrey(helper, MushoEntities.IRON_CRAWLER.get());
+    }
 }
