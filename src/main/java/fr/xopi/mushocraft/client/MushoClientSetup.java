@@ -28,6 +28,12 @@ import fr.xopi.mushocraft.core.MushoParticles;
 import net.minecraft.client.renderer.entity.NoopRenderer;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.neoforged.api.distmarker.Dist;
+import fr.xopi.mushocraft.client.render.DrakeScaleShieldRenderer;
+import fr.xopi.mushocraft.core.MushoItems;
+import net.minecraft.client.renderer.item.ItemProperties;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
@@ -52,6 +58,18 @@ public final class MushoClientSetup {
     @SubscribeEvent
     public static void onRegisterReloadListeners(RegisterClientReloadListenersEvent event) {
         event.registerReloadListener((ResourceManagerReloadListener) manager -> MoveIcons.reset());
+    }
+
+    /** The Snow Drake scale shield draws itself on the shield's shape, and bends to block as a shield does. */
+    @SubscribeEvent
+    public static void onRegisterClientExtensions(RegisterClientExtensionsEvent event) {
+        event.registerItem(DrakeScaleShieldRenderer.extensions(), MushoItems.SNOW_DRAKE_SHIELD.get());
+    }
+
+    @SubscribeEvent
+    public static void onClientSetup(FMLClientSetupEvent event) {
+        event.enqueueWork(() -> ItemProperties.register(MushoItems.SNOW_DRAKE_SHIELD.get(), ResourceLocation.withDefaultNamespace("blocking"),
+                (stack, level, holder, seed) -> holder != null && holder.isUsingItem() && holder.getUseItem() == stack ? 1.0F : 0.0F));
     }
 
     @SubscribeEvent

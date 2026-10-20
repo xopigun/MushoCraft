@@ -15,7 +15,6 @@ import fr.xopi.mushocraft.compat.epicfight.MonsterAnimations;
 import fr.xopi.mushocraft.core.MushoEntities;
 import fr.xopi.mushocraft.core.MushoItems;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.item.ItemStack;
 import fr.xopi.mushocraft.gametest.showcase.GalleryDirector.Exhibit;
 import fr.xopi.mushocraft.monster.MushoMonster;
@@ -226,19 +225,24 @@ final class MonsterExhibits {
         level.addFreshEntity(executioner);
     }
 
-    /** An armour stand in a full suit of Snow Drake scales. */
+    /** A still figure in a full suit of Snow Drake scales, holding the scale shield. */
     private static void drakeArmour(ServerPlayer player) {
         ServerLevel level = player.serverLevel();
-        ArmorStand stand = EntityType.ARMOR_STAND.create(level);
-        if (stand == null) {
+        Husk model = EntityType.HUSK.create(level);
+        if (model == null) {
             return;
         }
-        stand.moveTo(player.getX() + 1.2, player.getY(), player.getZ() + 3.0, 160.0F, 0.0F);
-        stand.setItemSlot(EquipmentSlot.HEAD, new ItemStack(MushoItems.SNOW_DRAKE_HELMET.get()));
-        stand.setItemSlot(EquipmentSlot.CHEST, new ItemStack(MushoItems.SNOW_DRAKE_CHESTPLATE.get()));
-        stand.setItemSlot(EquipmentSlot.LEGS, new ItemStack(MushoItems.SNOW_DRAKE_LEGGINGS.get()));
-        stand.setItemSlot(EquipmentSlot.FEET, new ItemStack(MushoItems.SNOW_DRAKE_BOOTS.get()));
-        level.addFreshEntity(stand);
+        model.moveTo(player.getX() + 1.2, player.getY(), player.getZ() + 3.0, 160.0F, 0.0F);
+        model.setYHeadRot(160.0F);
+        model.setYBodyRot(160.0F);
+        model.setNoAi(true);
+        model.setInvulnerable(true);
+        model.setItemSlot(EquipmentSlot.HEAD, new ItemStack(MushoItems.SNOW_DRAKE_HELMET.get()));
+        model.setItemSlot(EquipmentSlot.CHEST, new ItemStack(MushoItems.SNOW_DRAKE_CHESTPLATE.get()));
+        model.setItemSlot(EquipmentSlot.LEGS, new ItemStack(MushoItems.SNOW_DRAKE_LEGGINGS.get()));
+        model.setItemSlot(EquipmentSlot.FEET, new ItemStack(MushoItems.SNOW_DRAKE_BOOTS.get()));
+        model.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(MushoItems.SNOW_DRAKE_SHIELD.get()));
+        level.addFreshEntity(model);
     }
 
     /** One monster sets upon the dummy from afar. */

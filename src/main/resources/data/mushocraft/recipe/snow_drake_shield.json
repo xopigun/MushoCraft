@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "SIS",
+    "SSS",
+    " S "
+  ],
+  "key": {
+    "S": {
+      "item": "mushocraft:snow_drake_scale"
+    },
+    "I": {
+      "item": "minecraft:iron_ingot"
+    }
+  },
+  "result": {
+    "id": "mushocraft:snow_drake_shield",
+    "count": 1
+  }
+}

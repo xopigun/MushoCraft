@@ -2,6 +2,7 @@ package fr.xopi.mushocraft.magic.spell;
 
 import fr.xopi.mushocraft.MushoCraft;
 import fr.xopi.mushocraft.core.MushoArmorMaterials;
+import fr.xopi.mushocraft.core.MushoItems;
 import fr.xopi.mushocraft.magic.entity.SpellProjectile;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
@@ -17,7 +18,7 @@ import java.util.List;
 /**
  * What counts as ice: a spell of ice or the bite of the cold. Snow Drake scales resist it (wiki): each piece of their
  * armour takes off a share of it, and any piece keeps the wearer from freezing, as leather does
- * (freeze_immune_wearables tag).
+ * (freeze_immune_wearables tag). A raised scale shield stops it whole.
  */
 @EventBusSubscriber(modid = MushoCraft.MODID)
 public final class IceDamage {
@@ -41,8 +42,17 @@ public final class IceDamage {
                 .count();
     }
 
+    /** Whether it holds up a Snow Drake scale shield right now. */
+    public static boolean guardsWithDrakeShield(LivingEntity holder) {
+        return holder.isBlocking() && holder.getUseItem().is(MushoItems.SNOW_DRAKE_SHIELD.get());
+    }
+
     @SubscribeEvent
     public static void onIncomingDamage(LivingIncomingDamageEvent event) {
+        if (isIce(event.getSource()) && guardsWithDrakeShield(event.getEntity())) {
+            event.setCanceled(true); // the raised scales stop the ice whole, from any side
+            return;
+        }
         if (isIce(event.getSource())) {
             int pieces = drakeScalePieces(event.getEntity());
             if (pieces > 0) {

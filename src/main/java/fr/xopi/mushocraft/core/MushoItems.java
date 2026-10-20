@@ -8,6 +8,7 @@ import fr.xopi.mushocraft.magic.spell.MushoSpells;
 import fr.xopi.mushocraft.magic.spell.SpellSchool;
 import fr.xopi.mushocraft.magic.summon.SummonRituals;
 import fr.xopi.mushocraft.magic.summon.SummoningPaperItem;
+import fr.xopi.mushocraft.monster.DrakeScaleShieldItem;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
@@ -109,6 +110,10 @@ public final class MushoItems {
     public static final DeferredItem<ArmorItem> SNOW_DRAKE_CHESTPLATE = drakeArmour("snow_drake_chestplate", ArmorItem.Type.CHESTPLATE);
     public static final DeferredItem<ArmorItem> SNOW_DRAKE_LEGGINGS = drakeArmour("snow_drake_leggings", ArmorItem.Type.LEGGINGS);
     public static final DeferredItem<ArmorItem> SNOW_DRAKE_BOOTS = drakeArmour("snow_drake_boots", ArmorItem.Type.BOOTS);
+
+    /** A shield of Snow Drake scales: it stops ice magic while raised. */
+    public static final DeferredItem<DrakeScaleShieldItem> SNOW_DRAKE_SHIELD = ITEMS.register("snow_drake_shield",
+            () -> new DrakeScaleShieldItem(new Item.Properties().durability(420).rarity(Rarity.UNCOMMON)));
 
     public static final DeferredItem<DeferredSpawnEggItem> SWORD_MASTER_SPAWN_EGG = ITEMS.register("sword_master_spawn_egg",
             () -> new DeferredSpawnEggItem(MushoEntities.SWORD_MASTER, 0x2B2B33, 0xC9C9D6, new Item.Properties()));

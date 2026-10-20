@@ -577,4 +577,26 @@ public final class MonsterGameTests {
         ice.discard();
         helper.succeed();
     }
+
+    @GameTest(template = EMPTY, timeoutTicks = 60)
+    public static void aRaisedSnowDrakeShieldStopsIceMagic(GameTestHelper helper) {
+        Husk guard = prey(helper, new BlockPos(1, 1, 1));
+        Husk mage = prey(helper, new BlockPos(5, 1, 5));
+        guard.setItemSlot(EquipmentSlot.OFFHAND, new ItemStack(MushoItems.SNOW_DRAKE_SHIELD.get()));
+        guard.startUsingItem(net.minecraft.world.InteractionHand.OFF_HAND);
+        helper.runAfterDelay(10, () -> {
+            helper.assertTrue(guard.isBlocking(), "the shield is raised");
+            SpellProjectile ice = SpellProjectile.create(helper.getLevel(), mage, ProjectileProfile.of(SpellElement.ICE, 6.0F).build());
+            // from behind: the scales stop ice from any side
+            ice.setPos(guard.position().subtract(guard.getLookAngle().scale(2.0)));
+            guard.hurt(MushoDamageTypes.spell(helper.getLevel(), ice, mage), 10.0F);
+            helper.assertTrue(guard.getHealth() == guard.getMaxHealth(), "not a scratch from the ice");
+            helper.assertTrue(helper.getLevel().getRecipeManager().byKey(MushoCraft.id("snow_drake_shield")).isPresent(),
+                    "the shield is crafted from scales");
+            guard.discard();
+            mage.discard();
+            ice.discard();
+            helper.succeed();
+        });
+    }
 }

@@ -1,6 +1,7 @@
 """
 Snow Drake scale armour, drawn for MushoCraft: the worn layers (64x32, vanilla humanoid armour layout) and the four
 item icons, white scales with a pale blue sheen, a few dark blue scales as on the drake's back, steel-blue rims.
+The shield texture too (64x64, the vanilla shield layout).
 Usage: python drake_armour.py <assets/mushocraft directory>
 """
 import os
@@ -124,4 +125,22 @@ for name, mask in ICONS.items():
                        for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)))
             icon.putpixel((x, y), (RIM if edge else scale_px(x, y, rng)) + (255,))
     icon.save(os.path.join(ROOT, 'textures/item/snow_drake_%s.png' % name))
+# the shield (64x64, vanilla shield layout): a plate of scales with a steel-blue rim and a dark blue boss, a dark handle
+shield = Image.new('RGBA', (64, 64), CLEAR)
+
+
+def plate_face(face, x, y, w, h):
+    if face in ('front', 'back') and (x == 0 or x == w - 1 or y == 0 or y == h - 1):
+        return RIM
+    if face == 'front' and abs(x - (w - 1) / 2) < 1.6 and abs(y - (h - 1) / 2) < 1.6:
+        return BLUE  # the boss
+    if face == 'back':
+        return SHADE
+    return RIM if face in ('top', 'bottom', 'left', 'right') else 'scale'
+
+
+paint(shield, box(0, 0, 12, 22, 1), plate_face, rng)
+paint(shield, box(26, 0, 2, 6, 6), lambda face, x, y, w, h: (70, 64, 72), rng)
+os.makedirs(os.path.join(ROOT, 'textures/entity'), exist_ok=True)
+shield.save(os.path.join(ROOT, 'textures/entity/snow_drake_shield.png'))
 print('armour textures ok')
